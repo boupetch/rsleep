@@ -1,11 +1,15 @@
 Package: rsleep
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Sleep Analysis with R
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Paul Bouchequet <paul.bouchequet@frenchkpi.com>
+Maintainer: Paul Bouchequet <paul.bouchequet@frenchkpi.com>
+Description: Tools and function for sleep records analysis.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Imports:
+  edfReader,
+  jsonlite
+Suggests: testthat
+RoxygenNote: 6.1.1
