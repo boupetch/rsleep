@@ -28,12 +28,21 @@ test_that("Do not write channels", {
   unlink("data/sample", recursive = TRUE)
 })
 
-test_that("Corrupted channel", {
+test_that("Corrupted", {
   expect_warning({
-    write_channel(channel = "Corrupted",
+    write_channel(channel = "F4",
                   signals = NULL,
-                  headers = edfReader::readEdfSignals("data/subject1.edf"),
-                  mdfPath = "data/",
+                  headers = edfReader::readSignal("data/subject1.edf"),
+                  mdfPath = "data/sample",
+                  endian = "little")
+  })
+})
+
+test_that("Missing mdfPath argument", {
+  expect_error({
+    write_channel(channel = "F4",
+                  signals = list("F4"=list("signal"=c(1:100))),
+                  headers = edfReader::readEdfHeader("data/subject1.edf"),
                   endian = "little")
   })
 })

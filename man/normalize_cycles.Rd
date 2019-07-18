@@ -2,13 +2,13 @@
 % Please edit documentation in R/events.R
 \name{normalize_cycles}
 \alias{normalize_cycles}
-\title{normalize_cycles}
+\title{Normalize sleep cycles scored on Noxturnal software from start and stop flags to unique events.}
 \usage{
 normalize_cycles(events)
 }
 \arguments{
-\item{events}{events}
+\item{events}{Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}. Cycles flags must be named \code{Activity-CLASSICstart}, \code{Activity-BNstart}, \code{Activity-BNend}, \code{Activity-REMstart}, \code{Activity-REMend}, \code{Activity-ENstart} or \code{Activity-ENend}.}
 }
 \description{
-normalize_cycles
+Normalize sleep cycles scored on Noxturnal software from start and stop flags to unique events.
 }

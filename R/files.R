@@ -2,12 +2,19 @@
 #' Target directory is erased if it already exists. Signals are stored in binary file,
 #' events and metadata in JavaScript Object Notation (JSON) files.
 #'
-#' @references P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48‑49, march 2018.
+#' @references P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48/49, march 2018.
 #' @param edfPath character. European Data Format (EDF) file path.
 #' @param mdfPath character. Morpheo Data Format (MDF) directory path.
 #' @param channels character. Vector of channels labels to write.
 #' @param events dataframe. Events dataframe to write. Events dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
 #' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to \code{"little"}.
+#' @examples
+#' \dontrun{
+#' write_mdf(edfPath = "./record.edf",
+#' mdfPath = "./record/",
+#' channels = c("C3-M2","ECG"),
+#' events = read_events_noxturnal("events.csv"))
+#' }
 #' @export
 write_mdf <- function(edfPath, mdfPath, channels = c(NA), events = c(), endian="little") {
 
@@ -58,11 +65,11 @@ write_mdf <- function(edfPath, mdfPath, channels = c(NA), events = c(), endian="
 
 #' Write a timeserie to disk using Morpheo Data Format (MDF) guidelines.
 #'
-#' @references P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48‑49, march 2018.
+#' @references P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48-49, march 2018.
 #' @param channel character. Channel name.
 #' @param signals list. European Data Format (EDF) signals list.
 #' @param headers list. European Data Format (EDF) file headers.
-#' @param mdfPath Morpheo Data Format (MDF) directory path.
+#' @param mdfPath character. Morpheo Data Format (MDF) directory path.
 #' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to \code{"little"}.
 write_channel <- function(channel, signals, headers, mdfPath, endian="little"){
 
@@ -167,11 +174,15 @@ read_events_noxturnal <- function(dir){
 
 #' Read a Morpheo Data Format (MDF) directory to a list.
 #'
-#' @references P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48‑49, march 2018.
+#' @references P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48/49, march 2018.
 #' @param mdfPath character. MDF path.
 #' @param channels character. Channels to read.
 #' @param metadata boolean. Read or not the metadata.
 #' @return A list.
+#' @examples
+#' \dontrun{
+#' read_mdf(mdfPath = "./record/", channels = c("C3-M2","ECG"))
+#' }
 #' @export
 read_mdf <- function(mdfPath, channels = c(NA), metadata = TRUE) {
 

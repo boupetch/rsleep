@@ -1,15 +1,16 @@
 Package: rsleep
 Type: Package
-Title: Sleep Analysis with R
-Version: 0.1.0
+Title: Analysis of Sleep Data
+Version: 1.0.0
 Author: Paul Bouchequet <paul.bouchequet@frenchkpi.com>
 Maintainer: Paul Bouchequet <paul.bouchequet@frenchkpi.com>
-Description: Tools and function for sleep records analysis.
+Description: Provides users functions for sleep data management and analysis such as EDF to MDF conversion: P.Bouchequet, D.Jin, G.Solelhac, M.Chennaoui, D.Leger (2018) <doi:10.1016/j.msom.2018.01.130> "Morpheo Data Format (MDF), un nouveau format de donnees simple, robuste et performant pour stocker et analyser les enregistrements de sommeil". Provides hypnogram statistics computing and visualisation functions from "The AASM Manual for the Scoring of Sleep and Associated Events" <https://aasm.org/clinical-resources/scoring-manual/>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
   edfReader,
-  jsonlite
+  jsonlite,
+  ggplot2
 Suggests: testthat
 RoxygenNote: 6.1.1

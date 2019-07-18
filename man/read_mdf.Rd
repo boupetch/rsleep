@@ -19,6 +19,11 @@ A list.
 \description{
 Read a Morpheo Data Format (MDF) directory to a list.
 }
+\examples{
+\dontrun{
+read_mdf(mdfPath = "./record/", channels = c("C3-M2","ECG"))
+}
+}
 \references{
-P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48‑49, march 2018.
+P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48/49, march 2018.
 }

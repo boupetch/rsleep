@@ -13,7 +13,7 @@ write_channel(channel, signals, headers, mdfPath, endian = "little")
 
 \item{headers}{list. European Data Format (EDF) file headers.}
 
-\item{mdfPath}{Morpheo Data Format (MDF) directory path.}
+\item{mdfPath}{character. Morpheo Data Format (MDF) directory path.}
 
 \item{endian}{character. Endianess. \code{"big"} or \code{"little"}. Defaults to \code{"little"}.}
 }
@@ -21,5 +21,5 @@ write_channel(channel, signals, headers, mdfPath, endian = "little")
 Write a timeserie to disk using Morpheo Data Format (MDF) guidelines.
 }
 \references{
-P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48‑49, march 2018.
+P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48-49, march 2018.
 }

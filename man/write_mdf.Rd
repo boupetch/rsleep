@@ -25,6 +25,14 @@ Write a European Data Format (EDF) record file to disk using Morpheo Data Format
 Target directory is erased if it already exists. Signals are stored in binary file,
 events and metadata in JavaScript Object Notation (JSON) files.
 }
+\examples{
+\dontrun{
+write_mdf(edfPath = "./record.edf",
+mdfPath = "./record/",
+channels = c("C3-M2","ECG"),
+events = read_events_noxturnal("events.csv"))
+}
+}
 \references{
-P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48‑49, march 2018.
+P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48/49, march 2018.
 }
