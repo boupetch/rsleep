@@ -10,8 +10,12 @@
 #' @param integration_window Convolution window size.
 #' @param refractory Minimal space between peaks in milliseconds.
 #' @return A vector of each detected R peaks in seconds from the start.
+<<<<<<< HEAD
 #' @examples
 #' data("example_ecg_200hz")
+=======
+#' @example
+>>>>>>> 4f9f34496295d2429fa288db004743765c2e1abd
 #' detect_rpeaks(example_ecg_200hz, 200)
 #' @export
 detect_rpeaks <- function(signal,
@@ -44,7 +48,11 @@ detect_rpeaks <- function(signal,
   split_ecg <- split(signal_squared, ceiling(seq_along(signal_squared)/100000))
   split_ecg2 <- lapply(split_ecg,
                        function(x){
+<<<<<<< HEAD
                          xc <- stats::convolve(x,rep(1,integration_window),type="open")
+=======
+                         xc <- convolve(x,rep(1,integration_window),type="open")
+>>>>>>> 4f9f34496295d2429fa288db004743765c2e1abd
                          difflen <- length(xc) - length(x)
                          xc <- xc[(difflen/2+1):(length(xc)-(difflen/2))]
                          xc
