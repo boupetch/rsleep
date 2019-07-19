@@ -11,6 +11,7 @@ LazyData: true
 Imports:
   edfReader,
   jsonlite,
-  ggplot2
+  ggplot2,
+  signal
 Suggests: testthat
 RoxygenNote: 6.1.1
