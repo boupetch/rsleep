@@ -1,2 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+README.Rmd
+README.bibtex
+README_files/*
+README.csl
+

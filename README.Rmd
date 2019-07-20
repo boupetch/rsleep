@@ -1,0 +1,97 @@
+---
+title: "rsleep: A R package for sleep data analysis"
+output: github_document
+always_allow_html: yes
+bibliography: README.bibtex
+csl: README.csl
+---
+
+## Installation
+
+`rsleep` development version can be directly installed from Github using the `devtools` package.
+
+```
+devtools::install_github("boupetch/rsleep")
+```
+
+Otherwise stable version can be downloaded and installed from CRAN @hornik2012comprehensive :
+
+```
+install.packages("rsleep")
+```
+
+## Usage
+
+Load the package using the `library()` function.
+
+```{r}
+library(rsleep)
+```
+
+
+### File manipulation
+
+In `rsleep`, `write_mdf()` and `read_mdf()` functions are used to write and read records on disk. Files are converted from the European Data Format @kempSimpleFormatExchange1992 (EDF) to Morpheo Data Format @bouchequetMorpheoDataFormat2018a (MDF). MDF is a simple, efficient and interoperable hierarchical file format for biological timeseries. The format supports raw signal and metadata storage. MDF uses binary files for signals and JSON for metadata.
+
+### Sleep scoring
+
+#### Stages
+
+```{r plot_hypnogram}
+plot_hypnogram(example_hypnogram_30s)
+```
+
+
+#### Electrocardiogram
+
+`detect_rpeaks` implements the first part of the Pan & Tompkins algorithm @panRealTimeQRSDetection1985 to detect R peaks from an electrocardiogram (ECG) signal.
+
+```{r example_detect_rpeaks}
+
+library(ggplot2)
+
+sRate <- 200
+
+ecg <- data.frame(Volts = example_ecg_200hz,
+                  Seconds = c(1:length(example_ecg_200hz))/sRate)
+
+rpeaks <- detect_rpeaks(example_ecg_200hz, sRate)
+
+ggplot(ecg,
+       aes(x = Seconds,
+           y = Volts)) +
+  geom_line() +
+  geom_vline(data.frame(p = rpeaks),
+             mapping = aes(xintercept = p),
+             linetype="dashed",color = "red")
+
+```
+
+### Statistics computing
+
+#### Stages & scoring
+
+`stages_stats` function computes various statistics from the hypnogram.
+
+  * `rem_duration`: Total duration of REM sleep in minutes.
+  * `n1_duration`: Total duration of N1 sleep in minutes.
+  * `n2_duration`: Total duration of N2 sleep in minutes.
+  * `n3_duration`: Total duration of N3 sleep in minutes.
+  * `awa_duration`: Total duration of wake in minutes.
+  * `tts`: Time To Sleep (N1+N2+N3+REM durations) in minutes.
+  * `rem_tts`: REM over TTS duration ratio.
+  * `n3_tts`: N3 over TTS duration ratio.
+  * `n2_tts`: N2 over TTS duration ratio.
+  * `n1_tts`: N1 over TTS duration ratio.
+  * `tsp`: Total Sleep Period.
+  * `sleep_efficiency`: Sleep Efficiency.
+  * `sleep_latency`: Sleep Latency.
+  * `rem_latency`: REM Sleep Latency.
+  * `waso`: Wake After Sleep Onset.
+  
+```{r }
+stages_stats(example_hypnogram_30s)
+```
+
+  
+## References
