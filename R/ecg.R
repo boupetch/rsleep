@@ -28,7 +28,7 @@ detect_rpeaks <- function(signal,
 
   # Apply bandpass butterworth filter.
   bandpass <- signal::butter(n = filter_order,
-                             W = c(low, high),
+                             W = c((lowcut / (0.5 * sRate)), high),
                              type = "pass")
   signal_filt <- signal::filtfilt(bandpass, c(rep(signal[1],sRate),signal,rep(signal[length(signal)],sRate)))
   signal_filt <- signal_filt[(sRate+1):(length(signal_filt)-sRate)]

@@ -4,6 +4,8 @@ output: github_document
 always_allow_html: yes
 bibliography: README.bibtex
 csl: README.csl
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Installation
@@ -28,6 +30,9 @@ Load the package using the `library()` function.
 library(rsleep)
 ```
 
+## Using rsleep with sleep data
+
+
 
 ### File manipulation
 
@@ -40,7 +45,6 @@ In `rsleep`, `write_mdf()` and `read_mdf()` functions are used to write and read
 ```{r plot_hypnogram}
 plot_hypnogram(example_hypnogram_30s)
 ```
-
 
 #### Electrocardiogram
 
