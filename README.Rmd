@@ -26,7 +26,7 @@ install.packages("rsleep")
 
 Load the package using the `library()` function.
 
-```{r}
+```{r library}
 library(rsleep)
 ```
 
@@ -42,15 +42,19 @@ In `rsleep`, `write_mdf()` and `read_mdf()` functions are used to write and read
 
 #### Stages
 
+Hypnograms @AASMScoringManual can be plotted from stages data stored in a dataframe. `example_hypnogram_30s` provides an example of such a dataframe, with a full night hypnogram.
+
 ```{r plot_hypnogram}
+
 plot_hypnogram(example_hypnogram_30s)
+
 ```
 
 #### Electrocardiogram
 
 `detect_rpeaks` implements the first part of the Pan & Tompkins algorithm @panRealTimeQRSDetection1985 to detect R peaks from an electrocardiogram (ECG) signal.
 
-```{r example_detect_rpeaks}
+```{r detect_rpeaks}
 
 library(ggplot2)
 
@@ -64,7 +68,7 @@ rpeaks <- detect_rpeaks(example_ecg_200hz, sRate)
 ggplot(ecg,
        aes(x = Seconds,
            y = Volts)) +
-  geom_line() +
+  geom_line() + theme_bw() +
   geom_vline(data.frame(p = rpeaks),
              mapping = aes(xintercept = p),
              linetype="dashed",color = "red")
@@ -93,8 +97,10 @@ ggplot(ecg,
   * `rem_latency`: REM Sleep Latency.
   * `waso`: Wake After Sleep Onset.
   
-```{r }
+```{r stages_stats}
+
 stages_stats(example_hypnogram_30s)
+
 ```
 
   

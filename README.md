@@ -21,6 +21,8 @@ Load the package using the `library()` function.
 library(rsleep)
 ```
 
+## Using rsleep with sleep data
+
 ### File manipulation
 
 In `rsleep`, `write_mdf()` and `read_mdf()` functions are used to write
@@ -34,6 +36,10 @@ uses binary files for signals and JSON for metadata.
 
 #### Stages
 
+Hypnograms \[4\] can be plotted from stages data stored in a dataframe.
+`example_hypnogram_30s` provides an example of such a dataframe, with a
+full night hypnogram.
+
 ``` r
 plot_hypnogram(example_hypnogram_30s)
 ```
@@ -43,7 +49,7 @@ plot_hypnogram(example_hypnogram_30s)
 #### Electrocardiogram
 
 `detect_rpeaks` implements the first part of the Pan & Tompkins
-algorithm \[4\] to detect R peaks from an electrocardiogram (ECG)
+algorithm \[5\] to detect R peaks from an electrocardiogram (ECG)
 signal.
 
 ``` r
@@ -59,13 +65,13 @@ rpeaks <- detect_rpeaks(example_ecg_200hz, sRate)
 ggplot(ecg,
        aes(x = Seconds,
            y = Volts)) +
-  geom_line() +
+  geom_line() + theme_bw() +
   geom_vline(data.frame(p = rpeaks),
              mapping = aes(xintercept = p),
              linetype="dashed",color = "red")
 ```
 
-![](README_files/figure-gfm/example_detect_rpeaks-1.png)<!-- -->
+![](README_files/figure-gfm/detect_rpeaks-1.png)<!-- -->
 
 ### Statistics computing
 
@@ -96,13 +102,13 @@ stages_stats(example_hypnogram_30s)
 ```
 
     ## rem_duration  n1_duration  n2_duration  n3_duration awa_duration 
-    ##   0.00000000  19.00000000 177.00000000  70.50000000  84.50000000 
+    ## 2.380000e+02 4.500000e+00 2.705000e+02 1.280000e+02 9.400000e+01 
     ##          tts      rem_tts       n1_tts       n2_tts       n3_tts 
-    ## 266.50000000   0.00000000   0.07129456   0.66416510   0.26454034 
+    ## 6.410000e+02 3.712949e-01 7.020281e-03 4.219969e-01 1.996880e-01 
     ##      awa_tts          tsp   efficiency      latency   n1_latency 
-    ##   0.31707317 424.00000000   0.62853774  35.00000000   0.00000000 
-    ##   n2_latency   n3_latency         waso 
-    ##   3.00000000  21.00000000 122.50000000
+    ## 1.466459e-01 7.360000e+02 8.709239e-01 2.200000e+01 0.000000e+00 
+    ##   n2_latency   n3_latency  rem_latency         waso 
+    ## 3.300000e+01 5.100000e+01 1.160000e+02 7.300000e+01
 
 ## References
 
@@ -135,9 +141,18 @@ doi:[10.1016/j.msom.2018.01.130](https://doi.org/10.1016/j.msom.2018.01.130).
 
 </div>
 
+<div id="ref-AASMScoringManual">
+
+\[4\] AASM Scoring Manual - American Academy of Sleep Medicine, American
+Academy of Sleep Medicine Association for Sleep Clinicians and
+Researchers. (n.d.).
+<https://aasm.org/clinical-resources/scoring-manual/>.
+
+</div>
+
 <div id="ref-panRealTimeQRSDetection1985">
 
-\[4\] J. Pan, W.J. Tompkins, A Real-Time QRS Detection Algorithm, IEEE
+\[5\] J. Pan, W.J. Tompkins, A Real-Time QRS Detection Algorithm, IEEE
 Transactions on Biomedical Engineering. BME-32 (1985) 230–236.
 doi:[10.1109/TBME.1985.325532](https://doi.org/10.1109/TBME.1985.325532).
 
