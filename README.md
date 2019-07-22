@@ -23,33 +23,72 @@ library(rsleep)
 
 ## Using rsleep with sleep data
 
+### Getting sleep data
+
+An example sleep record can be downloaded using the following code line.
+It contains full polysomnography data recorded over a whole night.
+Signals form sensors are stored in the European Data Format \[2\] (EDF)
+file, while events are stored in the Comma-Separated Values (CSV) file,
+
+``` r
+download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
+
+download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
+```
+
 ### File manipulation
 
 In `rsleep`, `write_mdf()` and `read_mdf()` functions are used to write
-and read records on disk. Files are converted from the European Data
-Format \[2\] (EDF) to Morpheo Data Format \[3\] (MDF). MDF is a simple,
-efficient and interoperable hierarchical file format for biological
-timeseries. The format supports raw signal and metadata storage. MDF
-uses binary files for signals and JSON for metadata.
-
-### Sleep scoring
-
-#### Stages
-
-Hypnograms \[4\] can be plotted from stages data stored in a dataframe.
-`example_hypnogram_30s` provides an example of such a dataframe, with a
-full night hypnogram.
+and read records on disk. Files are converted from the EDF to Morpheo
+Data Format \[3\] (MDF). MDF is a simple, efficient and interoperable
+hierarchical file format for biological timeseries. The format supports
+raw signal and metadata storage. MDF uses binary files for signals and
+JSON for metadata.
 
 ``` r
-plot_hypnogram(example_hypnogram_30s)
+events <- read_events_noxturnal("15012016HD.csv")
+
+write_mdf(edfPath = "15012016HD.edf",
+          mdfPath = "15012016HD",
+          channels = c("C3-M2", "ECG"),
+          events = events)
+```
+
+Once written on disk, MDF records can be read using the `read_mdf()`
+function. It quickly returns signals, events and metadata as a list.
+
+``` r
+mdf <- read_mdf("15012016HD")
+```
+
+### Sleep Stages
+
+Hypnograms \[4\] can be plotted from stages data stored in a dataframe.
+
+``` r
+plot_hypnogram(mdf$events)
 ```
 
 ![](README_files/figure-gfm/plot_hypnogram-1.png)<!-- -->
 
-#### Electrocardiogram
+### Electroencephalography
+
+Fourier transforms are computed over EEG during sleep since 1942 \[5\] .
+Spectrograms of whole night signals can be plotted using the
+`spectrogram` function.
+
+``` r
+spectrogram(signal = mdf$channels$`C3-M2`$signal,
+            sRate = mdf$channels$`C3-M2`$metadata$sRate,
+            startTime = as.POSIXct(mdf$metadata$startTime))
+```
+
+![](README_files/figure-gfm/spectrogram-1.png)<!-- -->
+
+### Electrocardiogram
 
 `detect_rpeaks` implements the first part of the Pan & Tompkins
-algorithm \[5\] to detect R peaks from an electrocardiogram (ECG)
+algorithm \[6\] to detect R peaks from an electrocardiogram (ECG)
 signal.
 
 ``` r
@@ -150,9 +189,18 @@ Researchers. (n.d.).
 
 </div>
 
+<div id="ref-knottFourierTransformsElectroencephalogram1942">
+
+\[5\] J.R. Knott, F.A. Gibbs, C.E. Henry, Fourier transforms of the
+electroencephalogram during sleep., Journal of Experimental Psychology.
+31 (1942) 465–477.
+doi:[10.1037/h0058545](https://doi.org/10.1037/h0058545).
+
+</div>
+
 <div id="ref-panRealTimeQRSDetection1985">
 
-\[5\] J. Pan, W.J. Tompkins, A Real-Time QRS Detection Algorithm, IEEE
+\[6\] J. Pan, W.J. Tompkins, A Real-Time QRS Detection Algorithm, IEEE
 Transactions on Biomedical Engineering. BME-32 (1985) 230–236.
 doi:[10.1109/TBME.1985.325532](https://doi.org/10.1109/TBME.1985.325532).
 
