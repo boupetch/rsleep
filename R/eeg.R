@@ -37,7 +37,7 @@ spectrogram <- function(signal,
                            window = window,
                            overlap = overlap)
 
-  spec$S <- apply(spec$S,2,as.numeric)
+  spec$S <- apply(spec$S,2,Re)
 
   suppressWarnings(
     spec$S <- apply(spec$S,2,function(x){

@@ -1,8 +1,12 @@
 #' Normalize sleep cycles scored on Noxturnal software from start and stop flags to unique events.
 #'
 #' @param events Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}. Cycles flags must be named \code{Activity-CLASSICstart}, \code{Activity-BNstart}, \code{Activity-BNend}, \code{Activity-REMstart}, \code{Activity-REMend}, \code{Activity-ENstart} or \code{Activity-ENend}.
+#' @examples
+#' cycles <- data.frame(event = c("Activity-CLASSICstart","Activity-CLASSICend"))
+#' cycles$begin <- as.POSIXct(c("2016-01-16 01:13:30","2016-01-16 01:15:30"))
+#' cycles$end <- as.POSIXct(c("2016-01-16 01:13:30","2016-01-16 01:15:30"))
+#' normalize_cycles(cycles)
 #' @export
-#'
 normalize_cycles <- function(events){
   cycles_labels <- list(
     c("Activity-CLASSICstart","Activity-CLASSICend"),
@@ -75,6 +79,11 @@ plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 #' @param events Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}
 #' @param labels Sleep stages labels. Defaults to \code{c("N3","N2","N1","REM","AWA")}.
 #' @return hypnogram dataframe.
+#' @examples
+#' e <- data.frame(begin = as.POSIXlt(c(1536967800,1536967860,1536967830),origin = "1970-01-01"))
+#' e$end <- as.POSIXlt(c(1536967830,1536967890,1536967860), origin = "1970-01-01")
+#' e$event = c("back-position","N3","REM")
+#' hypnogram(e)
 #' @export
 hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
   check_events(events)

@@ -12,3 +12,9 @@ normalize_cycles(events)
 \description{
 Normalize sleep cycles scored on Noxturnal software from start and stop flags to unique events.
 }
+\examples{
+cycles <- data.frame(event = c("Activity-CLASSICstart","Activity-CLASSICend"))
+cycles$begin <- as.POSIXct(c("2016-01-16 01:13:30","2016-01-16 01:15:30"))
+cycles$end <- as.POSIXct(c("2016-01-16 01:13:30","2016-01-16 01:15:30"))
+normalize_cycles(cycles)
+}

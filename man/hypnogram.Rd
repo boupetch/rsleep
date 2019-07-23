@@ -17,3 +17,9 @@ hypnogram dataframe.
 \description{
 Remove non-sleep stages events and reorder dataframe rows using the \code{begin} column.
 }
+\examples{
+e <- data.frame(begin = as.POSIXlt(c(1536967800,1536967860,1536967830),origin = "1970-01-01"))
+e$end <- as.POSIXlt(c(1536967830,1536967890,1536967860), origin = "1970-01-01")
+e$event = c("back-position","N3","REM")
+hypnogram(e)
+}

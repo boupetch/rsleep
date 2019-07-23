@@ -9,6 +9,14 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-"
+)
+```
+
 ## Installation
 
 `rsleep` development version can be directly installed from Github using the `devtools` package.

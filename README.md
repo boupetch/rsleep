@@ -13,17 +13,7 @@ Otherwise stable version can be downloaded and installed from CRAN \[1\]
 
     install.packages("rsleep")
 
-## Usage
-
-Load the package using the `library()` function.
-
-``` r
-library(rsleep)
-```
-
-## Using rsleep with sleep data
-
-### Getting sleep data
+## Getting sleep data
 
 An example sleep record can be downloaded using the following code line.
 It contains full polysomnography data recorded over a whole night.
@@ -31,6 +21,7 @@ Signals form sensors are stored in the European Data Format \[2\] (EDF)
 file, while events are stored in the Comma-Separated Values (CSV) file,
 
 ``` r
+
 download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
 
 download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
@@ -46,6 +37,7 @@ raw signal and metadata storage. MDF uses binary files for signals and
 JSON for metadata.
 
 ``` r
+
 events <- read_events_noxturnal("15012016HD.csv")
 
 write_mdf(edfPath = "15012016HD.edf",
@@ -58,6 +50,7 @@ Once written on disk, MDF records can be read using the `read_mdf()`
 function. It quickly returns signals, events and metadata as a list.
 
 ``` r
+
 mdf <- read_mdf("15012016HD")
 ```
 
@@ -66,10 +59,11 @@ mdf <- read_mdf("15012016HD")
 Hypnograms \[4\] can be plotted from stages data stored in a dataframe.
 
 ``` r
+
 plot_hypnogram(mdf$events)
 ```
 
-![](README_files/figure-gfm/plot_hypnogram-1.png)<!-- -->
+![](man/figures/README-plot_hypnogram-1.png)<!-- -->
 
 ### Electroencephalography
 
@@ -78,12 +72,13 @@ Spectrograms of whole night signals can be plotted using the
 `spectrogram` function.
 
 ``` r
+
 spectrogram(signal = mdf$channels$`C3-M2`$signal,
             sRate = mdf$channels$`C3-M2`$metadata$sRate,
             startTime = as.POSIXct(mdf$metadata$startTime))
 ```
 
-![](README_files/figure-gfm/spectrogram-1.png)<!-- -->
+![](man/figures/README-spectrogram-1.png)<!-- -->
 
 ### Electrocardiogram
 
@@ -92,6 +87,7 @@ algorithm \[6\] to detect R peaks from an electrocardiogram (ECG)
 signal.
 
 ``` r
+
 library(ggplot2)
 
 sRate <- 200
@@ -110,7 +106,7 @@ ggplot(ecg,
              linetype="dashed",color = "red")
 ```
 
-![](README_files/figure-gfm/detect_rpeaks-1.png)<!-- -->
+![](man/figures/README-detect_rpeaks-1.png)<!-- -->
 
 ### Statistics computing
 
@@ -137,17 +133,17 @@ ggplot(ecg,
 <!-- end list -->
 
 ``` r
-stages_stats(example_hypnogram_30s)
-```
 
-    ## rem_duration  n1_duration  n2_duration  n3_duration awa_duration 
-    ## 2.380000e+02 4.500000e+00 2.705000e+02 1.280000e+02 9.400000e+01 
-    ##          tts      rem_tts       n1_tts       n2_tts       n3_tts 
-    ## 6.410000e+02 3.712949e-01 7.020281e-03 4.219969e-01 1.996880e-01 
-    ##      awa_tts          tsp   efficiency      latency   n1_latency 
-    ## 1.466459e-01 7.360000e+02 8.709239e-01 2.200000e+01 0.000000e+00 
-    ##   n2_latency   n3_latency  rem_latency         waso 
-    ## 3.300000e+01 5.100000e+01 1.160000e+02 7.300000e+01
+stages_stats(example_hypnogram_30s)
+#> rem_duration  n1_duration  n2_duration  n3_duration awa_duration 
+#> 2.380000e+02 4.500000e+00 2.705000e+02 1.280000e+02 9.400000e+01 
+#>          tts      rem_tts       n1_tts       n2_tts       n3_tts 
+#> 6.410000e+02 3.712949e-01 7.020281e-03 4.219969e-01 1.996880e-01 
+#>      awa_tts          tsp   efficiency      latency   n1_latency 
+#> 1.466459e-01 7.360000e+02 8.709239e-01 2.200000e+01 0.000000e+00 
+#>   n2_latency   n3_latency  rem_latency         waso 
+#> 3.300000e+01 5.100000e+01 1.160000e+02 7.300000e+01
+```
 
 ## References
 

@@ -9,11 +9,19 @@
 #' @param events dataframe. Events dataframe to write. Events dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
 #' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to \code{"little"}.
 #' @examples
-#' \dontrun{
-#' write_mdf(edfPath = "./record.edf",
-#' mdfPath = "./record/",
-#' channels = c("C3-M2","ECG"),
-#' events = read_events_noxturnal("events.csv"))
+#' \donttest{
+#' download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download",
+#' paste0(tempdir(),"/15012016HD.edf"))
+#' download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download",
+#' paste0(tempdir(),"15012016HD.csv"))
+#' mdfPath = paste0(tempdir(),"/15012016HD/")
+#' channels = c("C3-M2","ECG")
+#' events = read_events_noxturnal(paste0(tempdir(),"15012016HD.csv"))
+#' write_mdf(paste0(tempdir(),"/15012016HD.edf"),
+#'     mdfPath,
+#'     channels,
+#'     events
+#' )
 #' }
 #' @export
 write_mdf <- function(edfPath, mdfPath, channels = c(NA), events = c(), endian="little") {
@@ -180,8 +188,20 @@ read_events_noxturnal <- function(dir){
 #' @param metadata boolean. Read or not the metadata.
 #' @return A list.
 #' @examples
-#' \dontrun{
-#' read_mdf(mdfPath = "./record/", channels = c("C3-M2","ECG"))
+#' \donttest{
+#' download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download",
+#' paste0(tempdir(),"/15012016HD.edf"))
+#' download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download",
+#' paste0(tempdir(),"15012016HD.csv"))
+#' mdfPath = paste0(tempdir(),"/15012016HD/")
+#' channels = c("C3-M2","ECG")
+#' events = read_events_noxturnal(paste0(tempdir(),"15012016HD.csv"))
+#' write_mdf(paste0(tempdir(),"/15012016HD.edf"),
+#'     mdfPath,
+#'     channels,
+#'     events
+#' )
+#' mdf <- read_mdf(paste0(tempdir(),"/15012016HD.edf"))
 #' }
 #' @export
 read_mdf <- function(mdfPath, channels = c(NA), metadata = TRUE) {
