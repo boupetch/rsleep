@@ -55,3 +55,34 @@ spectrogram <- function(signal,
     return(spec)
   }
 }
+
+#' Computes spectral power of bands listed in the bands argument.
+#'
+#' @description `bands_power` encapsulates the `specgram` function from the `signal` package to compute bands spectral power using Hanning windowing. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
+#' @param bands A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``
+#' @param signal Numerical vector of the signal.
+#' @param sRate Signal sample rate in Hertz.
+#' @param broadband The broadband to normalize by.
+#' @return A list of bands powers
+#' @example
+#' bands_power(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
+#' @export
+bands_power <- function(bands, signal , sRate, broadband = c(0.5,40)){
+
+  s <- phonTools::pwelch(sound = signal,fs = sRate,points = 10000,show = F)
+  s[,2] <- rev(abs(s[,2]))
+
+  lapply(bands, function(band){
+    s_filtered <- s[s[,1] >= band[1] & s[,1] < band[2],]
+    s_broadband <- s[s[,1] >= broadband[1] & s[,1] < broadband[2],]
+    (sum(s_filtered[,2])/dim(s_filtered)[1])/sum(s_broadband[,2])
+  })
+}
+
+
+
+
+
+
+
+

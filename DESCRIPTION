@@ -12,6 +12,7 @@ Imports:
   edfReader,
   jsonlite,
   ggplot2,
-  signal
+  signal,
+  phonTools
 Suggests: testthat
 RoxygenNote: 6.1.1

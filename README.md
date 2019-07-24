@@ -1,6 +1,8 @@
 rsleep: A R package for sleep data analysis
 ================
 
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 ## Installation
 
 `rsleep` development version can be directly installed from Github using
@@ -27,7 +29,7 @@ download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016
 download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
 ```
 
-### File manipulation
+## Records manipulation
 
 In `rsleep`, `write_mdf()` and `read_mdf()` functions are used to write
 and read records on disk. Files are converted from the EDF to Morpheo
@@ -54,7 +56,7 @@ function. It quickly returns signals, events and metadata as a list.
 mdf <- read_mdf("15012016HD")
 ```
 
-### Sleep Stages
+## Sleep Stages
 
 Hypnograms \[4\] can be plotted from stages data stored in a dataframe.
 
@@ -65,7 +67,21 @@ plot_hypnogram(mdf$events)
 
 ![](man/figures/README-plot_hypnogram-1.png)<!-- -->
 
-### Electroencephalography
+## Epoching
+
+``` r
+
+reference <- hypnogram(mdf$events)
+reference <- reference[-nrow(reference),]
+
+epochs <- epochs(signals = lapply(mdf$channels,function(x){x$signal}),
+                 sRates = lapply(mdf$channels,function(x){x$metadata$sRate}),
+                 resample = 200,
+                 epoch = reference,
+                 startTime = as.numeric(as.POSIXct(mdf$metadata$startTime)))
+```
+
+## Electroencephalography
 
 Fourier transforms are computed over EEG during sleep since 1942 \[5\] .
 Spectrograms of whole night signals can be plotted using the
@@ -80,7 +96,55 @@ spectrogram(signal = mdf$channels$`C3-M2`$signal,
 
 ![](man/figures/README-spectrogram-1.png)<!-- -->
 
-### Electrocardiogram
+### Spectral powers
+
+``` r
+
+bands <- lapply(epochs,function(x){
+  apply(x, 2, function(y){
+    bands_power(bands = list(c(0.5,3.5), c(3.5,7.5), c(7.5,13), c(13,30)),
+                signal = y, sRate = 200,
+                broadband = c(0.5,30))
+  })
+})
+```
+
+``` r
+
+c3m2 <- lapply(bands,function(x){
+  unlist(x$`C3-M2`)
+})
+bands_df <- data.frame(matrix(unlist(c3m2), nrow=length(c3m2), byrow=T))
+
+colnames(bands_df) <- c("Delta","Theta","Alpha","Beta")
+bands_df$stage <- reference$event
+bands_df <- reshape2::melt(bands_df, id="stage")
+
+summary(bands_df)
+#>  stage       variable        value          
+#>  N3 :1024   Delta:1469   Min.   :0.0005108  
+#>  N2 :2164   Theta:1469   1st Qu.:0.0006754  
+#>  N1 :  36   Alpha:1469   Median :0.0006793  
+#>  REM:1904   Beta :1469   Mean   :0.0006779  
+#>  AWA: 748                3rd Qu.:0.0006838  
+#>                          Max.   :0.0007607
+```
+
+``` r
+
+library(ggplot2)
+
+pal <- c("#FF0000","#00A08A","#F98400","#5BBCD6")
+ggplot(bands_df,aes(x=stage,y=value,fill=variable)) + 
+  geom_boxplot() + theme_bw() +
+  scale_fill_manual(values = pal) +
+  theme(legend.title = element_blank()) +
+  xlab("") + ylab("Normalized power") 
+```
+
+![](man/figures/README-bands_plot-1.png)<!-- -->
+
+## Electrocardiography
 
 `detect_rpeaks` implements the first part of the Pan & Tompkins
 algorithm \[6\] to detect R peaks from an electrocardiogram (ECG)
@@ -108,9 +172,9 @@ ggplot(ecg,
 
 ![](man/figures/README-detect_rpeaks-1.png)<!-- -->
 
-### Statistics computing
+## Statistics computing
 
-#### Stages & scoring
+### Stages & scoring
 
 `stages_stats` function computes various statistics from the hypnogram.
 
