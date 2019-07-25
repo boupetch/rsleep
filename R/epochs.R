@@ -2,7 +2,8 @@
 #' @param signals A list of numeric vectors containing signals.
 #' @param sRates A vector or list of integer values of the signals sample rates.
 #' @param resample The sample rate to resample all signals. Defaults to 100.
-#' @param epochs Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.
+#' @param epoch Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.
+#' @param startTime The start timestamp of the signal, used to join events to epoch.
 #' @return A list of signal chunks
 #' @export
 epochs <- function(signals,

@@ -13,7 +13,9 @@ epochs(signals, sRates, resample = 100, epoch = 30, startTime = 0)
 
 \item{resample}{The sample rate to resample all signals. Defaults to 100.}
 
-\item{epochs}{Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.}
+\item{epoch}{Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.}
+
+\item{startTime}{The start timestamp of the signal, used to join events to epoch.}
 }
 \value{
 A list of signal chunks

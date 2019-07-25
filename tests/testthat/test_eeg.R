@@ -1,8 +1,36 @@
 context("EEG signal functions testing")
 
 test_that("Spectrogram", {
+
   library(signal)
-  spec <- spectrogram(chirp(seq(-2, 15, by = 0.001), 400, 10, 100, 'quadratic'),20,plot=T)
-  suppressWarnings(spec <- spectrogram(chirp(seq(-2, 15, by = 0.001), 400, 10, 100, 'quadratic'),20,n=1024,plot=F))
+
+  sig <- chirp(seq(-2, 15, by = 0.001), 400, 10, 100, 'quadratic')
+
+  spectrogram(signal = sig,
+                      sRate = 200,
+                      n=2048,
+                      window = 2048,
+                      plot=T)
+  if(file.exists("Rplots.pdf")){
+    file.remove("Rplots.pdf")
+  }
+
+  spec <- spectrogram(signal = sig,
+                      sRate = 200,
+                      n=2048,
+                      window = 2048,
+                      plot=F)
+
   expect_equal(class(spec),"specgram")
+})
+
+test_that("Bands", {
+
+  library(signal)
+
+  sig <- chirp(seq(-2, 15, by = 0.001), 400, 10, 100, 'quadratic')
+
+  bands <- bands_power(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200)
+
+  expect_equal(length(bands),2)
 })
