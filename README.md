@@ -134,12 +134,12 @@ bands_df <- reshape2::melt(bands_df, id="stage")
 
 summary(bands_df)
 #>  stage       variable        value         
-#>  N3 :1024   Delta:1469   Min.   :0.001278  
-#>  N2 :2164   Theta:1469   1st Qu.:0.004599  
-#>  N1 :  36   Alpha:1469   Median :0.005671  
-#>  REM:1904   Beta :1469   Mean   :0.005731  
-#>  AWA: 748                3rd Qu.:0.007051  
-#>                          Max.   :0.009137
+#>  N3 :1024   Delta:1469   Min.   :0.004375  
+#>  N2 :2164   Theta:1469   1st Qu.:0.006235  
+#>  N1 :  36   Alpha:1469   Median :0.008367  
+#>  REM:1904   Beta :1469   Mean   :0.008254  
+#>  AWA: 748                3rd Qu.:0.009860  
+#>                          Max.   :0.014397
 ```
 
 ``` r
