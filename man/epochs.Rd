@@ -23,3 +23,6 @@ A list of signal chunks
 \description{
 Split signals into a list of epochs according to an events dataframe or an epoch duration.
 }
+\examples{
+epochs(list(c(1:1000),c(1:1000)),100,2)
+}

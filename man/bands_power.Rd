@@ -16,10 +16,10 @@ bands_power(bands, signal, sRate, broadband = c(0.5, 40))
 \item{broadband}{The broadband to normalize by.}
 }
 \value{
-A list of bands powers
+A list of bands powers.
 }
 \description{
-`bands_power` encapsulates the `specgram` function from the `signal` package to compute bands spectral power using Hanning windowing. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
+`bands_power` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
 }
 \examples{
 bands_power(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)

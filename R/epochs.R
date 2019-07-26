@@ -5,6 +5,8 @@
 #' @param epoch Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.
 #' @param startTime The start timestamp of the signal, used to join events to epoch.
 #' @return A list of signal chunks
+#' @examples
+#' epochs(list(c(1:1000),c(1:1000)),100,2)
 #' @export
 epochs <- function(signals,
                    sRates,
