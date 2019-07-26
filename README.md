@@ -40,6 +40,18 @@ JSON for metadata.
 
 ``` r
 
+if(!dir.exists("15012016HD")){
+  events <- read_events_noxturnal("15012016HD.csv")
+
+  write_mdf(edfPath = "15012016HD.edf",
+            mdfPath = "15012016HD",
+            channels = c("C3-M2", "ECG"),
+            events = events)
+}
+```
+
+``` r
+
 events <- read_events_noxturnal("15012016HD.csv")
 
 write_mdf(edfPath = "15012016HD.edf",
@@ -102,7 +114,7 @@ spectrogram(signal = mdf$channels$`C3-M2`$signal,
 
 bands <- lapply(epochs,function(x){
   apply(x, 2, function(y){
-    bands_power(bands = list(c(0.5,3.5), c(3.5,7.5), c(7.5,13), c(13,30)),
+    bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
                 signal = y, sRate = 200,
                 broadband = c(0.5,30))
   })
@@ -114,20 +126,20 @@ bands <- lapply(epochs,function(x){
 c3m2 <- lapply(bands,function(x){
   unlist(x$`C3-M2`)
 })
-bands_df <- data.frame(matrix(unlist(c3m2), nrow=length(c3m2), byrow=T))
+bands_df <- data.frame(matrix(unlist(c3m2), nrow=length(c3m2), byrow=TRUE))
 
 colnames(bands_df) <- c("Delta","Theta","Alpha","Beta")
 bands_df$stage <- reference$event
 bands_df <- reshape2::melt(bands_df, id="stage")
 
 summary(bands_df)
-#>  stage       variable        value          
-#>  N3 :1024   Delta:1469   Min.   :0.0005108  
-#>  N2 :2164   Theta:1469   1st Qu.:0.0006754  
-#>  N1 :  36   Alpha:1469   Median :0.0006793  
-#>  REM:1904   Beta :1469   Mean   :0.0006779  
-#>  AWA: 748                3rd Qu.:0.0006838  
-#>                          Max.   :0.0007607
+#>  stage       variable        value         
+#>  N3 :1024   Delta:1469   Min.   :0.001278  
+#>  N2 :2164   Theta:1469   1st Qu.:0.004599  
+#>  N1 :  36   Alpha:1469   Median :0.005671  
+#>  REM:1904   Beta :1469   Mean   :0.005731  
+#>  AWA: 748                3rd Qu.:0.007051  
+#>                          Max.   :0.009137
 ```
 
 ``` r

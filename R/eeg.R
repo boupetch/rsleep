@@ -24,7 +24,7 @@ spectrogram <- function(signal,
                         overlap = 0,
                         cols = c(rep("#3B9AB2",9),"#78B7C5","#EBCC2A","#E1AF00",rep("#F21A00",6)),
                         freq = 4,
-                        plot = T,
+                        plot = TRUE,
                         startTime = as.POSIXct("1970/01/01 00:00:00")){
 
   resample_sRate <- maxFreq*2
@@ -64,13 +64,13 @@ spectrogram <- function(signal,
 #' @param sRate Signal sample rate in Hertz.
 #' @param broadband The broadband to normalize by.
 #' @return A list of bands powers
-#' @example
+#' @examples
 #' bands_power(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
 #' @export
 bands_power <- function(bands, signal , sRate, broadband = c(0.5,40)){
 
-  s <- phonTools::pwelch(sound = signal,fs = sRate,points = 10000,show = F)
-  s[,2] <- rev(abs(s[,2]))
+  s <- phonTools::pwelch(sound = signal,fs = sRate,points = 1000, show = FALSE)
+  s[,2] <- s[,2]+abs(min(s[,2]))
 
   lapply(bands, function(band){
     s_filtered <- s[s[,1] >= band[1] & s[,1] < band[2],]
@@ -78,11 +78,3 @@ bands_power <- function(bands, signal , sRate, broadband = c(0.5,40)){
     (sum(s_filtered[,2])/dim(s_filtered)[1])/sum(s_broadband[,2])
   })
 }
-
-
-
-
-
-
-
-

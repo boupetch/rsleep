@@ -49,7 +49,7 @@ detect_rpeaks <- function(signal,
                          xc <- xc[(difflen/2+1):(length(xc)-(difflen/2))]
                          xc
                        })
-  signal_conv <- unlist(split_ecg2,use.names = F)
+  signal_conv <- unlist(split_ecg2,use.names = FALSE)
 
   # Detect peak on preprocessed signal.
   peaks <- c(0)

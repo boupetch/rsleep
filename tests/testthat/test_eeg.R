@@ -10,7 +10,7 @@ test_that("Spectrogram", {
                       sRate = 200,
                       n=2048,
                       window = 2048,
-                      plot=T)
+                      plot=TRUE)
   if(file.exists("Rplots.pdf")){
     file.remove("Rplots.pdf")
   }
@@ -19,7 +19,7 @@ test_that("Spectrogram", {
                       sRate = 200,
                       n=2048,
                       window = 2048,
-                      plot=F)
+                      plot=FALSE)
 
   expect_equal(class(spec),"specgram")
 })
