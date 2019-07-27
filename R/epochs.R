@@ -1,7 +1,7 @@
 #' Split signals into a list of epochs according to an events dataframe or an epoch duration.
-#' @param signals A list of numeric vectors containing signals.
+#' @param signals A list of numeric vectors containing signals, or a single vector containing one signal.
 #' @param sRates A vector or list of integer values of the signals sample rates.
-#' @param resample The sample rate to resample all signals. Defaults to 100.
+#' @param resample The sample rate to resample all signals. Defaults to to the max of the provided sample rates.
 #' @param epoch Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.
 #' @param startTime The start timestamp of the signal, used to join events to epoch.
 #' @return A list of signal chunks
@@ -10,9 +10,14 @@
 #' @export
 epochs <- function(signals,
                    sRates,
-                   resample = 100,
+                   resample = max(sRates),
                    epoch = 30,
                    startTime = 0){
+
+
+  if(!is.list(signals)){
+    signals <- list(signals)
+  }
 
   resampled_signals <- mapply(function(x,y){
     if(y != resample){
