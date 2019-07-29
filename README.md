@@ -133,13 +133,13 @@ bands_df$stage <- reference$event
 bands_df <- reshape2::melt(bands_df, id="stage")
 
 summary(bands_df)
-#>  stage       variable        value         
-#>  N3 :1024   Delta:1469   Min.   :0.004375  
-#>  N2 :2164   Theta:1469   1st Qu.:0.006235  
-#>  N1 :  36   Alpha:1469   Median :0.008367  
-#>  REM:1904   Beta :1469   Mean   :0.008254  
-#>  AWA: 748                3rd Qu.:0.009860  
-#>                          Max.   :0.014397
+#>  stage       variable        value       
+#>  N3 :1024   Delta:1469   Min.   :0.1259  
+#>  N2 :2164   Theta:1469   1st Qu.:0.1743  
+#>  N1 :  36   Alpha:1469   Median :0.1986  
+#>  REM:1904   Beta :1469   Mean   :0.2500  
+#>  AWA: 748                3rd Qu.:0.2855  
+#>                          Max.   :0.5536
 ```
 
 ``` r
@@ -183,6 +183,62 @@ ggplot(ecg,
 ```
 
 ![](man/figures/README-detect_rpeaks-1.png)<!-- -->
+
+### Heart Rate Variability
+
+Using the RHRV package \[7\], Heart Rate Variability (HRV) analysis can
+be conducted over whole records.
+
+Building and interpolating heart rate signal is the first step of an HRV
+analysis.
+
+``` r
+
+library(RHRV)
+#> Loading required package: tcltk
+#> Loading required package: tkrplot
+#> Loading required package: waveslim
+#> 
+#> waveslim: Wavelet Method for 1/2/3D Signals (version = 1.7.5.1)
+#> Loading required package: nonlinearTseries
+#> Registered S3 method overwritten by 'xts':
+#>   method     from
+#>   as.zoo.xts zoo
+#> Registered S3 method overwritten by 'quantmod':
+#>   method            from
+#>   as.zoo.data.frame zoo
+#> 
+#> Attaching package: 'nonlinearTseries'
+#> The following object is masked from 'package:grDevices':
+#> 
+#>     contourLines
+#> Loading required package: lomb
+
+peaks <- detect_rpeaks(signal = mdf$channels$ECG$signal,
+                       sRate = mdf$channels$ECG$metadata$sRate)
+
+
+hrv <- CreateHRVData()
+
+hrv <- LoadBeatVector(HRVData = hrv,
+                      beatPositions = peaks,
+                      scale = 1,
+                      datetime = format(as.POSIXct(mdf$metadata$startTime), "%d/%m/%Y %H:%M:%S"))
+
+# Building the non-interpolated heart rate signal
+hrv <- BuildNIHR(hrv)
+
+# Filtering twice to eliminate all artifacts
+hrv <- FilterNIHR(hrv)
+hrv <- FilterNIHR(hrv)
+
+# Interpolation of the instantaneous heart rate
+hrv <- InterpolateNIHR(hrv)
+
+PlotHR(hrv)
+```
+
+![](man/figures/README-hrv-1.png)<!-- -->
 
 ## Statistics computing
 
@@ -275,6 +331,16 @@ doi:[10.1037/h0058545](https://doi.org/10.1037/h0058545).
 \[6\] J. Pan, W.J. Tompkins, A Real-Time QRS Detection Algorithm, IEEE
 Transactions on Biomedical Engineering. BME-32 (1985) 230–236.
 doi:[10.1109/TBME.1985.325532](https://doi.org/10.1109/TBME.1985.325532).
+
+</div>
+
+<div id="ref-rodriguez-linaresOpenSourceTool2011">
+
+\[7\] L. Rodríguez-Liñares, A.J. Méndez, M.J. Lado, D.N. Olivieri, X.A.
+Vila, I. Gómez-Conde, An open source tool for heart rate variability
+spectral analysis, Computer Methods and Programs in Biomedicine. 103
+(2011) 39–50.
+doi:[10.1016/j.cmpb.2010.05.012](https://doi.org/10.1016/j.cmpb.2010.05.012).
 
 </div>
 

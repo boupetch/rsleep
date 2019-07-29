@@ -204,6 +204,41 @@ ggplot(ecg,
 
 ```
 
+### Heart Rate Variability
+
+Using the RHRV package @rodriguez-linaresOpenSourceTool2011, Heart Rate Variability (HRV) analysis can be conducted over whole records. 
+
+Building and interpolating heart rate signal is the first step of an HRV analysis.
+
+```{r hrv, message=FALSE, warning=FALSE}
+
+library(RHRV)
+
+peaks <- detect_rpeaks(signal = mdf$channels$ECG$signal,
+                       sRate = mdf$channels$ECG$metadata$sRate)
+
+
+hrv <- CreateHRVData()
+
+hrv <- LoadBeatVector(HRVData = hrv,
+                      beatPositions = peaks,
+                      scale = 1,
+                      datetime = format(as.POSIXct(mdf$metadata$startTime), "%d/%m/%Y %H:%M:%S"))
+
+# Building the non-interpolated heart rate signal
+hrv <- BuildNIHR(hrv)
+
+# Filtering twice to eliminate all artifacts
+hrv <- FilterNIHR(hrv)
+hrv <- FilterNIHR(hrv)
+
+# Interpolation of the instantaneous heart rate
+hrv <- InterpolateNIHR(hrv)
+
+PlotHR(hrv)
+
+```
+
 ## Statistics computing
 
 ### Stages & scoring
