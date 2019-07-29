@@ -1,6 +1,8 @@
 rsleep: A R package for sleep data analysis
 ================
 
+[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ## Installation
@@ -116,7 +118,7 @@ bands <- lapply(epochs,function(x){
   apply(x, 2, function(y){
     bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
                 signal = y, sRate = 200,
-                broadband = c(0.5,30))
+                normalize = c(0.5,30))
   })
 })
 ```
@@ -195,24 +197,6 @@ analysis.
 ``` r
 
 library(RHRV)
-#> Loading required package: tcltk
-#> Loading required package: tkrplot
-#> Loading required package: waveslim
-#> 
-#> waveslim: Wavelet Method for 1/2/3D Signals (version = 1.7.5.1)
-#> Loading required package: nonlinearTseries
-#> Registered S3 method overwritten by 'xts':
-#>   method     from
-#>   as.zoo.xts zoo
-#> Registered S3 method overwritten by 'quantmod':
-#>   method            from
-#>   as.zoo.data.frame zoo
-#> 
-#> Attaching package: 'nonlinearTseries'
-#> The following object is masked from 'package:grDevices':
-#> 
-#>     contourLines
-#> Loading required package: lomb
 
 peaks <- detect_rpeaks(signal = mdf$channels$ECG$signal,
                        sRate = mdf$channels$ECG$metadata$sRate)
