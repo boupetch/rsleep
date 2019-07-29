@@ -75,6 +75,6 @@ bands_power <- function(bands, signal , sRate, broadband = c(0.5,40)){
   lapply(bands, function(band){
     s_filtered <- s[s[,1] >= band[1] & s[,1] < band[2],]
     s_broadband <- s[s[,1] >= broadband[1] & s[,1] < broadband[2],]
-    (sum(s_filtered[,2])/dim(s_filtered)[1])/sum(s_broadband[,2])
+    sum(s_filtered[,2])/sum(s_broadband[,2])
   })
 }
