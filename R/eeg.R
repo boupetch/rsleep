@@ -62,19 +62,26 @@ spectrogram <- function(signal,
 #' @param bands A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``
 #' @param signal Numerical vector of the signal.
 #' @param sRate Signal sample rate in Hertz.
-#' @param broadband The broadband to normalize by.
+#' @param normalize A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.
 #' @return A list of bands powers.
 #' @examples
 #' bands_power(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
 #' @export
-bands_power <- function(bands, signal , sRate, broadband = c(0.5,40)){
+bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
 
   s <- phonTools::pwelch(sound = signal,fs = sRate,points = 1000, show = FALSE)
   s[,2] <- s[,2]+abs(min(s[,2]))
 
   lapply(bands, function(band){
+
     s_filtered <- s[s[,1] >= band[1] & s[,1] < band[2],]
-    s_broadband <- s[s[,1] >= broadband[1] & s[,1] < broadband[2],]
-    sum(s_filtered[,2])/sum(s_broadband[,2])
+
+    if(length(normalize) == 2){
+      s_broadband <- s[s[,1] >= normalize[1] & s[,1] < normalize[2],]
+      sum(s_filtered[,2])/sum(s_broadband[,2])
+    } else {
+      sum(s_filtered[,2])
+    }
+
   })
 }

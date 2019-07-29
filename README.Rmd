@@ -146,7 +146,7 @@ bands <- lapply(epochs,function(x){
   apply(x, 2, function(y){
     bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
                 signal = y, sRate = 200,
-                broadband = c(0.5,30))
+                normalize = c(0.5,30))
   })
 })
 
