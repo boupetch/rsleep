@@ -9,9 +9,10 @@ editor_options:
   chunk_output_type: console
 ---
 
-[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep) [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep) [![Build Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis-ci.org/boupetch/rsleep) [![codecov](https://codecov.io/gh/boupetch/rsleep/branch/master/graph/badge.svg)](https://codecov.io/gh/boupetch/rsleep) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) 
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep) [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep) [![Build Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis-ci.org/boupetch/rsleep) [![codecov](https://codecov.io/gh/boupetch/rsleep/branch/master/graph/badge.svg)](https://codecov.io/gh/boupetch/rsleep) [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) 
+
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(

@@ -2,12 +2,15 @@ rsleep: A R package for sleep data analysis
 ================
 
 [![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep)
+<<<<<<< HEAD
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep)
 [![Build
 Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis-ci.org/boupetch/rsleep)
 [![codecov](https://codecov.io/gh/boupetch/rsleep/branch/master/graph/badge.svg)](https://codecov.io/gh/boupetch/rsleep)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+=======
+>>>>>>> 3e7434001f8b1d5003f45ef0548b0f43a3413b72
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
