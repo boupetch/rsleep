@@ -9,6 +9,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep)
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, echo = FALSE}
