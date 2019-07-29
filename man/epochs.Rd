@@ -4,14 +4,15 @@
 \alias{epochs}
 \title{Split signals into a list of epochs according to an events dataframe or an epoch duration.}
 \usage{
-epochs(signals, sRates, resample = 100, epoch = 30, startTime = 0)
+epochs(signals, sRates, resample = max(sRates), epoch = 30,
+  startTime = 0)
 }
 \arguments{
-\item{signals}{A list of numeric vectors containing signals.}
+\item{signals}{A list of numeric vectors containing signals, or a single vector containing one signal.}
 
 \item{sRates}{A vector or list of integer values of the signals sample rates.}
 
-\item{resample}{The sample rate to resample all signals. Defaults to 100.}
+\item{resample}{The sample rate to resample all signals. Defaults to to the max of the provided sample rates.}
 
 \item{epoch}{Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.}
 
