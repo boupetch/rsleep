@@ -4,7 +4,7 @@
 \alias{bands_power}
 \title{Computes spectral power of bands listed in the bands argument.}
 \usage{
-bands_power(bands, signal, sRate, broadband = c(0.5, 40))
+bands_power(bands, signal, sRate, normalize = c(0.5, 40))
 }
 \arguments{
 \item{bands}{A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``}
@@ -13,7 +13,7 @@ bands_power(bands, signal, sRate, broadband = c(0.5, 40))
 
 \item{sRate}{Signal sample rate in Hertz.}
 
-\item{broadband}{The broadband to normalize by.}
+\item{normalize}{A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.}
 }
 \value{
 A list of bands powers.
