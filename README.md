@@ -10,6 +10,9 @@ Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis
 [![codecov](https://codecov.io/gh/boupetch/rsleep/branch/master/graph/badge.svg)](https://codecov.io/gh/boupetch/rsleep)
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+rsleep is a R package providing tools for sleep data management,
+visualization and analysis.
+
 ## Installation
 
 `rsleep` development version can be directly installed from Github using
@@ -21,6 +24,11 @@ Otherwise stable version can be downloaded and installed from CRAN \[1\]
 :
 
     install.packages("rsleep")
+
+## Vignettes
+
+  - [Managing Sleep Records
+    Files](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
 
 ## Getting sleep data
 

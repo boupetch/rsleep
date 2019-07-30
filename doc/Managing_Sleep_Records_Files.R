@@ -27,8 +27,8 @@ c3m2sr <- s$`C3-M2`$sRate
 ## ----fig.width = 7-------------------------------------------------------
 plot(c3m2[(c3m2sr*30):(c3m2sr*30*2)],type = "l")
 
-## ----download_events, eval=FALSE-----------------------------------------
-#  download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
+## ----download_events-----------------------------------------------------
+download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
 
 ## ----read_events---------------------------------------------------------
 library(rsleep)
@@ -40,6 +40,9 @@ summary(events)
 ## ----unique_events-------------------------------------------------------
 unique(events$event)
 
+## ----hypnogram-----------------------------------------------------------
+plot_hypnogram(events)
+
 ## ----write_mdf-----------------------------------------------------------
 write_mdf(edfPath = "15012016HD.edf",
           mdfPath = "15012016HD",
@@ -48,4 +51,13 @@ write_mdf(edfPath = "15012016HD.edf",
 
 ## ----read_mdf------------------------------------------------------------
 mdf <- read_mdf("15012016HD")
+
+## ----ecg_example---------------------------------------------------------
+
+ecgSrate <- mdf$channels$ECG$metadata$sRate
+
+ecg10 <- mdf$channels$`ECG`$signal[(50*ecgSrate):(60*ecgSrate)]
+
+plot(ecg10, type="l")
+
 

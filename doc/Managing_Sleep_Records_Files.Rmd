@@ -60,33 +60,17 @@ Plotting seconds 30 to 60 of the record looks like this:
 plot(c3m2[(c3m2sr*30):(c3m2sr*30*2)],type = "l")
 ```
 
-# Morpheo Data Format Records
+# Events Files
 
-Although EDF imposed itself as a standard for data exchange, it may not be seen as suitable for all of the usages. While the standard supports events since 2003, very few software allow events exportation directly in EDF files. When finding new ways to store physiological data, one must keep in mind some simple rule to ensure its effectiveness:
+While the EDF standard supports events since 2003, very few software allow events exportation directly in EDF files.
 
-  * **Simplicity**: Data format definitions must be straightforward, understadable by non-IT population to lower technical barriers in using the format.
-  
-  * **Interoperability**: Data must be able to be read and wrote easily on every platform, using any programming language. This implies format definitions must be published and open sourced while respecting several standards.
-  
-  * **Efficiency**: A good data format must not slow down operations with costly read and write operations.
-  
-  * **Scalability**: Usages of today are not the usages of tomorrow. 20 years ago, it was not common to compare thousands of PSGs in a single analysis. But big data democratization lowered costs and made it possible. Who knows the data usages in 20 years?
+Scoring of the previous sample record can be downloaded here.
 
-Following these recommendations, a consortium of a few public and private laboratories published in 2018 the implementation a new format: the Morpheo Data Format (MDF) @bouchequetMorpheoDataFormat2018. The MDF format does no aim to replace EDF as a standard for data exchange. It a format designed to ease simultaneous work and collaboration over records stored on disk while ensuring interoperability,
-
-This format firstly distinguishes signal data from events and metadata. **Signals** regroup all the physiological, high sample rate timeseries such as electroencephalography, electrocardiography, nasal flow, oxygen levels, and so on. **Metadata**, as its name suggests, is data about the record. Patient identifier, recording conditions and all fields describing the record are considered metadata. **Events** include sleep scoring and technical events such as equipment logs.
-
-In MDF, signals are stored as raw binary files in folders, while events and metadata are stored in JSON.
-
-## Reading events
-
-Scoring of the previous sample record can be recorded here.
-
-```{r download_events, eval=FALSE}
+```{r download_events}
 download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
 ```
 
-These events have been exported from Noxturnal, a sleep scoring software published by Resmed. As they are stored using a particular convention, the `read_events_noxturnal` from the `rsleep` package helps us reading the file as clean dataframe.
+These events have been exported from Noxturnal, a sleep scoring software published by Resmed @ResMedWebsite. As they are stored using a particular convention, the `read_events_noxturnal` from the `rsleep` package helps us reading the file as clean dataframe.
 
 ```{r read_events}
 library(rsleep)
@@ -102,9 +86,39 @@ Events are characterized by a `start`  and an `end` timestamp, and an `event` la
 unique(events$event)
 ```
 
+Using events dataframe containing sleep stage scoring, `rsleep` can plot hypnograms.
+
+```{r hypnogram}
+plot_hypnogram(events)
+```
+
+# Morpheo Data Format Records
+
+Although EDF imposed itself as a standard for data exchange, it may not be seen as suitable for all of the usages. When finding new ways to store physiological data, one must keep in mind some simple rule to ensure its effectiveness:
+
+  * **Simplicity**: Data format definitions must be straightforward, understadable by non-IT population to lower technical barriers in using the format.
+  
+  * **Interoperability**: Data must be able to be read and wrote easily on every platform, using any programming language. This implies format definitions must be published and open sourced while respecting several standards.
+  
+  * **Efficiency**: A good data format must not slow down operations with costly read and write operations.
+  
+  * **Scalability**: Usages of today are not the usages of tomorrow. 20 years ago, it was not common to compare thousands of PSGs in a single analysis. But big data democratization lowered costs and made it possible. Who knows the data usages in 20 years?
+
+Following these recommendations, a consortium of a few public and private laboratories published in 2018 the implementation a new format: the Morpheo Data Format (MDF) @bouchequetMorpheoDataFormat2018. The MDF format does no aim to replace EDF as a standard for data exchange. It a format designed to ease simultaneous work and collaboration over records stored on disk while ensuring interoperability,
+
+MDF distinguishes signal data from events and metadata:
+
+  * **Signals** regroup all the physiological, high sample rate timeseries such as electroencephalography, electrocardiography, nasal flow, oxygen levels, and so on.
+  
+  * **Metadata**, as its name suggests, is data about the record. Patient identifier, recording conditions and all fields describing the record are considered metadata.
+  
+  * **Events** include sleep scoring and technical events such as equipment logs.
+
+In MDF, signals are stored as raw binary files in folders, while events and metadata are stored in JSON. This way, any programming language can read MDf file without the use of complex dependencies.
+
 ## Writing MDF files
 
-MDF files can be wrote from EDF files and events using the `write_mdf` function from `rsleep`.
+MDF files can be wrote from EDF files and events using the `write_mdf` function from `rsleep`. 
 
 ```{r write_mdf}
 write_mdf(edfPath = "15012016HD.edf",
@@ -113,6 +127,7 @@ write_mdf(edfPath = "15012016HD.edf",
           events = events)
 ```
 
+This call creates the directory `15012016HD`. Events are stored in the `events.json` file. Record metadata is in the `metadata.json` file. For each channel a directory is created, with `signal.bin` containing the raw signal and `metadata.json` the metadata.
 
 ## Reading EDF files
 
@@ -121,5 +136,20 @@ MDF files can be read using the `read_mdf` function from `rsleep`.
 ```{r read_mdf}
 mdf <- read_mdf("15012016HD")
 ```
+
+`read_mdf` quickly reads the record as list. Signals and metadata can be accessed in the same way as the EDF file. 
+
+For instance, 10 seconds of ECG signal would look like this:
+
+```{r ecg_example}
+
+ecgSrate <- mdf$channels$ECG$metadata$sRate
+
+ecg10 <- mdf$channels$`ECG`$signal[(50*ecgSrate):(60*ecgSrate)]
+
+plot(ecg10, type="l")
+
+```
+
 
 # References

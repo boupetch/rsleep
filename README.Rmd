@@ -11,9 +11,6 @@ editor_options:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep) [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep) [![Build Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis-ci.org/boupetch/rsleep) [![codecov](https://codecov.io/gh/boupetch/rsleep/branch/master/graph/badge.svg)](https://codecov.io/gh/boupetch/rsleep) [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) 
-
-
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -21,6 +18,10 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-"
 )
 ```
+
+[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep) [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep) [![Build Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis-ci.org/boupetch/rsleep) [![codecov](https://codecov.io/gh/boupetch/rsleep/branch/master/graph/badge.svg)](https://codecov.io/gh/boupetch/rsleep) [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) 
+
+rsleep is a R package providing tools for sleep data management, visualization and analysis. 
 
 ## Installation
 
@@ -42,12 +43,15 @@ library(rsleep)
 
 ```
 
+## Vignettes
+
+  * [Managing Sleep Records Files](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
+
 ## Getting sleep data
 
 An example sleep record can be downloaded using the following code line. It contains full polysomnography data recorded over a whole night. Signals form sensors are stored in the European Data Format @kempSimpleFormatExchange1992 (EDF) file, while events are stored in the Comma-Separated Values (CSV) file,
 
 ```{r download_data_hidden, include=FALSE}
-
 if(!file.exists("15012016HD.edf")){
   download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
 }
@@ -55,16 +59,13 @@ if(!file.exists("15012016HD.edf")){
 if(!file.exists("15012016HD.csv")){
   download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
 }
-
 ```
 
 
 ```{r download_data_display, eval=FALSE}
-
 download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
 
 download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
-
 ```
 
 ## Records manipulation
