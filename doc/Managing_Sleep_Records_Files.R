@@ -40,7 +40,7 @@ summary(events)
 ## ----unique_events-------------------------------------------------------
 unique(events$event)
 
-## ----hypnogram-----------------------------------------------------------
+## ----hypnogram, fig.width = 7--------------------------------------------
 plot_hypnogram(events)
 
 ## ----write_mdf-----------------------------------------------------------
@@ -52,12 +52,10 @@ write_mdf(edfPath = "15012016HD.edf",
 ## ----read_mdf------------------------------------------------------------
 mdf <- read_mdf("15012016HD")
 
-## ----ecg_example---------------------------------------------------------
-
+## ----ecg_example, fig.width = 7------------------------------------------
 ecgSrate <- mdf$channels$ECG$metadata$sRate
 
 ecg10 <- mdf$channels$`ECG`$signal[(50*ecgSrate):(60*ecgSrate)]
 
 plot(ecg10, type="l")
-
 
