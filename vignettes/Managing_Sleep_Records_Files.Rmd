@@ -82,7 +82,7 @@ In MDF, signals are stored as raw binary files in folders, while events and meta
 
 Scoring of the previous sample record can be recorded here.
 
-```{r download_events, eval=FALSE}
+```{r download_events}
 download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
 ```
 
