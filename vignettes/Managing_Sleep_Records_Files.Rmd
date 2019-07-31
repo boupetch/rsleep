@@ -28,12 +28,12 @@ An example EDF file can be donwloaded using the following code:
 
 ```{r download_edf_hidden, include=FALSE}
 if(!file.exists("15012016HD.edf")){
-  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
+  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
 }
 ```
 
 ```{r download_data_display, eval=FALSE}
-download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
+download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
 ```
 
 To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals.
@@ -67,7 +67,7 @@ While the EDF standard supports events since 2003, very few software allow event
 Scoring of the previous sample record can be downloaded here.
 
 ```{r download_events}
-download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
+download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv", "wget", T)
 ```
 
 These events have been exported from Noxturnal, a sleep scoring software published by Resmed @ResMedWebsite. As they are stored using a particular convention, the `read_events_noxturnal` from the `rsleep` package helps us reading the file as clean dataframe.
