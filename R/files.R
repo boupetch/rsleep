@@ -7,7 +7,7 @@
 #' @param mdfPath character. Morpheo Data Format (MDF) directory path.
 #' @param channels character. Vector of channels labels to write.
 #' @param events dataframe. Events dataframe to write. Events dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
-#' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to \code{"little"}.
+#' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to platform endian.
 #' @examples
 #' \donttest{
 #' download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download",
@@ -24,7 +24,7 @@
 #' )
 #' }
 #' @export
-write_mdf <- function(edfPath, mdfPath, channels = c(NA), events = c(), endian="little") {
+write_mdf <- function(edfPath, mdfPath, channels = c(NA), events = c(), endian=.Platform$endian) {
 
   # Reset MDF directory
   if(dir.exists(mdfPath)){
@@ -78,8 +78,8 @@ write_mdf <- function(edfPath, mdfPath, channels = c(NA), events = c(), endian="
 #' @param signals list. European Data Format (EDF) signals list.
 #' @param headers list. European Data Format (EDF) file headers.
 #' @param mdfPath character. Morpheo Data Format (MDF) directory path.
-#' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to \code{"little"}.
-write_channel <- function(channel, signals, headers, mdfPath, endian="little"){
+#' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to platform endian.
+write_channel <- function(channel, signals, headers, mdfPath, endian=.Platform$endian){
 
   signal <- signals[[channel]]
 
