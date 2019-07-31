@@ -4,15 +4,17 @@
 #' @param resample The sample rate to resample all signals. Defaults to to the max of the provided sample rates.
 #' @param epoch Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.
 #' @param startTime The start timestamp of the signal, used to join events to epoch.
+#' @param padding Number of previous and next epochs to pad the current epoch with. This functionnality is mostly used to enrich deep learning datasets. Defaults to 0.
 #' @return A list of signal chunks
 #' @examples
-#' epochs(list(c(1:1000),c(1:1000)),100,2)
+#' epochs(list(rep(c(1,2,3,4),100),rep(c(5,6,7,8),100)),4,4,1,padding = 2)
 #' @export
 epochs <- function(signals,
                    sRates,
                    resample = max(sRates),
                    epoch = 30,
-                   startTime = 0){
+                   startTime = 0,
+                   padding = 0){
 
 
   if(!is.list(signals)){
@@ -30,7 +32,7 @@ epochs <- function(signals,
 
   if(is.numeric(epoch)){
 
-    lapply(
+    epochs <- lapply(
       split(resampled_signals,
             ceiling(seq_along(resampled_signals[,1])/(resample*epoch))),
       matrix,
@@ -50,11 +52,43 @@ epochs <- function(signals,
       }
     })
     epochs[sapply(epochs, is.null)] <- NULL
-    epochs
 
   } else {
 
     stop("`epoch` parameter must be a numeric or a dataframe of events.")
 
   }
+
+  # Apply padding
+  if(padding > 0){
+
+    epochs <- lapply(c(1:length(epochs)), function(i){
+
+      epoch <-  epochs[[i]]
+
+      for(j in c(1:padding)){
+
+        if((i-1) %in% c(1:length(epochs))){
+          prev <- epochs[[i-1]]
+        } else {
+          prev <- epochs[[1]]
+        }
+
+        if((i+1) %in%  c(1:length(epochs))){
+          last <- epochs[[i+1]]
+        } else {
+          last <- epochs[[length(epochs)]]
+        }
+
+        epoch <-  abind::abind(prev, epoch, last, along = 1)
+
+      }
+
+      epoch
+
+    })
+  }
+
+  epochs
+
 }
