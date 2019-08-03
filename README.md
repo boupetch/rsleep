@@ -15,22 +15,32 @@ visualization and analysis.
 
 ## Installation
 
-`rsleep` development version can be directly installed from Github using
-the `devtools` package.
+Stable version can be downloaded and installed from
+[CRAN](https://cran.r-project.org/) \[1\] :
 
-    devtools::install_github("boupetch/rsleep")
+``` r
+install.packages("rsleep", repos = "https://cloud.r-project.org")
+```
 
-Otherwise stable version can be downloaded and installed from CRAN \[1\]
-:
+Development version can be directly installed from
+[Github](https://github.com/) using the `devtools` package :
 
-    install.packages("rsleep")
+``` r
+devtools::install_github("boupetch/rsleep")
+```
+
+## Usage
+
+``` r
+library(rsleep)
+```
 
 ## Vignettes
 
   - [Managing Sleep Records
     Files](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
 
-## Getting sleep data
+## Examples
 
 An example sleep record can be downloaded using the following code line.
 It contains full polysomnography data recorded over a whole night.
@@ -38,7 +48,6 @@ Signals form sensors are stored in the European Data Format \[2\] (EDF)
 file, while events are stored in the Comma-Separated Values (CSV) file,
 
 ``` r
-
 download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
 
 download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
@@ -54,7 +63,6 @@ raw signal and metadata storage. MDF uses binary files for signals and
 JSON for metadata.
 
 ``` r
-
 if(!dir.exists("15012016HD")){
   events <- read_events_noxturnal("15012016HD.csv")
 
@@ -262,7 +270,6 @@ PlotHR(hrv)
 <!-- end list -->
 
 ``` r
-
 stages_stats(example_hypnogram_30s)
 #> rem_duration  n1_duration  n2_duration  n3_duration awa_duration 
 #> 2.380000e+02 4.500000e+00 2.705000e+02 1.280000e+02 9.400000e+01 

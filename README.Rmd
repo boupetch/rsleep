@@ -25,29 +25,29 @@ rsleep is a R package providing tools for sleep data management, visualization a
 
 ## Installation
 
-`rsleep` development version can be directly installed from Github using the `devtools` package.
+Stable version can be downloaded and installed from [CRAN](https://cran.r-project.org/) @hornik2012comprehensive :
 
+```{r install_cran, results="hide"}
+install.packages("rsleep", repos = "https://cloud.r-project.org")
 ```
+
+Development version can be directly installed from [Github](https://github.com/) using the `devtools` package :
+
+```{r install_github, results="hide", message=FALSE}
 devtools::install_github("boupetch/rsleep")
 ```
 
-Otherwise stable version can be downloaded and installed from CRAN @hornik2012comprehensive :
+## Usage
 
-```
-install.packages("rsleep")
-```
-
-```{r library, include=FALSE}
-
+```{r library,results="hide"}
 library(rsleep)
-
 ```
 
 ## Vignettes
 
   * [Managing Sleep Records Files](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
 
-## Getting sleep data
+## Examples
 
 An example sleep record can be downloaded using the following code line. It contains full polysomnography data recorded over a whole night. Signals form sensors are stored in the European Data Format @kempSimpleFormatExchange1992 (EDF) file, while events are stored in the Comma-Separated Values (CSV) file,
 
@@ -73,7 +73,6 @@ download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016
 In `rsleep`, `write_mdf()` and `read_mdf()` functions are used to write and read records on disk. Files are converted from the EDF to Morpheo Data Format @bouchequetMorpheoDataFormat2018a (MDF). MDF is a simple, efficient and interoperable hierarchical file format for biological timeseries. The format supports raw signal and metadata storage. MDF uses binary files for signals and JSON for metadata.
 
 ```{r write_mdf_hidden, eval=FALSE}
-
 if(!dir.exists("15012016HD")){
   events <- read_events_noxturnal("15012016HD.csv")
 
@@ -82,26 +81,21 @@ if(!dir.exists("15012016HD")){
             channels = c("C3-M2", "ECG"),
             events = events)
 }
-
 ```
 
 ```{r write_mdf_display, eval=FALSE}
-
 events <- read_events_noxturnal("15012016HD.csv")
 
 write_mdf(edfPath = "15012016HD.edf",
           mdfPath = "15012016HD",
           channels = c("C3-M2", "ECG"),
           events = events)
-
 ```
 
 Once written on disk, MDF records can be read using the `read_mdf()` function. It quickly returns signals, events and metadata as a list.
 
 ```{r read_mdf}
-
 mdf <- read_mdf("15012016HD")
-
 ```
 
 ## Sleep Stages
@@ -266,9 +260,7 @@ PlotHR(hrv)
   * `waso`: Wake After Sleep Onset.
   
 ```{r stages_stats}
-
 stages_stats(example_hypnogram_30s)
-
 ```
 
 ## References
