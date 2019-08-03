@@ -5,8 +5,10 @@ bibliography: Managing_Sleep_Records_Files.bibtex
 csl: vignettes.csl
 vignette: >
   %\VignetteIndexEntry{Managing_Sleep_Records_With_rsleep}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include = FALSE}
@@ -16,13 +18,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-Records of physiological signals during sleep can take many forms. It starts with simple accelerometry @vanheesEstimatingSleepParameters2018 and goes up to full polysomnography (PSG) @AASMScoringManual, a simultaneous recording of more than ten physiological signals. But sleep records all share a common aspect: they are timeseries, collections of datapoints indexed in time order. Along these timeseries are found metadata: recording conditions, patient information... 
+Records of physiological signals during sleep can take many forms. It starts with simple accelerometry @vanheesEstimatingSleepParameters2018 and goes up to full polysomnography (PSG) @AASMScoringManual, a simultaneous recording of more than ten physiological signals. But sleep records all share a common aspect: they are timeseries, collections of datapoints indexed in time order. Along these timeseries are found metadata: recording conditions, patient information, sample rates and such.
 
-The European Data Format (EDF) has been firstly described in 1992 to ease medical timeseries exchange between research teams @Kemp1992. Primarily conceived to store polygraphic signals, the design has been updated in 2003 to support events data in files, thus renaming the format to EDF+ @Kemp2003. Another update in 2013 now allow video data storage @Kemp2013. A small website recaps history and lists a few data, software and users of the format: [http://edfplus.info/](http://edfplus.info/).
+The European Data Format (EDF) has been firstly described in 1992 to ease medical timeseries storage and exchange @Kemp1992. Primarily conceived to store polygraphic signals, the design has been updated in 2003 to support events data, thus renaming the format to EDF+ @Kemp2003. Another update in 2013 implemented video data storage @Kemp2013. A small website recaps history and lists a few databases, softwares and users of the format: [http://edfplus.info/](http://edfplus.info/).
 
-Since its publication, the EDF imposed itself as a standard for exchange of sleep records. Files size come from few hundred megabytes to a few gigabytes, accoring to the variety of signals and their resolution.
+Since its publication, the EDF imposed itself as a standard for exchange of sleep records. Files size come from few hundred megabytes to a few gigabytes, accoring to the number, length and resolution of signals.
 
-## EDF Records
+# Reading EDF Records files
 
 An example EDF file can be donwloaded using the following code:
 
@@ -36,7 +38,7 @@ if(!file.exists("15012016HD.edf")){
 download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
 ```
 
-To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals.
+This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.
 
 ```{r read_edf}
 library(edfReader)
@@ -46,7 +48,7 @@ h <- readEdfHeader("15012016HD.edf")
 s <- readEdfSignals(h, signals = c("C3-M2", "ECG"))
 ```
 
-The variable `s` now contains signals in a convenient list. For instance, the electroencephalographic derivation `C3-M2` signal and sample rate can be accessed like this:
+The variable `s` now contains signals and their metadata in a convenient list object. For instance, the electroencephalographic (EEG) derivation `C3-M2` signal and sample rate can be accessed like this:
 
 ```{r}
 c3m2 <- s$`C3-M2`$signal
@@ -54,7 +56,7 @@ c3m2 <- s$`C3-M2`$signal
 c3m2sr <- s$`C3-M2`$sRate
 ```
 
-Plotting seconds 30 to 60 of the record looks like this:
+Plotting seconds 30 to 60 of the record would look like this:
 
 ```{r fig.width = 7}
 plot(c3m2[(c3m2sr*30):(c3m2sr*30*2)],type = "l")
@@ -104,9 +106,9 @@ Although EDF imposed itself as a standard for data exchange, it may not be seen 
   
   * **Scalability**: Usages of today are not the usages of tomorrow. 20 years ago, it was not common to compare thousands of PSGs in a single analysis. But big data democratization lowered costs and made it possible. Who knows the data usages in 20 years?
 
-Following these recommendations, a consortium of a few public and private laboratories published in 2018 the implementation a new format: the Morpheo Data Format (MDF) @bouchequetMorpheoDataFormat2018. The MDF format does no aim to replace EDF as a standard for data exchange. It a format designed to ease simultaneous work and collaboration over records stored on disk while ensuring interoperability,
+Following these recommendations, a consortium of public and private research teams published in 2018 the implementation a new format: the Morpheo Data Format (MDF) @bouchequetMorpheoDataFormat2018. The MDF format does not aim to replace EDF as a standard for data exchange. This format have been designed to ease simultaneous work and collaboration over records stored on disk while ensuring interoperability,
 
-MDF distinguishes signal data from events and metadata:
+MDF distinguishes *signal* data from *events* and *metadata*:
 
   * **Signals** regroup all the physiological, high sample rate timeseries such as electroencephalography, electrocardiography, nasal flow, oxygen levels, and so on.
   
@@ -114,7 +116,7 @@ MDF distinguishes signal data from events and metadata:
   
   * **Events** include sleep scoring and technical events such as equipment logs.
 
-In MDF, signals are stored as raw binary files in folders, while events and metadata are stored in JSON. This way, any programming language can read MDf file without the use of complex dependencies.
+In MDF, signals are stored as raw binary files in folders, while events and metadata are stored in JSON. This way, any programming language can read MDF file without the use of complex dependencies.
 
 ## Writing MDF files
 
