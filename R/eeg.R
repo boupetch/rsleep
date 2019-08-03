@@ -5,7 +5,7 @@
 #' @param sRate Signal sample rate in Hertz.
 #' @param maxFreq Maximal frequency to plot in Hertz. Signal will be resampled at maxFreq*2 sample rate.
 #' @param n The size of the Fourier transform window.
-#' @param window Shape of the fourier transform window, defaults to n*2.
+#' @param window Shape of the fourier transform window, defaults to n.
 #' @param overlap Overlap with previous window, defaults to 0.
 #' @param cols Color scale used for the underlying plot function.
 #' @param freq Aggregate frequency used to lower spectrogram resolution. Defaults to 4.
@@ -20,7 +20,7 @@ spectrogram <- function(signal,
                         sRate,
                         maxFreq = 25,
                         n = 1024,
-                        window = n*2,
+                        window = n,
                         overlap = 0,
                         cols = c(rep("#3B9AB2",9),"#78B7C5","#EBCC2A","#E1AF00",rep("#F21A00",6)),
                         freq = 4,
