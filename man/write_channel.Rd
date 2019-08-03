@@ -4,7 +4,8 @@
 \alias{write_channel}
 \title{Write a timeserie to disk using Morpheo Data Format (MDF) guidelines.}
 \usage{
-write_channel(channel, signals, headers, mdfPath, endian = "little")
+write_channel(channel, signals, headers, mdfPath,
+  endian = .Platform$endian)
 }
 \arguments{
 \item{channel}{character. Channel name.}
@@ -15,7 +16,7 @@ write_channel(channel, signals, headers, mdfPath, endian = "little")
 
 \item{mdfPath}{character. Morpheo Data Format (MDF) directory path.}
 
-\item{endian}{character. Endianess. \code{"big"} or \code{"little"}. Defaults to \code{"little"}.}
+\item{endian}{character. Endianess. \code{"big"} or \code{"little"}. Defaults to platform endian.}
 }
 \description{
 Write a timeserie to disk using Morpheo Data Format (MDF) guidelines.

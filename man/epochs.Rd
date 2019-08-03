@@ -5,7 +5,7 @@
 \title{Split signals into a list of epochs according to an events dataframe or an epoch duration.}
 \usage{
 epochs(signals, sRates, resample = max(sRates), epoch = 30,
-  startTime = 0)
+  startTime = 0, padding = 0)
 }
 \arguments{
 \item{signals}{A list of numeric vectors containing signals, or a single vector containing one signal.}
@@ -17,6 +17,8 @@ epochs(signals, sRates, resample = max(sRates), epoch = 30,
 \item{epoch}{Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.}
 
 \item{startTime}{The start timestamp of the signal, used to join events to epoch.}
+
+\item{padding}{Number of previous and next epochs to pad the current epoch with. This functionnality is mostly used to enrich deep learning datasets. Defaults to 0.}
 }
 \value{
 A list of signal chunks
@@ -25,5 +27,5 @@ A list of signal chunks
 Split signals into a list of epochs according to an events dataframe or an epoch duration.
 }
 \examples{
-epochs(list(c(1:1000),c(1:1000)),100,2)
+epochs(list(rep(c(1,2,3,4),100),rep(c(5,6,7,8),100)),4,4,1,padding = 2)
 }
