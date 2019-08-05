@@ -74,7 +74,6 @@ if(!dir.exists("15012016HD")){
 ```
 
 ``` r
-
 events <- read_events_noxturnal("15012016HD.csv")
 
 write_mdf(edfPath = "15012016HD.edf",
@@ -87,7 +86,6 @@ Once written on disk, MDF records can be read using the `read_mdf()`
 function. It quickly returns signals, events and metadata as a list.
 
 ``` r
-
 mdf <- read_mdf("15012016HD")
 ```
 
