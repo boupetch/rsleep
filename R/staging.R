@@ -15,20 +15,16 @@ score_stages <- function(signals,
   model_url <- "http://cloud.frenchkpi.com/s/fjWTZZ2omGgGa6R/download"
 
   if((!file_test("-f", model_path) && dir.exists(model_path)) |
-     (file.exists(model_path) && digest::digest(object = model_path, algo = "md5") != model_f_md5) ){
+     (file.exists(paste0(model_path,"/",model_fname)) && digest::digest(object = paste0(model_path,"/",model_fname), algo = "md5") != model_f_md5) ){
 
     model_fullpath <- paste0(model_path,"/",model_fname)
 
     if(verbose) message(paste0("Model missing or outdated. Downloading to ",model_fullpath))
 
     if(.Platform$OS.type == "unix") {
-      if(!file.exists(model_fullpath)){
-        download.file(model_url, model_fullpath, "wget", T)
-      }
+      download.file(model_url, model_fullpath, "wget", T)
     } else {
-      if(!file.exists(model_fullpath)){
-        download.file(model_url, model_fullpath, method = "wininet", T)
-      }
+      download.file(model_url, model_fullpath, method = "wininet", T)
     }
 
   } else if (!file_test("-f", model_path) && !dir.exists(model_path)){
@@ -37,6 +33,7 @@ score_stages <- function(signals,
 
   } else {
 
+    if(verbose) message(paste0("Model found."))
     model_fullpath <- model_path
 
   }
@@ -113,30 +110,30 @@ build_batches <- function(){
   "TODO"
 }
 
-h <- edfReader::readEdfHeader("15012016HD.edf")
-s <- edfReader::readEdfSignals(h)
-
-res <- score_stages(
-  signals = lapply(c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),function(x){
-    s[[x]]$signal}),
-  sRates = lapply(c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),function(x){
-    s[[x]]$sRate}))
-
-hypnodensity(res,startTime = as.POSIXct(s[[1]]$startTime))
-
-
-events<- apply(res, 1, function(x){
-  s <- which(x[1:5] == max(x[1:5]))
-  s[s == 1] <- "AWA"
-  s[s == 2] <- "REM"
-  s[s == 3] <- "N1"
-  s[s == 4] <- "N2"
-  s[s == 5] <- "N3"
-  s
-})
-hypnogram <- data.frame(event=events,
-                        begin = as.POSIXct(c((0:(length(events)-1))*30)),
-                        end = as.POSIXct(c((0:(length(events)-1))*30+30)))
-
-plot_hypnogram(r)
+# h <- edfReader::readEdfHeader("15012016HD.edf")
+# s <- edfReader::readEdfSignals(h)
+#
+# res <- score_stages(
+#   signals = lapply(c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),function(x){
+#     s[[x]]$signal}),
+#   sRates = lapply(c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),function(x){
+#     s[[x]]$sRate}))
+#
+# hypnodensity(res,startTime = as.POSIXct(s[[1]]$startTime))
+#
+#
+# events<- apply(res, 1, function(x){
+#   s <- which(x[1:5] == max(x[1:5]))
+#   s[s == 1] <- "AWA"
+#   s[s == 2] <- "REM"
+#   s[s == 3] <- "N1"
+#   s[s == 4] <- "N2"
+#   s[s == 5] <- "N3"
+#   s
+# })
+# hypnogram <- data.frame(event=events,
+#                         begin = as.POSIXct(c((0:(length(events)-1))*30)),
+#                         end = as.POSIXct(c((0:(length(events)-1))*30+30)))
+#
+# plot_hypnogram(r)
 
