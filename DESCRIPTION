@@ -14,7 +14,8 @@ Imports:
   ggplot2,
   signal,
   phonTools,
-  abind
+  abind,
+  digest
 Suggests: 
     testthat,
     knitr,

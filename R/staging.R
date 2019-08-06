@@ -13,17 +13,15 @@ score_stages <- function(signals,
                          model_path = tempdir(),
                          verbose = TRUE){
 
-  if(!("keras" %in%  installed.packages()[,1])){
+  if(!("keras" %in%  utils::installed.packages()[,1])){
     stop("Keras packagae required. Please install the Keras R package to continue: https://keras.rstudio.com/")
-  } else {
-    library(keras)
   }
 
   model_fname <- "hd_conv_v3.h5"
   model_f_md5 <- "5a757f2258c0675010ef617eb3e6f563"
   model_url <- "https://osf.io/axcvf/download"
 
-  if((!file_test("-f", model_path) && dir.exists(model_path)) |
+  if((!utils::file_test("-f", model_path) && dir.exists(model_path)) |
      (file.exists(paste0(model_path,"/",model_fname)) && digest::digest(object = paste0(model_path,"/",model_fname), algo = "md5") != model_f_md5) ){
 
     model_fullpath <- paste0(model_path,"/",model_fname)
@@ -31,14 +29,14 @@ score_stages <- function(signals,
     if(verbose) message(paste0("Model missing or outdated. Downloading to ",model_fullpath))
 
     if(.Platform$OS.type == "unix") {
-      download.file(model_url, model_fullpath, "wget", T)
+      utils::download.file(model_url, model_fullpath, "wget", T)
     } else {
-      download.file(model_url, model_fullpath, method = "wininet", T)
+      utils::download.file(model_url, model_fullpath, method = "wininet", T)
     }
 
-  } else if (!file_test("-f", model_path) && !dir.exists(model_path)){
+  } else if (!utils::file_test("-f", model_path) && !dir.exists(model_path)){
 
-    error("Model directory does not exist.")
+    stop("Model directory does not exist.")
 
   } else {
 
@@ -48,7 +46,7 @@ score_stages <- function(signals,
   }
 
   if(verbose) message("Reading model...")
-  model <- load_model_hdf5(model_fullpath)
+  model <- keras::load_model_hdf5(model_fullpath)
 
   if(verbose) message("Epoching signals...")
   epochs <- epochs(signals = signals,
@@ -63,17 +61,17 @@ score_stages <- function(signals,
       x <- t(x)
       t(apply(x,1,function(y){
         y <- y-mean(y)
-        y <- y/sd(y)
+        y <- y/stats::sd(y)
         y
       }))
     })
 
   x <- abind::abind(epochs,along=-1)
 
-  x <- array_reshape(x,dim = c(dim(x)[1],dim(x)[2],dim(x)[3],1))
+  x <- keras::array_reshape(x,dim = c(dim(x)[1],dim(x)[2],dim(x)[3],1))
 
   if(verbose) message("Performing prediction...")
-  model %>% predict(x)
+  stats::predict(model, x)
 }
 
 #' Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
@@ -126,7 +124,7 @@ plot_hypnodensity <- function(hypnodensity){
   pal <- c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00", "#F98400")
   stages <- c("AWA","REM","N1","N2","N3")
 
-  melt <- reshape(data = hypnodensity,
+  melt <- stats::reshape(data = hypnodensity,
                   direction = "long",
                   varying = 1:5,
                   idvar='begin',
@@ -139,9 +137,9 @@ plot_hypnodensity <- function(hypnodensity){
 
   melt$stage <- factor(melt$stage, levels = stages)
 
-  ggplot2::ggplot(melt, ggplot2::aes(x = begin,
-                                    y= likelihood,
-                                    fill = stage)) +
+  ggplot2::ggplot(melt, ggplot2::aes_string(x = "begin",
+                                    y= "likelihood",
+                                    fill = "stage")) +
       ggplot2::geom_area(position = 'stack') +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.position = "bottom",

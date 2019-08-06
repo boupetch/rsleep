@@ -11,13 +11,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
 Records of physiological signals during sleep can take many forms. It starts with simple accelerometry @vanheesEstimatingSleepParameters2018 and goes up to full polysomnography (PSG) @AASMScoringManual, a simultaneous recording of more than ten physiological signals. But sleep records all share a common aspect: they are timeseries, collections of datapoints indexed in time order. Along these timeseries are found metadata: recording conditions, patient information, sample rates and such.
 
 The European Data Format (EDF) has been firstly described in 1992 to ease medical timeseries storage and exchange @Kemp1992. Primarily conceived to store polygraphic signals, the design has been updated in 2003 to support events data, thus renaming the format to EDF+ @Kemp2003. Another update in 2013 implemented video data storage @Kemp2013. A small website recaps history and lists a few databases, softwares and users of the format: [http://edfplus.info/](http://edfplus.info/).
@@ -28,17 +21,15 @@ Since its publication, the EDF imposed itself as a standard for exchange of slee
 
 An example EDF file can be donwloaded using the following code:
 
-```{r download_edf_hidden, include=FALSE}
-if(!file.exists("15012016HD.edf")){
-  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
-}
+```{r check_eval, echo = FALSE}
+knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
-```{r download_data_display, eval=FALSE}
-download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
+```{r download_data, eval=FALSE}
+download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 ```
 
-This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.
+This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris. To read EDF files, we can use the R library [`edfReader`](https://CRAN.R-project.org/package=edfReader). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.
 
 ```{r read_edf}
 library(edfReader)
@@ -50,7 +41,7 @@ s <- readEdfSignals(h, signals = c("C3-M2", "ECG"))
 
 The variable `s` now contains signals and their metadata in a convenient list object. For instance, the electroencephalographic (EEG) derivation `C3-M2` signal and sample rate can be accessed like this:
 
-```{r}
+```{r access_data}
 c3m2 <- s$`C3-M2`$signal
 
 c3m2sr <- s$`C3-M2`$sRate
@@ -58,7 +49,7 @@ c3m2sr <- s$`C3-M2`$sRate
 
 Plotting seconds 30 to 60 of the record would look like this:
 
-```{r fig.width = 7}
+```{r plot_edf, fig.width = 7}
 plot(c3m2[(c3m2sr*30):(c3m2sr*30*2)],type = "l")
 ```
 
@@ -68,8 +59,8 @@ While the EDF standard supports events since 2003, very few software allow event
 
 Scoring of the previous sample record can be downloaded here.
 
-```{r download_events}
-download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv", "wget", T)
+```{r download_events, eval=FALSE}
+download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
 These events have been exported from Noxturnal, a sleep scoring software published by Resmed @ResMedWebsite. As they are stored using a particular convention, the `read_events_noxturnal` from the `rsleep` package helps us reading the file as clean dataframe.
@@ -78,8 +69,6 @@ These events have been exported from Noxturnal, a sleep scoring software publish
 library(rsleep)
 
 events <- read_events_noxturnal("15012016HD.csv")
-
-summary(events)
 ```
 
 Events are characterized by a `start`  and an `end` timestamp, and an `event` label. This schema is applicable to all the kind of events found in sleep databases.
@@ -128,6 +117,7 @@ write_mdf(edfPath = "15012016HD.edf",
           channels = c("C3-M2","ECG"),
           events = events)
 ```
+
 
 This call creates the directory `15012016HD`. Events are stored in the `events.json` file. Record metadata is in the `metadata.json` file. For each channel a directory is created, with `signal.bin` containing the raw signal and `metadata.json` the metadata.
 
