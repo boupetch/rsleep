@@ -1,6 +1,15 @@
+#' Score stages from polysomnography signals. Provided for research purposes. Do not use in production.
+#'
+#' @description Score stages from polysomnography signals using a pre-trained convolutional neural network (See references for model architecture). Model have been pre-trained on data from the Hotel-Dieu, Paris, recorded with Resmed Nox polysomnography device. The model may not be suitable for data recorded with other kind of device. It is provided for research purposes. Do not use in production. Model needs 6 channels to predict sleep stage over 30 seconds epochs: Electroencephalogram:`C3-M2`,`C4-M1`,`O1-M2`; Electrooculogram:`E1-M2`,`E2-M1`, Electromyogram:`1-2`.
+#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
+#' @param signals A list of the 7 signals vectors. Must be ordered in the following order: `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
+#' @param sRates A vector of the sample rates of the 7 signals passed in the `signals` parameter.
+#' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
+#' @param verbose Boolean. Display or not status messages.
+#' @return A matrix containing hypnodensity values for each epoch and each of the 5 stages: `AWA`, `REM`, `N1`, `N2`, `N3`.
+#' @export
 score_stages <- function(signals,
                          sRates,
-                         signals_names = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
                          model_path = tempdir(),
                          verbose = TRUE){
 
@@ -67,9 +76,20 @@ score_stages <- function(signals,
   model %>% predict(x)
 }
 
-score_stages_edf <- function(edf, model_path = tempdir(), verbose = TRUE){
-
-  channels <- c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")
+#' Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
+#'
+#' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
+#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
+#' @references Kemp, B., Värri, A., Rosa, A.C., Nielsen, K.D. and Gade, J., 1992. A simple format for exchange of digitized polygraphic recordings. Electroencephalography and clinical neurophysiology, 82(5), pp.391-393.
+#' @param edf The EDF file path.
+#' @param channels A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
+#' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
+#' @param verbose Boolean. Display or not status messages.
+#' @return A dataframe containing predicted hypnodensity values of the record.
+#' @export
+score_stages_edf <- function(edf,
+                             channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
+                             model_path = tempdir(), verbose = TRUE){
 
   h <- edfReader::readEdfHeader(edf)
   s <- edfReader::readEdfSignals(h, signals = channels)
@@ -94,74 +114,39 @@ score_stages_edf <- function(edf, model_path = tempdir(), verbose = TRUE){
   hypnodensity
 }
 
-hypnodensity <- function(m,
-                         labels = c("AWA","REM","N1","N2","N3"),
-                         startTime = as.POSIXct("1970/01/01 00:00:00"),
-                         epoch_duration = 30,
-                         plot = TRUE){
+#' Plot a hypnodensity graph using `ggplot2`.
+#'
+#' @description Plot a hypnodensity graph using `ggplot2` from the values returned from `score_stages_edf` function.
+#' @references Stephansen, J.B., Olesen, A.N., Olsen, M., Ambati, A., Leary, E.B., Moore, H.E., Carrillo, O., Lin, L., Han, F., Yan, H. and Sun, Y.L., 2018. Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy. Nature communications, 9(1), p.5229.
+#' @param hypnodensity A hypnodensity dataframe as returned by the `score_stages_edf` function.
+#' @return A `ggplot2` hypnodensity graph.
+#' @export
+plot_hypnodensity <- function(hypnodensity){
 
   pal <- c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00", "#F98400")
+  stages <- c("AWA","REM","N1","N2","N3")
 
-  df <- as.data.frame(m)
+  melt <- reshape(data = hypnodensity,
+                  direction = "long",
+                  varying = 1:5,
+                  idvar='begin',
+                  timevar = "stage",
+                  v.names = "likelihood",
+                  times = stages,
+                  sep="")
 
-  colnames(df) <- labels
+  row.names(melt) <- NULL
 
-  df$epoch <- startTime + ((c(1:nrow(df))-1)*epoch_duration)
+  melt$stage <- factor(melt$stage, levels = stages)
 
-  if(plot){
-    df2 <- cbind(df[ncol(df)], stack(df[1:length(labels)]))
-
-    p <- ggplot2::ggplot(df2, ggplot2::aes(x = epoch,
-                                           y= values,
-                                           fill = ind)) +
+  ggplot2::ggplot(melt, ggplot2::aes(x = begin,
+                                    y= likelihood,
+                                    fill = stage)) +
       ggplot2::geom_area(position = 'stack') +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.position = "bottom",
                      legend.title = ggplot2::element_blank()) +
-      ggplot2::xlab("") + ggplot2::ylab("Stage likelihood")
-
-    if(length(labels) == 5){
-      p <- p + ggplot2::scale_fill_manual(values = pal)
-    }
-    p
-  } else {
-    df
-  }
+      ggplot2::xlab("") + ggplot2::ylab("Stage likelihood") +
+    ggplot2::scale_fill_manual(values = pal)
 }
-
-train_stages <- function(){
-  "TODO"
-}
-
-build_batches <- function(){
-  "TODO"
-}
-
-#res <- score_stages_edf("15012016HD.edf")
-
-# h <- edfReader::readEdfHeader("15012016HD.edf")
-# s <- edfReader::readEdfSignals(h)
-#
-# res <- score_stages(
-#   signals = lapply(c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),function(x){
-#     s[[x]]$signal}),
-#   sRates = lapply(c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),function(x){
-#     s[[x]]$sRate}))
-#
-# hypnodensity(res,startTime = as.POSIXct(s[[1]]$startTime))
-#
-# events<- apply(res, 1, function(x){
-#   s <- which(x[1:5] == max(x[1:5]))
-#   s[s == 1] <- "AWA"
-#   s[s == 2] <- "REM"
-#   s[s == 3] <- "N1"
-#   s[s == 4] <- "N2"
-#   s[s == 5] <- "N3"
-#   s
-# })
-# hypnogram <- data.frame(event=events,
-#                         begin = as.POSIXct(c((0:(length(events)-1))*30)),
-#                         end = as.POSIXct(c((0:(length(events)-1))*30+30)))
-#
-# plot_hypnogram(hypnogram)
 
