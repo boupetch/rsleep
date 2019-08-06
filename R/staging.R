@@ -12,7 +12,7 @@ score_stages <- function(signals,
 
   model_fname <- "hd_conv_v3.h5"
   model_f_md5 <- "5a757f2258c0675010ef617eb3e6f563"
-  model_url <- "http://cloud.frenchkpi.com/s/fjWTZZ2omGgGa6R/download"
+  model_url <- "https://osf.io/axcvf/download"
 
   if((!file_test("-f", model_path) && dir.exists(model_path)) |
      (file.exists(paste0(model_path,"/",model_fname)) && digest::digest(object = paste0(model_path,"/",model_fname), algo = "md5") != model_f_md5) ){
@@ -67,6 +67,33 @@ score_stages <- function(signals,
   model %>% predict(x)
 }
 
+score_stages_edf <- function(edf, model_path = tempdir(), verbose = TRUE){
+
+  channels <- c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")
+
+  h <- edfReader::readEdfHeader(edf)
+  s <- edfReader::readEdfSignals(h, signals = channels)
+
+  signals = lapply(channels,function(x){s[[x]]$signal})
+
+  sRates = lapply(channels,function(x){s[[x]]$sRate})
+
+  res <- score_stages(signals = signals,
+                      sRates = sRates,
+                      model_path = model_path,
+                      verbose = verbose)
+
+  hypnodensity <- as.data.frame(res)
+
+  colnames(hypnodensity) <- c("AWA","REM","N1","N2","N3")
+
+  hypnodensity$begin <- as.POSIXct(h$startTime)+(c(0:(nrow(hypnodensity)-1))*30)
+
+  hypnodensity$end <- hypnodensity$begin+30
+
+  hypnodensity
+}
+
 hypnodensity <- function(m,
                          labels = c("AWA","REM","N1","N2","N3"),
                          startTime = as.POSIXct("1970/01/01 00:00:00"),
@@ -109,6 +136,8 @@ train_stages <- function(){
 build_batches <- function(){
   "TODO"
 }
+
+#res <- score_stages_edf("15012016HD.edf")
 
 # h <- edfReader::readEdfHeader("15012016HD.edf")
 # s <- edfReader::readEdfSignals(h)
