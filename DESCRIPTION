@@ -9,17 +9,17 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-  edfReader,
-  jsonlite,
-  ggplot2,
-  signal,
-  phonTools,
   abind,
-  digest
-Suggests: 
-    testthat,
-    knitr,
-    rmarkdown,
-    keras
+  digest,
+  edfReader,
+  ggplot2,
+  jsonlite,
+  phonTools,
+  signal
+Suggests:
+  keras,
+  knitr,
+  rmarkdown,
+  testthat
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
