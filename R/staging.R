@@ -121,7 +121,6 @@ build_batches <- function(){
 #
 # hypnodensity(res,startTime = as.POSIXct(s[[1]]$startTime))
 #
-#
 # events<- apply(res, 1, function(x){
 #   s <- which(x[1:5] == max(x[1:5]))
 #   s[s == 1] <- "AWA"
@@ -135,5 +134,5 @@ build_batches <- function(){
 #                         begin = as.POSIXct(c((0:(length(events)-1))*30)),
 #                         end = as.POSIXct(c((0:(length(events)-1))*30+30)))
 #
-# plot_hypnogram(r)
+# plot_hypnogram(hypnogram)
 
