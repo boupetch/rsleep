@@ -1,6 +1,8 @@
 ---
-title: "Spectral analysis of electroencephalography (EEG) signals"
+title: "Spectral analysis of electroencephalography (EEG) signals in sleep data"
 output: rmarkdown::html_vignette
+bibliography: Spectral_analysis_of_EEG_signals.bibtex
+csl: vignettes.csl
 vignette: >
   %\VignetteIndexEntry{Spectral_analysis_of_EEG_signals}
   %\VignetteEncoding{UTF-8}
@@ -16,35 +18,35 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Electroencephalography
+Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring this electival activity over a period of time. Those electrodes are typically arranged on the scalp using a standardized method: the 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005. 
 
-Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. 
+EEG is a major component in sleep analysis. Sleep stages are mainly defined over EEG characteristics @AASMScoringManual. And many sleep related disorders modify EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG @ibanezSurveySleepAssessment2018. 
 
-# Example data
+EEG data can be found in sleep records files. In European Data Format (EDF) @Kemp1992 files, EEG channels can be found under their placement names. The following vignette explains how to extract this data and perform basic spectral analysis over EEG data.
+
+## Example data
 
 An example EDF file can be donwloaded using the following code:
 
-```{r download_edf_hidden, include=FALSE}
-if(!file.exists("15012016HD.edf")){
-  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
-}
+```{r check_eval, echo = FALSE}
+knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
-```{r download_data_display, eval=FALSE}
-download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
+```{r download_data, eval=FALSE}
+download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 ```
 
-The EDF file can be loaded using the edfReader library.
+This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed. In our case, we only need one EEG channel to perform the analysis. 
 
 ```{r read_edf}
 library(edfReader)
 
 h <- readEdfHeader("15012016HD.edf")
 
-s <- readEdfSignals(h, signals = c("C3-M2"))
+s <- readEdfSignals(h, signals = "C3-M2")
 ```
 
-# Spectrogram
+## Spectrogram
 
 ```{r spectrogram, fig.width = 7}
 library(rsleep)
@@ -54,7 +56,7 @@ spectrogram(signal = s$signal,
             startTime = as.POSIXct(s$startTime))
 ```
 
-# Epoching
+## Epoching
 
 ```{r download_events}
 download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv", "wget", T)
@@ -69,7 +71,7 @@ epochs <- epochs(signals = s$signal,
                  startTime = as.numeric(as.POSIXct(s$startTime)))
 ```
 
-# Periodogram
+## Periodogram
 
 ```{r periodogram, fig.width=7, message=FALSE, error=FALSE}
 library(dplyr)
@@ -96,16 +98,14 @@ ggplot(df, aes(x=hz,y=dB,color=stage)) +
 
 ```
 
-# Bands
+## Bands
 
 ```{r}
 
 bands <- lapply(epochs,function(x){
-  apply(x, 2, function(y){
     bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
-                signal = y, sRate = 200,
+                signal = x, sRate = 200,
                 normalize = c(0.5,30))
-  })
 })
 
 
@@ -113,5 +113,5 @@ bands <- lapply(epochs,function(x){
 ```
 
 
-# Machine learning
+## Machine learning
 
