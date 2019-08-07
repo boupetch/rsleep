@@ -3,7 +3,7 @@ cache: packages
 warnings_are_errors: false
 
 before_install:
-  - Rscript -e 'devtools::install_github("rstudio/keras"); library(keras); install_keras()'
+  - Rscript -e 'install.packages("devtools"); devtools::install_github("rstudio/keras"); library(keras); install_keras()'
 
 r_packages:
   - covr
