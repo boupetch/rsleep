@@ -1,16 +1,8 @@
-## ---- include = FALSE----------------------------------------------------
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+## ----check_eval, echo = FALSE--------------------------------------------
+knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 
-## ----download_edf_hidden, include=FALSE----------------------------------
-if(!file.exists("15012016HD.edf")){
-  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
-}
-
-## ----download_data_display, eval=FALSE-----------------------------------
-#  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf")
+## ----download_data, eval=FALSE-------------------------------------------
+#  download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 
 ## ----read_edf------------------------------------------------------------
 library(edfReader)
@@ -19,23 +11,21 @@ h <- readEdfHeader("15012016HD.edf")
 
 s <- readEdfSignals(h, signals = c("C3-M2", "ECG"))
 
-## ------------------------------------------------------------------------
+## ----access_data---------------------------------------------------------
 c3m2 <- s$`C3-M2`$signal
 
 c3m2sr <- s$`C3-M2`$sRate
 
-## ----fig.width = 7-------------------------------------------------------
+## ----plot_edf, fig.width = 7---------------------------------------------
 plot(c3m2[(c3m2sr*30):(c3m2sr*30*2)],type = "l")
 
-## ----download_events-----------------------------------------------------
-download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv")
+## ----download_events, eval=FALSE-----------------------------------------
+#  download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 
 ## ----read_events---------------------------------------------------------
 library(rsleep)
 
 events <- read_events_noxturnal("15012016HD.csv")
-
-summary(events)
 
 ## ----unique_events-------------------------------------------------------
 unique(events$event)
