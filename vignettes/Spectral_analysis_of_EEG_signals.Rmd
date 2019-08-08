@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
 Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring this electival activity over a period of time. Those electrodes are typically arranged on the scalp using a standardized method: the 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005. 
@@ -26,17 +28,14 @@ EEG data can be found in sleep records files. In European Data Format (EDF) @Kem
 
 ## Example data
 
-An example EDF file can be donwloaded using the following code:
-
-```{r check_eval, echo = FALSE}
-knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
-```
+An example EDF file and its visual scoring can be donwloaded using the following code:
 
 ```{r download_data, eval=FALSE}
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
+download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
-This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed. In our case, we only need one EEG channel to perform the analysis. 
+This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed. In our case, we only need one EEG channel to perform the analysis. 
 
 ```{r read_edf}
 library(edfReader)
@@ -46,7 +45,21 @@ h <- readEdfHeader("15012016HD.edf")
 s <- readEdfSignals(h, signals = "C3-M2")
 ```
 
+Visual scoring of the record gives the following hypnogram:
+
+```{r hypnogram, fig.width = 7}
+events <- read_events_noxturnal("15012016HD.csv")
+
+hypnogram <- hypnogram(events)
+
+plot_hypnogram(hypnogram)
+```
+
+Multiple sleep cycles can be observed on this hypnogram. The night begin by two long deep sleep periods. In total, seven paradoxical sleep (REM) cycles can be observed.
+
 ## Spectrogram
+
+Using rlseep, a spectrogram can be displayed:
 
 ```{r spectrogram, fig.width = 7}
 library(rsleep)
@@ -56,13 +69,9 @@ spectrogram(signal = s$signal,
             startTime = as.POSIXct(s$startTime))
 ```
 
+## Bands
+
 ## Epoching
-
-```{r download_events}
-download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv", "wget", T)
-
-hypnogram <- hypnogram(read_events_noxturnal("15012016HD.csv"))
-```
 
 ```{r epochs}
 epochs <- epochs(signals = s$signal,
@@ -70,6 +79,15 @@ epochs <- epochs(signals = s$signal,
                  epoch = hypnogram,
                  startTime = as.numeric(as.POSIXct(s$startTime)))
 ```
+
+```{r}
+bands <- lapply(epochs,function(x){
+    bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
+                signal = x, sRate = 200,
+                normalize = c(0.5,30))
+})
+```
+
 
 ## Periodogram
 
@@ -98,20 +116,6 @@ ggplot(df, aes(x=hz,y=dB,color=stage)) +
 
 ```
 
-## Bands
-
-```{r}
-
-bands <- lapply(epochs,function(x){
-    bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
-                signal = x, sRate = 200,
-                normalize = c(0.5,30))
-})
-
-
-
-```
-
-
 ## Machine learning
 
+## References
