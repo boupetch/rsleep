@@ -35,7 +35,7 @@ download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
-This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed. In our case, we only need one EEG channel to perform the analysis. 
+This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed ones. In our case, we only need one EEG channel to perform the analysis. 
 
 ```{r read_edf}
 library(edfReader)
@@ -45,35 +45,57 @@ h <- readEdfHeader("15012016HD.edf")
 s <- readEdfSignals(h, signals = "C3-M2")
 ```
 
-Visual scoring of the record gives the following hypnogram:
+Visual scoring of this record gives the following hypnogram:
 
 ```{r hypnogram, fig.width = 7}
+library(rsleep)
+
 events <- read_events_noxturnal("15012016HD.csv")
 
-hypnogram <- hypnogram(events)
-
-plot_hypnogram(hypnogram)
+plot_hypnogram(events)
 ```
 
-Multiple sleep cycles can be observed on this hypnogram. The night begin by two long deep sleep periods. In total, seven paradoxical sleep (REM) cycles can be observed.
+The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A sleep expert scored this record visually following the guidelines from the American Association of Sleep Medicine (AASM) @AASMScoringManual. Five stages can be observed:
+
+  * **AWA**: Awakeness.
+  * **REM**: Rapid-Eye-Movement (REM) sleep, or paradoxical sleep.
+  * **N1**: Light sleep, a transitional stage.
+  * **N2,N3**: Slow-wave sleep.
 
 ## Spectrogram
 
-Using rlseep, a spectrogram can be displayed:
+The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies. A nice interactive and visual explanation of Fourier transform can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).
+
+Applied to EEG, Fourier transform gives an overview of the frequencies making the brain activity. 
+A **spectrogram** is the visualisation of these frequencies over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. This function is a wrapper over the `specgram` function from the `signal` package, adapted to large signals vectors found in sleep data, defining peasant colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
 
 ```{r spectrogram, fig.width = 7}
-library(rsleep)
-
 spectrogram(signal = s$signal,
             sRate = s$sRate,
             startTime = as.POSIXct(s$startTime))
 ```
 
-## Bands
+This heatmap show an estimate of power spectral density (PSD) by frequency over time. Cycles of higher PSD in the lower part of the spectrum occurs all along the night. Similar Patterns can be identified between the hypnogram and the spectrogram. Indeed, higher PSD in lower frequencies of the EEG is the main characteristic of deep sleep.
 
-## Epoching
+## Spectrum bands
+
+The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands. Bands limits can slightly vary between publications, but these four are the most found and used:
+
+  * **Delta**: Between `0.5` and `3.5` Hertz, the Delta band is associated with slow-wave sleep in adults subjects.
+  
+  * **Theta**: Between `3.5` and `7.5` Hertz, the Theta band is associated with drowsiness in adults and teens subjects.
+  
+  * **Alpha**: Between `7.5` and `13` Hertz, the Alpha band is associated with a relaxed state and eyes closed.
+  
+  * **Beta**: Between `13` and `30` Hertz the Beta band is associated with active thinking, focus, high alert or anxiousness.
+
+### Epoching
+
+To observe spectral powers of bands per sleep stages, 
 
 ```{r epochs}
+hypnogram <- hypnogram(events)
+
 epochs <- epochs(signals = s$signal,
                  sRates = s$sRate,
                  epoch = hypnogram,
