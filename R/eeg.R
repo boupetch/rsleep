@@ -69,7 +69,7 @@ spectrogram <- function(signal,
 #' @export
 bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
 
-  s <- phonTools::pwelch(sound = signal,fs = sRate,points = 1000, show = FALSE)
+  s <- phonTools::pwelch(x = signal,fs = sRate,points = 1000, show = FALSE)
   s[,2] <- s[,2]+abs(min(s[,2]))
 
   lapply(bands, function(band){
@@ -84,4 +84,52 @@ bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
     }
 
   })
+}
+
+#' pwelch psd
+#'
+#' @description pwelch psd
+#' @param x todo
+#' @param sRate todo
+#' @param points todo
+#' @param overlap todo
+#' @param padding todo
+#' @param show todo
+#' @return peridodogram plotted or raw
+#' @examples
+#' pwelch(s$signal[(200*200*30):(200*230*30)],200)
+#' @export
+pwelch <- function(x,
+                   sRate,
+                   points = 0,
+                   overlap = 0,
+                   padding = 0,
+                   show = TRUE){
+  n = length(x)
+  if (points == 0)
+    points = ceiling(n/10)
+  x = c(x, rep(0, points))
+  spots = seq(1, n, points - overlap)
+  if ((points + padding)%%2 == 1)
+    padding = padding + 1
+  n = points + padding
+  psd = rep(0, n)
+  for (i in 1:length(spots)) {
+    tmp = x[spots[i]:(spots[i] + points - 1)] * signal::hamming(points)
+    tmp = c(tmp, rep(0, padding))
+    tmp = stats::fft(tmp)
+    tmp = tmp * Conj(tmp)
+    psd = psd + tmp
+  }
+  psd = psd/length(spots)
+  psd = psd[1:(n/2 + 1)]
+  psd = abs(psd)
+  psd = log(psd)
+  psd = psd - max(psd)
+  hz = seq(0, sRate/2, length.out = (n/2) + 1)
+  if (show == TRUE)
+    plot(hz, psd, type = "l", ylab = "PSD",
+         xlab = "Frequency (Hz.)",
+         xaxs = "i")
+  invisible(cbind(hz, dB))
 }
