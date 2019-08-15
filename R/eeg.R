@@ -69,18 +69,19 @@ spectrogram <- function(signal,
 #' @export
 bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
 
-  s <- phonTools::pwelch(x = signal,fs = sRate,points = 1000, show = FALSE)
-  s[,2] <- s[,2]+abs(min(s[,2]))
+  #s <- phonTools::pwelch(x = signal,fs = sRate,points = 1000, show = FALSE)
+  s <- pwelch(x = signal,sRate = sRate,points = 1000, show = FALSE)
+  #s[,2] <- s[,2]+abs(min(s[,2]))
 
   lapply(bands, function(band){
 
-    s_filtered <- s[s[,1] >= band[1] & s[,1] < band[2],]
+    s_filtered <- s[s$hz >= band[1] & s$hz < band[2],]
 
     if(length(normalize) == 2){
-      s_broadband <- s[s[,1] >= normalize[1] & s[,1] < normalize[2],]
-      sum(s_filtered[,2])/sum(s_broadband[,2])
+      s_broadband <- s[s$hz >= normalize[1] & s$hz < normalize[2],]
+      sum(s_filtered$psd)/sum(s_broadband$psd)
     } else {
-      sum(s_filtered[,2])
+      sum(s_filtered$psd)
     }
 
   })
@@ -97,7 +98,7 @@ bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
 #' @param show todo
 #' @return peridodogram plotted or raw
 #' @examples
-#' pwelch(s$signal[(200*200*30):(200*230*30)],200)
+#' s <- pwelch(sin(c(1:10000)), 200)
 #' @export
 pwelch <- function(x,
                    sRate,
@@ -129,7 +130,8 @@ pwelch <- function(x,
   hz = seq(0, sRate/2, length.out = (n/2) + 1)
   if (show == TRUE)
     plot(hz, psd, type = "l", ylab = "PSD",
-         xlab = "Frequency (Hz.)",
+         xlab = "Hz",
          xaxs = "i")
-  invisible(cbind(hz, dB))
+  invisible(data.frame("hz" = hz,
+            "psd" = psd))
 }
