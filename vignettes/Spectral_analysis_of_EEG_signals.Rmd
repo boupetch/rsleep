@@ -110,6 +110,29 @@ bands <- lapply(epochs,function(x){
 })
 ```
 
+```{r}
+bands_df <- data.frame(matrix(unlist(bands), nrow=length(bands), byrow=TRUE))
+
+colnames(bands_df) <- c("Delta","Theta","Alpha","Beta")
+
+bands_df$stage <- hypnogram$event[-1]
+
+bands_df <- reshape2::melt(bands_df, "stage")
+ 
+ggplot(bands_df,
+       aes(x=stage,y=value,color=stage)) +
+  geom_boxplot() +
+  facet_grid(. ~ variable, scales = "free") +
+  scale_colour_manual(name = "stage",
+                      values = c("#F98400",
+                                 "#F2AD00",
+                                 "#00A08A",
+                                 "#FF0000",
+                                 "#5BBCD6")) +
+  theme_bw() + xlab("") + ylab("PSD") + 
+  theme(legend.title = element_blank())
+```
+
 
 ## Periodogram
 
