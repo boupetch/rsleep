@@ -22,9 +22,9 @@ knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv"))
 
 Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring this electival activity over a period of time. Those electrodes are typically arranged on the scalp using a standardized method: the 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005. 
 
-EEG is a major component in sleep analysis. Sleep stages are mainly defined over EEG characteristics @AASMScoringManual. And many sleep related disorders modify EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG @ibanezSurveySleepAssessment2018. 
+EEG is a major component in sleep analysis. Sleep stages are mainly defined over EEG characteristics @AASMScoringManual. Many sleep related disorders modify EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG along many others types of records @ibanezSurveySleepAssessment2018. 
 
-EEG data can be found in sleep records files. In European Data Format (EDF) @Kemp1992 files, EEG channels can be found under their placement names. The following vignette explains how to extract this data and perform basic spectral analysis over EEG data.
+EEG data can be found in sleep records files. In European Data Format (EDF) @Kemp1992 files, EEG channels data can be found labelled under their placement names. This vignette explains how to extract EEG data from sleep recrods and perform basic spectral analysis.
 
 ## Example data
 
@@ -79,9 +79,9 @@ This heatmap show an estimate of power spectral density (PSD) by frequency over 
 
 ## Spectrum bands
 
-The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands. Bands limits can slightly vary between publications, but these four are the most found and used:
+The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005. Bands limits can slightly vary in publications:
 
-  * **Delta**: Between `0.5` and `3.5` Hertz, the Delta band is associated with slow-wave sleep in adults subjects.
+  * **Delta**: Below `3.5` Hertz, the Delta band is associated with slow-wave sleep in adults subjects.
   
   * **Theta**: Between `3.5` and `7.5` Hertz, the Theta band is associated with drowsiness in adults and teens subjects.
   
@@ -213,6 +213,11 @@ parallel::stopCluster(cl)
 
 results <- predict(fit, newdata = validation)
 fit
+
+
+length(pspectrum_basic(c(1:1000),verbose = TRUE,tapseq=c(1,2,3,4))$freq)
+
+riedsid(c(1:1000),tapseq = c(1:500))
 ```
 
 ## References
