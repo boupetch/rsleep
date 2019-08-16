@@ -122,7 +122,7 @@ bands_df <- reshape2::melt(bands_df, "stage")
 ggplot(bands_df,
        aes(x=stage,y=value,color=stage)) +
   geom_boxplot() +
-  facet_grid(. ~ variable, scales = "free") +
+  facet_grid(rows = vars(variable),scales = "free") +
   scale_colour_manual(name = "stage",
                       values = c("#F98400",
                                  "#F2AD00",
@@ -130,7 +130,7 @@ ggplot(bands_df,
                                  "#FF0000",
                                  "#5BBCD6")) +
   theme_bw() + xlab("") + ylab("PSD") + 
-  theme(legend.title = element_blank())
+  theme(legend.position = "none")
 ```
 
 
@@ -140,19 +140,27 @@ ggplot(bands_df,
 library(dplyr)
 library(ggplot2)
 
+sm <- function(x, sRate){
+  res <- psd::pspectrum(x,plot=FALSE,verbose=FALSE,)
+  df <- data.frame("hz" = res$freq, "psd" = res$spec)
+  df$psd <- log(df$psd)
+  df$hz <- df$hz*sRate
+  df
+}
+
 periodograms <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
-  periodogram <- phonTools::pwelch(x, fs = s$sRate, show = FALSE)
-  periodogram <- as.data.frame(periodogram[periodogram[,1] <= 20,])
+  periodogram <- sm(x, sRate = s$sRate)#pwelch(x, sRate = s$sRate, show = FALSE)
+  periodogram <- as.data.frame(periodogram[periodogram$hz <= 20,])
   periodogram$stage <- y
   periodogram
 }, SIMPLIFY = F)
 
 df <- do.call("rbind", periodograms) %>%
     group_by(hz,stage) %>%
-    summarize(dB = mean(dB)) %>%
+    summarize(psd = mean(psd)) %>%
     ungroup()
 
-ggplot(df, aes(x=hz,y=dB,color=stage)) +
+ggplot(df, aes(x=hz,y=psd,color=stage)) +
   geom_line() + theme_bw() +
   theme(legend.title = element_blank()) + 
   scale_colour_manual(name = "stage",
@@ -162,5 +170,49 @@ ggplot(df, aes(x=hz,y=dB,color=stage)) +
 ```
 
 ## Machine learning
+
+Would it be possible to classify sleep stage using periodogram of a single channel eeg?
+
+```{r}
+
+set.seed(1234)
+
+library(caret)
+
+pw <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
+  periodogram <- sm(x, sRate = s$sRate) %>% #pwelch(x, sRate = s$sRate, show = FALSE) %>%
+    dplyr::filter(hz <= 20) %>%
+    reshape2::dcast(formula = psd ~ hz,
+                    value.var = "psd")
+    
+  periodogram$psd <- NULL
+  periodogram$`0` <- NULL
+  
+  sapply(periodogram,function(x){
+    max(x,na.rm = TRUE)
+    })
+
+}, SIMPLIFY = F)
+
+df <- as.data.frame(do.call("rbind", pw))
+
+df$stage <-  hypnogram$event[-1]
+
+inTrain <- caret::createDataPartition(df$stage, p=0.80, list=F)
+training <- df[inTrain, ]
+validation <- df[-inTrain, ]
+
+cl <- parallel::makeCluster(parallel::detectCores())
+doParallel::registerDoParallel(cl)
+control <- ?caret::trainControl(method="cv", 3,allowParallel = TRUE)
+fit <- caret::train(stage ~ .,
+                    data= df,
+                    method= 'rf',
+                    importance = TRUE)
+parallel::stopCluster(cl)
+
+results <- predict(fit, newdata = validation)
+fit
+```
 
 ## References
