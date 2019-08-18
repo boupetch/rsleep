@@ -28,14 +28,16 @@ EEG data can be found in sleep records files. In European Data Format (EDF) @Kem
 
 ## Example data
 
-An example EDF file and its visual scoring can be donwloaded using the following code:
+An example EDF file and its scoring can be donwloaded using the following code:
 
 ```{r download_data, eval=FALSE}
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
-This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed ones. In our case, we only need one EEG channel to perform the analysis. 
+The `.edf` file contains signals and metadata. The `.csv` files contains the scoring, exported from Noxturnal, a visual analysis software for sleep data published by Resmed.
+
+This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html) can read `.edf` files. Reading an `.edf` file is divided into two steps: First reading the headers of the file, then reading the signals. Signals can be selected to only read a selection of interest. The folowing spectral analysis will only be performed on a single channel of the EEG, `C3-M2`.
 
 ```{r read_edf}
 library(edfReader)
@@ -67,7 +69,7 @@ The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A
 The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies. A nice interactive and visual explanation of Fourier transform can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).
 
 Applied to EEG, Fourier transform gives an overview of the frequencies making the brain activity. 
-A **spectrogram** is the visualisation of these frequencies over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. This function is a wrapper over the `specgram` function from the `signal` package, adapted to large signals vectors found in sleep data, defining peasant colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
+A **spectrogram** is the visualisation of these frequencies over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. This function is a wrapper over the `specgram` function from the `signal` package, adapted to large signals vectors found in sleep data, defining colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
 
 ```{r spectrogram, fig.width = 7}
 spectrogram(signal = s$signal,
@@ -79,7 +81,7 @@ This heatmap show an estimate of power spectral density (PSD) by frequency over 
 
 ## Spectrum bands
 
-The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005. Bands limits can slightly vary in publications:
+The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005. Bands limits can slightly vary in publications: 
 
   * **Delta**: Below `3.5` Hertz, the Delta band is associated with slow-wave sleep in adults subjects.
   
@@ -105,7 +107,7 @@ epochs <- epochs(signals = s$signal,
 ```{r}
 bands <- lapply(epochs,function(x){
     bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
-                signal = x, sRate = 200,
+                signal = x, sRate = s$sRate,
                 normalize = c(0.5,30))
 })
 ```
@@ -116,10 +118,11 @@ bands_df <- data.frame(matrix(unlist(bands), nrow=length(bands), byrow=TRUE))
 colnames(bands_df) <- c("Delta","Theta","Alpha","Beta")
 
 bands_df$stage <- hypnogram$event[-1]
+bands_df$epoch <- c(1:nrow(bands_df))
 
-bands_df <- reshape2::melt(bands_df, "stage")
+bands_df_long <- reshape2::melt(bands_df, c("stage","epoch"))
  
-ggplot(bands_df,
+ggplot(bands_df_long,
        aes(x=stage,y=value,color=stage)) +
   geom_boxplot() +
   facet_grid(rows = vars(variable),scales = "free") +
@@ -131,6 +134,17 @@ ggplot(bands_df,
                                  "#5BBCD6")) +
   theme_bw() + xlab("") + ylab("PSD") + 
   theme(legend.position = "none")
+```
+
+### Along the night
+
+```{r}
+
+ggplot(bands_df_long,
+       aes(x=epoch,y=value,color=variable)) +
+  geom_line()
+ 
+
 ```
 
 
