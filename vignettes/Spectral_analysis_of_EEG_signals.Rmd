@@ -20,13 +20,13 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
-Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial electrical activity over a period of time. Electrodes are typically arranged using the standardized 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005. 
+Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial activity over time. Electrodes are typically arranged using the standardized 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, allowing reproductibility of the results between recordings. 
 
-EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG along many other types of physiological recordings  @ibanezSurveySleepAssessment2018. 
+EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG along many other physiological recordings  @ibanezSurveySleepAssessment2018. 
 
-Raw EEG data can be found in sleep records files. In European Data Format (EDF) @Kemp1992 records, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of EEG signal. 
+Raw EEG data can be found in sleep records files. In European Data Format (EDF) @Kemp1992 records, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of EEG signal from sleep records files.
 
-## Example data
+## Sleep data
 
 An example EDF file and its scoring can be donwloaded using the following code:
 
@@ -35,9 +35,9 @@ download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
-The `.edf` file contains signals and metadata. The `.csv` files contains the scoring, exported from Noxturnal, a visual analysis software for sleep data published by Resmed.
+The `.edf` file contains signals and metadata. The `.csv` file contains the scoring, exported from Noxturnal, a visual analysis software for sleep data published by Resmed.
 
-This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html) reads `.edf` files. Reading an `.edf` file is divided in two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will only be performed on a single channel of the EEG, `C3-M2`.
+This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will only be performed on a single channel of the EEG, `C3-M2`.
 
 ```{r read_edf}
 library(edfReader)
@@ -81,7 +81,7 @@ This heatmap show an estimate of power spectral density (PSD) by frequency over 
 
 ## Spectrum bands
 
-The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005. Bands limits can slightly vary in publications: 
+The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005. Bands limits can slightly vary in publications:
 
   * **Delta**: Below `3.5` Hertz, the Delta band is associated with slow-wave sleep in adults subjects.
   
@@ -90,6 +90,8 @@ The traditional way to analyze EEG is to cut the frequencies of the spectrum int
   * **Alpha**: Between `7.5` and `13` Hertz, the Alpha band is associated with a relaxed state and eyes closed.
   
   * **Beta**: Between `13` and `30` Hertz the Beta band is associated with active thinking, focus, high alert or anxiousness.
+
+  * **Gamma**: Over `30` Hertz the Gamma band is TODO
 
 ### Epoching
 
@@ -104,6 +106,8 @@ epochs <- epochs(signals = s$signal,
                  startTime = as.numeric(as.POSIXct(s$startTime)))
 ```
 
+Bands can be computed using the bands_power of the rsleep package
+
 ```{r}
 bands <- lapply(epochs,function(x){
     bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
@@ -112,7 +116,11 @@ bands <- lapply(epochs,function(x){
 })
 ```
 
+After some reshaping, bands psd distribution can be plotted per stage
+
 ```{r}
+library(ggplot2)
+
 bands_df <- data.frame(matrix(unlist(bands), nrow=length(bands), byrow=TRUE))
 
 colnames(bands_df) <- c("Delta","Theta","Alpha","Beta")
@@ -139,31 +147,20 @@ ggplot(bands_df_long,
 ### Along the night
 
 ```{r}
-
 ggplot(bands_df_long,
        aes(x=epoch,y=value,color=variable)) +
   geom_line()
- 
-
 ```
-
 
 ## Periodogram
 
 ```{r periodogram, fig.width=7, message=FALSE, error=FALSE}
 library(dplyr)
-library(ggplot2)
 
-sm <- function(x, sRate){
-  res <- psd::pspectrum(x,plot=FALSE,verbose=FALSE,)
-  df <- data.frame("hz" = res$freq, "psd" = res$spec)
-  df$psd <- log(df$psd)
-  df$hz <- df$hz*sRate
-  df
-}
+psdres <- sm(epochs[[1]], s$sRate, 100)
 
 periodograms <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
-  periodogram <- sm(x, sRate = s$sRate)#pwelch(x, sRate = s$sRate, show = FALSE)
+  periodogram <- pwelch(x, sRate = s$sRate, show = FALSE)
   periodogram <- as.data.frame(periodogram[periodogram$hz <= 20,])
   periodogram$stage <- y
   periodogram
@@ -189,12 +186,12 @@ Would it be possible to classify sleep stage using periodogram of a single chann
 
 ```{r}
 
-set.seed(1234)
+set.seed(12345)
 
 library(caret)
 
 pw <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
-  periodogram <- sm(x, sRate = s$sRate) %>% #pwelch(x, sRate = s$sRate, show = FALSE) %>%
+  periodogram <- psm(x, sRate = s$sRate, 200) %>%
     dplyr::filter(hz <= 20) %>%
     reshape2::dcast(formula = psd ~ hz,
                     value.var = "psd")
@@ -218,20 +215,22 @@ validation <- df[-inTrain, ]
 
 cl <- parallel::makeCluster(parallel::detectCores())
 doParallel::registerDoParallel(cl)
-control <- ?caret::trainControl(method="cv", 3,allowParallel = TRUE)
+control <- caret::trainControl(method="cv", 3,allowParallel = TRUE)
 fit <- caret::train(stage ~ .,
                     data= df,
-                    method= 'rf',
-                    importance = TRUE)
+                    method= 'rf')
 parallel::stopCluster(cl)
 
 results <- predict(fit, newdata = validation)
 fit
 
-
-length(pspectrum_basic(c(1:1000),verbose = TRUE,tapseq=c(1,2,3,4))$freq)
-
-riedsid(c(1:1000),tapseq = c(1:500))
 ```
 
+sm
+mtry  Accuracy   Kappa    
+   2    0.8836683  0.8358472
+  21    0.8748001  0.8233672
+  40    0.8699981  0.8166512
+
+  
 ## References

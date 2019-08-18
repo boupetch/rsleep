@@ -98,7 +98,7 @@ bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
 #' @param show todo
 #' @return peridodogram plotted or raw
 #' @examples
-#' s <- pwelch(sin(c(1:10000)), 200)
+#' pwelch(sin(c(1:10000)), 200)
 #' @export
 pwelch <- function(x,
                    sRate,
@@ -134,4 +134,47 @@ pwelch <- function(x,
          xaxs = "i")
   invisible(data.frame("hz" = hz,
             "psd" = psd))
+}
+
+#' sine multitaper psd
+#'
+#' @description sine multitaper psd from psd r package
+#' @param x Signal vector.
+#' @param sRate Sample rate of the signal.
+#' @param length periodogram resolution. 0 default to not resize.
+#' @return peridodogram plotted or raw
+#' @examples
+#' psm(sin(c(1:10000)), 200, 100)
+#' @export
+psm <- function(x, sRate, length=0){
+
+  library()$results[,1]
+
+  if(!("psd" %in% (.packages()))){
+    library(psd)
+  }
+
+  res <- psd::pspectrum(x,plot=FALSE,verbose=FALSE)
+
+  df <- data.frame("hz" = res$freq, "psd" = res$spec)
+
+  df$psd <- log(df$psd)
+
+  df$hz <- df$hz*sRate
+
+  if(length > 0){
+
+    psd <- signal::resample(x = df$psd,
+                            p = length,
+                            q = nrow(df))
+
+    hz <- signal::resample(x = df$hz,
+                           p = length,
+                           q = nrow(df))
+
+    df <- data.frame("psd" = psd,
+                     "hz" = hz)
+  }
+
+  df
 }

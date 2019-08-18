@@ -40,4 +40,8 @@ test_that("Spectral power computing", {
   expect_equal(length(bands),2)
   expect_equal(is.null(bands[[1]]),FALSE)
 
+  # PSM
+  p <- psm(sin(c(1:10000)), 200, 100)
+  expect_equal(nrow(p),100)
+
 })
