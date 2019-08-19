@@ -69,7 +69,7 @@ The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A
 The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies. A nice interactive and visual explanation of Fourier transform can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).
 
 Applied to EEG, Fourier transform gives an overview of the frequencies making the brain activity. 
-A **spectrogram** is the visualisation of these frequencies over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. This function is a wrapper over the `specgram` function from the `signal` package, adapted to large signals vectors found in sleep data, defining colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
+A **spectrogram** is the visualisation of these frequencies densities over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. The function is a wrapper over the `specgram` function from the `signal` package, adapted to the long signals vectors found in sleep data, defining colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
 
 ```{r spectrogram, fig.width = 7}
 spectrogram(signal = s$signal,
@@ -77,11 +77,11 @@ spectrogram(signal = s$signal,
             startTime = as.POSIXct(s$startTime))
 ```
 
-This heatmap show an estimate of power spectral density (PSD) by frequency over time. Cycles of higher PSD in the lower part of the spectrum occurs all along the night. Similar Patterns can be identified between the hypnogram and the spectrogram. Indeed, higher PSD in lower frequencies of the EEG is the main characteristic of deep sleep.
+This heatmap show an estimate of power spectral density (PSD) by frequency over time. Periods of higher PSD in the lower part of the spectrum occurs all along the night. Similar Patterns can be identified between the hypnogram and the spectrogram. Higher PSD in lower frequencies of the EEG is indeed the main characteristic of deep sleep.
 
 ## Spectrum bands
 
-The traditional way to analyze EEG is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005. Bands limits can slightly vary in publications:
+The traditional way to simplify the EEG spectrogram is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005:
 
   * **Delta**: Below `3.5` Hertz, the Delta band is associated with slow-wave sleep in adults subjects.
   
@@ -91,11 +91,13 @@ The traditional way to analyze EEG is to cut the frequencies of the spectrum int
   
   * **Beta**: Between `13` and `30` Hertz the Beta band is associated with active thinking, focus, high alert or anxiousness.
 
-  * **Gamma**: Over `30` Hertz the Gamma band is TODO
+  * **Gamma**: Over `30` Hertz the Gamma band is mostly used for animal EEG analysis.
 
 ### Epoching
 
-To observe spectral powers of bands per sleep stages, 
+As sleep is usually analyzed over 30 seconds periods, spectral activity can be computed over the same periods to compare it to the sleep stages scoring.
+
+The epochs function from the rsleep package cut the signal according to the hypnogram periods. It returns a list of signal chunks.
 
 ```{r epochs}
 hypnogram <- hypnogram(events)
@@ -106,7 +108,7 @@ epochs <- epochs(signals = s$signal,
                  startTime = as.numeric(as.POSIXct(s$startTime)))
 ```
 
-Bands can be computed using the bands_power of the rsleep package
+Bands can be computed using the bands_power of the rsleep package.
 
 ```{r}
 bands <- lapply(epochs,function(x){
