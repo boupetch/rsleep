@@ -1,5 +1,6 @@
 ---
 title: "Spectral analysis of electroencephalography (EEG) signals in sleep data"
+author: "Paul Bouchequet"
 output: rmarkdown::html_vignette
 bibliography: Spectral_analysis_of_EEG_signals.bibtex
 csl: vignettes.csl
@@ -16,15 +17,15 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
+# Do not run chunks if files are not present.
 knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
-Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial activity over time. Electrodes are typically arranged using the standardized 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, allowing reproductibility of the results between recordings. 
+Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial activity over time. Electrodes are typically arranged using the standardized International 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, allowing reproductibility of the results between recordings. 
 
 EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG along many other physiological recordings  @ibanezSurveySleepAssessment2018. 
 
-Raw EEG data can be found in sleep records files. In European Data Format (EDF) @Kemp1992 records, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of EEG signal from sleep records files.
+Raw EEG data can be found in sleep records files. In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of EEG signal from sleep records files.
 
 ## Sleep data
 
@@ -37,7 +38,7 @@ download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 
 The `.edf` file contains signals and metadata. The `.csv` file contains the scoring, exported from Noxturnal, a visual analysis software for sleep data published by Resmed.
 
-This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will only be performed on a single channel of the EEG, `C3-M2`.
+This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
 
 ```{r read_edf}
 library(edfReader)
@@ -60,16 +61,19 @@ plot_hypnogram(events)
 The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A sleep expert scored this record visually following the guidelines from the American Association of Sleep Medicine (AASM) @AASMScoringManual. Five stages can be observed:
 
   * **AWA**: Awakeness.
-  * **REM**: Rapid-Eye-Movement (REM) sleep, or paradoxical sleep.
-  * **N1**: Light sleep, a transitional stage.
-  * **N2,N3**: Slow-wave sleep.
+  * **REM**: Rapid-Eye-Movement (REM) sleep, or paradoxical sleep, highlighted in red.
+  * **N1**: Light sleep transitional stage.
+  * **N2**: Light sleep.
+  * **N3**: Slow-wave sleep.
+  
+Visual scoring is an emprical science and requires a considerable amount of clinical knowledge. Alternative methods like spectral estimations techniques such as the Fourier transform must be used to quantify information carried in the physiological signals (EEG quant analysis book).
 
 ## Spectrogram
 
-The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies. A nice interactive and visual explanation of Fourier transform can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).
+The Fourier transform may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies. A visual explanation of Fourier transform can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).
 
 Applied to EEG, Fourier transform gives an overview of the frequencies making the brain activity. 
-A **spectrogram** is the visualisation of these frequencies densities over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. The function is a wrapper over the `specgram` function from the `signal` package, adapted to the long signals vectors found in sleep data, defining colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
+A **spectrogram** is the visualisation of these frequencies densities over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. The function wrappers the `specgram` function from the `signal` package, adapting it to the long signals vectors found in sleep data, defining colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
 
 ```{r spectrogram, fig.width = 7}
 spectrogram(signal = s$signal,
@@ -79,9 +83,58 @@ spectrogram(signal = s$signal,
 
 This heatmap show an estimate of power spectral density (PSD) by frequency over time. Periods of higher PSD in the lower part of the spectrum occurs all along the night. Similar Patterns can be identified between the hypnogram and the spectrogram. Higher PSD in lower frequencies of the EEG is indeed the main characteristic of deep sleep.
 
-## Spectrum bands
+## Epoching
 
-The traditional way to simplify the EEG spectrogram is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005:
+As sleep is usually analyzed over 30 seconds epochs, spectral activity can be computed over the same epochs to compare it to the sleep stages scoring.
+
+The `epochs` function from the `rsleep` package cut the signal according to the hypnogram periods. `epochs` returns a list of signal vectors.
+
+```{r epochs}
+hypnogram <- hypnogram(events)[-1]
+
+startTime <- as.numeric(as.POSIXct(s$startTime))
+
+epochs <- rsleep::epochs(s$signal,s$sRate,
+                         epoch = hypnogram,
+                         startTime = startTime)
+```
+
+## Periodogram
+
+The periodogram is the direct result of a spectral density estimator such as the Fourier Transform. pwelch from rsleep computes periodogram. associated with stages in a vectorized cursor with the mapply function, peridograms of each epcoh of the whole night can be averaged by stage.
+
+```{r periodogram_compute}
+library(dplyr)
+
+psdres <- sm(epochs[[1]], s$sRate, 100)
+
+periodograms <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
+  periodogram <- pwelch(x, sRate = s$sRate, show = FALSE)
+  periodogram <- as.data.frame(periodogram[periodogram$hz <= 30,])
+  periodogram$stage <- y
+  periodogram
+}, SIMPLIFY = F)
+
+df <- do.call("rbind", periodograms) %>%
+    group_by(hz,stage) %>%
+    summarize(psd = mean(psd)) %>%
+    ungroup()
+```
+
+Result can be plotted
+
+```{r periodogram_plot, fig.width=7, message=FALSE, error=FALSE}
+ggplot(df, aes(x=hz,y=psd,color=stage)) +
+  geom_line() + theme_bw() +
+  theme(legend.title = element_blank()) + 
+  scale_colour_manual(name = "stage",
+                      values = c("#F98400","#F2AD00","#00A08A","#FF0000","#5BBCD6")) +
+  xlab("Hertz") + ylab("PSD")
+```
+
+## Bands
+
+The traditional way to simplify the EEG periodogram is to cut the frequencies of the spectrum into bands or ranges @niedermeyerElectroencephalographyBasicPrinciples2005:
 
   * **Delta**: Below `3.5` Hertz, the Delta band is associated with slow-wave sleep in adults subjects.
   
@@ -93,20 +146,6 @@ The traditional way to simplify the EEG spectrogram is to cut the frequencies of
 
   * **Gamma**: Over `30` Hertz the Gamma band is mostly used for animal EEG analysis.
 
-### Epoching
-
-As sleep is usually analyzed over 30 seconds periods, spectral activity can be computed over the same periods to compare it to the sleep stages scoring.
-
-The epochs function from the rsleep package cut the signal according to the hypnogram periods. It returns a list of signal chunks.
-
-```{r epochs}
-hypnogram <- hypnogram(events)
-
-epochs <- epochs(signals = s$signal,
-                 sRates = s$sRate,
-                 epoch = hypnogram,
-                 startTime = as.numeric(as.POSIXct(s$startTime)))
-```
 
 Bands can be computed using the bands_power of the rsleep package.
 
@@ -117,6 +156,7 @@ bands <- lapply(epochs,function(x){
                 normalize = c(0.5,30))
 })
 ```
+
 
 After some reshaping, bands psd distribution can be plotted per stage
 
@@ -146,45 +186,13 @@ ggplot(bands_df_long,
   theme(legend.position = "none")
 ```
 
-### Along the night
-
-```{r}
-ggplot(bands_df_long,
-       aes(x=epoch,y=value,color=variable)) +
-  geom_line()
-```
-
-## Periodogram
-
-```{r periodogram, fig.width=7, message=FALSE, error=FALSE}
-library(dplyr)
-
-psdres <- sm(epochs[[1]], s$sRate, 100)
-
-periodograms <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
-  periodogram <- pwelch(x, sRate = s$sRate, show = FALSE)
-  periodogram <- as.data.frame(periodogram[periodogram$hz <= 20,])
-  periodogram$stage <- y
-  periodogram
-}, SIMPLIFY = F)
-
-df <- do.call("rbind", periodograms) %>%
-    group_by(hz,stage) %>%
-    summarize(psd = mean(psd)) %>%
-    ungroup()
-
-ggplot(df, aes(x=hz,y=psd,color=stage)) +
-  geom_line() + theme_bw() +
-  theme(legend.title = element_blank()) + 
-  scale_colour_manual(name = "stage",
-                      values = c("#F98400","#F2AD00","#00A08A","#FF0000","#5BBCD6")) +
-  xlab("Hertz") + ylab("PSD")
-
-```
+Spectral bands greatly simplify the EEG spectrum, but many data gets lost in this aggregation process. 
 
 ## Machine learning
 
 Would it be possible to classify sleep stage using periodogram of a single channel eeg?
+
+THe psd package @barbourPsdAdaptiveSine2014
 
 ```{r}
 
@@ -194,7 +202,7 @@ library(caret)
 
 pw <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
   periodogram <- psm(x, sRate = s$sRate, 200) %>%
-    dplyr::filter(hz <= 20) %>%
+    dplyr::filter(hz <= 30) %>%
     reshape2::dcast(formula = psd ~ hz,
                     value.var = "psd")
     
@@ -229,10 +237,10 @@ fit
 ```
 
 sm
-mtry  Accuracy   Kappa    
-   2    0.8836683  0.8358472
-  21    0.8748001  0.8233672
-  40    0.8699981  0.8166512
+  mtry  Accuracy   Kappa    
+   2    0.8901621  0.8450582
+  30    0.8843484  0.8369050
+  59    0.8797522  0.8304760
 
   
 ## References
