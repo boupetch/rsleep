@@ -25,7 +25,7 @@ Electroencephalography (EEG) refers to all the methods of recording, analysis an
 
 EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG along many other physiological recordings  @ibanezSurveySleepAssessment2018. 
 
-Raw EEG data can be found in sleep records files. In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of EEG signal from sleep records files.
+In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of a single EEG signal from sleep records files.
 
 ## Sleep data
 
@@ -66,31 +66,16 @@ The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A
   * **N2**: Light sleep.
   * **N3**: Slow-wave sleep.
   
-Visual scoring is an emprical science and requires a considerable amount of clinical knowledge. Alternative methods like spectral estimations techniques such as the Fourier transform must be used to quantify information carried in the physiological signals (EEG quant analysis book).
-
-## Spectrogram
-
-The Fourier transform may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies. A visual explanation of Fourier transform can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).
-
-Applied to EEG, Fourier transform gives an overview of the frequencies making the brain activity. 
-A **spectrogram** is the visualisation of these frequencies densities over time. It chops the signal into overlapping slices, windows each slice and applies a Fourier transform to determine the frequency components at that slice. The `spectrogram` function from the `rsleep` package draw a spectrogram from a given signal. The function wrappers the `specgram` function from the `signal` package, adapting it to the long signals vectors found in sleep data, defining colors and limiting the frequencies displayed to 25 Hertz. Those parameters can be modified in the function call.
-
-```{r spectrogram, fig.width = 7}
-spectrogram(signal = s$signal,
-            sRate = s$sRate,
-            startTime = as.POSIXct(s$startTime))
-```
-
-This heatmap show an estimate of power spectral density (PSD) by frequency over time. Periods of higher PSD in the lower part of the spectrum occurs all along the night. Similar Patterns can be identified between the hypnogram and the spectrogram. Higher PSD in lower frequencies of the EEG is indeed the main characteristic of deep sleep.
+Visual scoring is an emprical science and requires a considerable amount of clinical knowledge. Alternative methods like spectral estimations techniques such as the Fourier transform must be used to quantify information carried in the physiological signals @tongQuantitativeEEGAnalysis2009.
 
 ## Epoching
 
-As sleep is usually analyzed over 30 seconds epochs, spectral activity can be computed over the same epochs to compare it to the sleep stages scoring.
+Epoching is the first step of quantitative sleep analysis. Physiological signal, such as EEG, must be splitted into consecutive epochs of a discrete duration. Epochs usually start at the closing of lights, when the  patient or subject begins the night.
 
-The `epochs` function from the `rsleep` package cut the signal according to the hypnogram periods. `epochs` returns a list of signal vectors.
+As the example record already has a hynogram, the EEG signal can be splitted using these epochs. The `epochs` function from the `rsleep` package split the signal according to these parameters. It returns a list of signal vectors. In the example, the last scored epoch of the hypnogram finishes after the end of the signal. The hynogram dataframe must be truncated accordingly.
 
 ```{r epochs}
-hypnogram <- hypnogram(events)[-1]
+hypnogram <- hypnogram(events)[-1,]
 
 startTime <- as.numeric(as.POSIXct(s$startTime))
 
@@ -101,12 +86,24 @@ epochs <- rsleep::epochs(s$signal,s$sRate,
 
 ## Periodogram
 
-The periodogram is the direct result of a spectral density estimator such as the Fourier Transform. pwelch from rsleep computes periodogram. associated with stages in a vectorized cursor with the mapply function, peridograms of each epcoh of the whole night can be averaged by stage.
+The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).  However, an EEG signal carry a lot of noise. This noise is easily interprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segment to average PSD. 
+
+### Single epoch
+
+pwelch from rsleep computes periodogram...
+
+```{r pwelch, fig.width=7, message=FALSE, error=FALSE}
+pwelch(epochs[[200]], sRate = s$sRate)
+```
+
+Peak at 50...
+
+### Stages averages
+
+associated with stages in a vectorized cursor with the mapply function, peridograms of each epcoh of the whole night can be averaged by stage.
 
 ```{r periodogram_compute}
 library(dplyr)
-
-psdres <- sm(epochs[[1]], s$sRate, 100)
 
 periodograms <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
   periodogram <- pwelch(x, sRate = s$sRate, show = FALSE)
@@ -124,11 +121,12 @@ df <- do.call("rbind", periodograms) %>%
 Result can be plotted
 
 ```{r periodogram_plot, fig.width=7, message=FALSE, error=FALSE}
+palette <- c("#F98400","#F2AD00","#00A08A","#FF0000","#5BBCD6")
 ggplot(df, aes(x=hz,y=psd,color=stage)) +
   geom_line() + theme_bw() +
   theme(legend.title = element_blank()) + 
   scale_colour_manual(name = "stage",
-                      values = c("#F98400","#F2AD00","#00A08A","#FF0000","#5BBCD6")) +
+                      values = palette) +
   xlab("Hertz") + ylab("PSD")
 ```
 
@@ -157,7 +155,6 @@ bands <- lapply(epochs,function(x){
 })
 ```
 
-
 After some reshaping, bands psd distribution can be plotted per stage
 
 ```{r}
@@ -171,17 +168,15 @@ bands_df$stage <- hypnogram$event[-1]
 bands_df$epoch <- c(1:nrow(bands_df))
 
 bands_df_long <- reshape2::melt(bands_df, c("stage","epoch"))
- 
+
+paeltte <-c("#F98400", "#F2AD00", "#00A08A", "#FF0000", "#5BBCD6")
+
 ggplot(bands_df_long,
        aes(x=stage,y=value,color=stage)) +
   geom_boxplot() +
   facet_grid(rows = vars(variable),scales = "free") +
   scale_colour_manual(name = "stage",
-                      values = c("#F98400",
-                                 "#F2AD00",
-                                 "#00A08A",
-                                 "#FF0000",
-                                 "#5BBCD6")) +
+                      values = palette) +
   theme_bw() + xlab("") + ylab("PSD") + 
   theme(legend.position = "none")
 ```
@@ -233,14 +228,6 @@ parallel::stopCluster(cl)
 
 results <- predict(fit, newdata = validation)
 fit
-
 ```
 
-sm
-  mtry  Accuracy   Kappa    
-   2    0.8901621  0.8450582
-  30    0.8843484  0.8369050
-  59    0.8797522  0.8304760
-
-  
 ## References
