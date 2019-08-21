@@ -35,6 +35,14 @@ test_that("Spectral power computing", {
   expect_equal(length(bands),2)
   expect_equal(is.null(bands[[1]]),FALSE)
 
+  bands <- bands_psd(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200,normalize = FALSE,method="pwelch")
+  expect_equal(length(bands),2)
+  expect_equal(is.null(bands[[1]]),FALSE)
+
+  bands <- bands_psd(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200,normalize = FALSE,method="psm")
+  expect_equal(length(bands),2)
+  expect_equal(is.null(bands[[1]]),FALSE)
+
   # Normalization
   bands <- bands_psd(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200,normalize = c(0.3,40))
   expect_equal(length(bands),2)

@@ -67,15 +67,19 @@ spectrogram <- function(signal,
 #' @examples
 #' bands_psd(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
 #' @export
-bands_psd <- function(bands, signal , sRate, normalize = c(0.5,40)){
+bands_psd <- function(bands, signal , sRate, normalize = c(0.5,40), method="pwelch"){
 
-  #s <- phonTools::pwelch(x = signal,fs = sRate,points = 1000, show = FALSE)
-  s <- pwelch(x = signal,sRate = sRate, points = 1000, show = FALSE)
-  #s[,2] <- s[,2]+abs(min(s[,2]))
+  if(method == "pwelch"){
+    s <- pwelch(x = signal, sRate = sRate, points = 1000, show = FALSE)
+  } else if(method == "psm"){
+    s <- psm(x = signal, sRate = sRate)
+  } else{
+    stop("Choose between \"pwelch\" and \"psm\" for psd estimation method.")
+  }
 
   lapply(bands, function(band){
 
-    s_filtered <- s[s$hz >= band[1] & s$hz < band[2],]
+    s_filtered <-  s[s$hz >= band[1] & s$hz < band[2],]
 
     if(length(normalize) == 2){
       s_broadband <- s[s$hz >= normalize[1] & s$hz < normalize[2],]
