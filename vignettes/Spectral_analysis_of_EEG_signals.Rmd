@@ -12,7 +12,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r, include = FALSE}
+```{r env, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv"))
 
 Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial activity over time. Electrodes are typically arranged using the standardized International 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, allowing reproductibility of the results between recordings. 
 
-EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography, the gold standard exam in sleep medicine, includes EEG along many other physiological recordings  @ibanezSurveySleepAssessment2018. 
+EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography (PSG), the gold standard exam in sleep medicine, includes EEG along many other physiological recordings  @ibanezSurveySleepAssessment2018. 
 
 In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of a single EEG signal from sleep records files.
 
@@ -31,7 +31,7 @@ In records stored using European Data Format (EDF) @Kemp1992, EEG channels can b
 
 An example EDF file and its scoring can be donwloaded using the following code:
 
-```{r download_data, eval=FALSE}
+```{r download, eval=FALSE}
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
@@ -40,7 +40,7 @@ The `.edf` file contains signals and metadata. The `.csv` file contains the scor
 
 This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
 
-```{r read_edf}
+```{r edf}
 library(edfReader)
 
 h <- readEdfHeader("15012016HD.edf")
@@ -48,7 +48,7 @@ h <- readEdfHeader("15012016HD.edf")
 s <- readEdfSignals(h, signals = "C3-M2")
 ```
 
-Visual scoring of this record can be plotted in the following hypnogram using the rsleep package:
+Visual scoring of this record can be read and plotted using the `rsleep` package:
 
 ```{r hypnogram, fig.width = 7}
 library(rsleep)
@@ -70,11 +70,11 @@ Visual scoring is an emprical science and requires a considerable amount of clin
 
 ## Epoching
 
-Epoching is the first step of quantitative sleep analysis. Physiological signal, such as EEG, must be splitted into consecutive epochs of a discrete duration. Epochs usually start at the closing of lights, when the  patient or subject begins the night.
+Epoching is the first step of sleep analysis. Physiological signal, such as EEG, are splitted into consecutive epochs of a discrete duration. Epochs usually start at lights turnoff, when the  patient or subject starts the night.
 
 As the example record already has a hynogram, the EEG signal can be splitted using these epochs. The `epochs` function from the `rsleep` package split the signal according to these parameters. It returns a list of signal vectors. In the example, the last scored epoch of the hypnogram finishes after the end of the signal. The hynogram dataframe must be truncated accordingly.
 
-```{r epochs}
+```{r epoching}
 hypnogram <- hypnogram(events)[-1,]
 
 startTime <- as.numeric(as.POSIXct(s$startTime))
@@ -86,49 +86,63 @@ epochs <- rsleep::epochs(s$signal,s$sRate,
 
 ## Periodogram
 
-The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/).  However, an EEG signal carry a lot of noise. This noise is easily interprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segment to average PSD. 
+The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/). However, EEG signals carry a lot of noise. This noise is easily interprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segment to average PSD from the FT.
 
 ### Single epoch
 
-pwelch from rsleep computes periodogram...
+The `pwelch` function `rsleep` computes a periodogram using Welch's method. The following computes and plot the periodogram of the 200th epoch, scored N3 by a sleep expert.
 
 ```{r pwelch, fig.width=7, message=FALSE, error=FALSE}
-pwelch(epochs[[200]], sRate = s$sRate)
+p <- pwelch(epochs[[200]], sRate = s$sRate)
+
+summary(p)
 ```
 
-Peak at 50...
+This epoch periodogram shows high PSD in lower frequencies of the spectrum. The peak at 50 Hertz is an artifact caused by the power line of the PSG recorder @motamedi-fakhrSignalProcessingTechniques2014a. As values are normalized using `log`, PSD are negative.
 
 ### Stages averages
 
-associated with stages in a vectorized cursor with the mapply function, peridograms of each epcoh of the whole night can be averaged by stage.
+To compute average periodograms by stage, hypnogram and epochs can be iterated using the `mapply` function to compute periodograms associated to stages. Periodograms can be filtered at this step to discard values over 30 Hertz.
 
-```{r periodogram_compute}
-library(dplyr)
-
-periodograms <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
-  periodogram <- pwelch(x, sRate = s$sRate, show = FALSE)
-  periodogram <- as.data.frame(periodogram[periodogram$hz <= 30,])
-  periodogram$stage <- y
-  periodogram
+```{r avg_pdg_compute}
+periodograms <- mapply(x = epochs, y = hypnogram$event, FUN = function(x,y){
+  p <- pwelch(x, sRate = s$sRate, show = FALSE)
+  p <- as.data.frame(p[p$hz <= 30,])
+  p$stage <- y
+  p
 }, SIMPLIFY = F)
-
-df <- do.call("rbind", periodograms) %>%
-    group_by(hz,stage) %>%
-    summarize(psd = mean(psd)) %>%
-    ungroup()
 ```
 
-Result can be plotted
+`mapply` returns a list that can be coerced to a `dataframe` using `rbind` combined to `do.call`.
+
+```{r pdg_rbind}
+periodograms_df <- do.call("rbind", periodograms)
+```
+
+Once coerced to a `dataframe`, raw periodogram values can be averaged by stage:
+
+```{r pdg_aggregate}
+avg_periodograms <- aggregate(psd ~ hz+stage,
+                              periodograms_df,
+                              mean)
+```
+
+Aggregated periodograms can then be plotted using `ggplot2`.
 
 ```{r periodogram_plot, fig.width=7, message=FALSE, error=FALSE}
+library(ggplot2)
+
 palette <- c("#F98400","#F2AD00","#00A08A","#FF0000","#5BBCD6")
-ggplot(df, aes(x=hz,y=psd,color=stage)) +
+
+ggplot(avg_periodograms, aes(x=hz,y=psd,color=stage)) +
   geom_line() + theme_bw() +
   theme(legend.title = element_blank()) + 
   scale_colour_manual(name = "stage",
                       values = palette) +
-  xlab("Hertz") + ylab("PSD")
+  xlab("Frequency (Hertz)") + ylab("PSD")
 ```
+
+Each sleep stage show a distinct average periodogram. If the N3 stage show higher PSD values in the lower spectrum, it show way lower PSD in the upper frequencies compared to other stages.
 
 ## Bands
 
@@ -145,28 +159,34 @@ The traditional way to simplify the EEG periodogram is to cut the frequencies of
   * **Gamma**: Over `30` Hertz the Gamma band is mostly used for animal EEG analysis.
 
 
-Bands can be computed using the bands_power of the rsleep package.
+Bands can be computed using the `bands_power` of the `rsleep` package. Those bands can be normalized by the spectrum range covered by the bands. 
 
-```{r}
+```{r bands_compute}
 bands <- lapply(epochs,function(x){
-    bands_power(bands = list(c(0.5,3.5),c(3.5,7.5),c(7.5,13),c(13,30)),
+    bands_power(bands = list(c(0.5,3.5), # Delta
+                             c(3.5,7.5), # Theta
+                             c(7.5,13), # Alpha
+                             c(13,30)), # Beta
                 signal = x, sRate = s$sRate,
                 normalize = c(0.5,30))
 })
 ```
 
-After some reshaping, bands psd distribution can be plotted per stage
+As...
 
-```{r}
-library(ggplot2)
-
+```{r bands_reshape}
 bands_df <- data.frame(matrix(unlist(bands), nrow=length(bands), byrow=TRUE))
 
 colnames(bands_df) <- c("Delta","Theta","Alpha","Beta")
 
 bands_df$stage <- hypnogram$event[-1]
-bands_df$epoch <- c(1:nrow(bands_df))
 
+bands_df$epoch <- c(1:nrow(bands_df))
+```
+
+After some reshaping, bands psd distribution can be plotted per stage
+
+```{r bands_plot}
 bands_df_long <- reshape2::melt(bands_df, c("stage","epoch"))
 
 paeltte <-c("#F98400", "#F2AD00", "#00A08A", "#FF0000", "#5BBCD6")
@@ -189,11 +209,11 @@ Would it be possible to classify sleep stage using periodogram of a single chann
 
 THe psd package @barbourPsdAdaptiveSine2014
 
-```{r}
-
+```{r ml}
 set.seed(12345)
 
 library(caret)
+library(dplyr)
 
 pw <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
   periodogram <- psm(x, sRate = s$sRate, 200) %>%
