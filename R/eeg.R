@@ -58,19 +58,19 @@ spectrogram <- function(signal,
 
 #' Computes spectral power of bands listed in the bands argument.
 #'
-#' @description `bands_power` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
+#' @description `bands_psd` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
 #' @param bands A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``
 #' @param signal Numerical vector of the signal.
 #' @param sRate Signal sample rate in Hertz.
 #' @param normalize A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.
 #' @return A list of bands powers.
 #' @examples
-#' bands_power(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
+#' bands_psd(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
 #' @export
-bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
+bands_psd <- function(bands, signal , sRate, normalize = c(0.5,40)){
 
   #s <- phonTools::pwelch(x = signal,fs = sRate,points = 1000, show = FALSE)
-  s <- pwelch(x = signal,sRate = sRate,points = 1000, show = FALSE)
+  s <- pwelch(x = signal,sRate = sRate, points = 1000, show = FALSE)
   #s[,2] <- s[,2]+abs(min(s[,2]))
 
   lapply(bands, function(band){

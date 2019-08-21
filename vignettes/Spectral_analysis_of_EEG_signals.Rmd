@@ -159,11 +159,11 @@ The traditional way to simplify the EEG periodogram is to cut the frequencies of
   * **Gamma**: Over `30` Hertz the Gamma band is mostly used for animal EEG analysis.
 
 
-Bands can be computed using the `bands_power` of the `rsleep` package. Those bands can be normalized by the spectrum range covered by the bands. 
+Bands can be computed using the `bands_psd` of the `rsleep` package. Those bands can be normalized by the spectrum range covered by the bands. 
 
 ```{r bands_compute}
 bands <- lapply(epochs,function(x){
-    bands_power(bands = list(c(0.5,3.5), # Delta
+    bands_psd(bands = list(c(0.5,3.5), # Delta
                              c(3.5,7.5), # Theta
                              c(7.5,13), # Alpha
                              c(13,30)), # Beta

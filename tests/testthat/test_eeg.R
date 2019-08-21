@@ -31,12 +31,12 @@ test_that("Spectral power computing", {
   sig <- chirp(seq(-2, 15, by = 0.001), 400, 10, 100, 'quadratic')
 
   # No normalization
-  bands <- bands_power(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200,normalize = FALSE)
+  bands <- bands_psd(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200,normalize = FALSE)
   expect_equal(length(bands),2)
   expect_equal(is.null(bands[[1]]),FALSE)
 
   # Normalization
-  bands <- bands_power(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200,normalize = c(0.3,40))
+  bands <- bands_psd(bands = list(c(0.3,4),c(1,2)),signal = sig,sRate = 200,normalize = c(0.3,40))
   expect_equal(length(bands),2)
   expect_equal(is.null(bands[[1]]),FALSE)
 
