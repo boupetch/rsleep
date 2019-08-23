@@ -142,7 +142,7 @@ ggplot(avg_periodograms, aes(x=hz,y=psd,color=stage)) +
   xlab("Frequency (Hertz)") + ylab("PSD")
 ```
 
-Each sleep stage show a distinct average periodogram. If the N3 stage show higher PSD values in the lower spectrum, it show way lower PSD in the upper frequencies compared to other stages.
+Each sleep stage show a distinct average periodogram. If the N3 stage averages higher PSD values in the lower spectrum, it show way lower PSD in the upper frequencies compared to other stages.
 
 ## Bands
 
@@ -186,7 +186,7 @@ bands_df$epoch <- c(1:nrow(bands_df))
 
 After some reshaping, bands psd distribution can be plotted per stage
 
-```{r bands_plot}
+```{r bands_plot, fig.width=7, message=FALSE, error=FALSE}
 bands_df_long <- reshape2::melt(bands_df, c("stage","epoch"))
 
 paeltte <-c("#F98400", "#F2AD00", "#00A08A", "#FF0000", "#5BBCD6")
