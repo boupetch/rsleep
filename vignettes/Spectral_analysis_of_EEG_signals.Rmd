@@ -75,7 +75,7 @@ Epoching is the first step of sleep analysis. Physiological signal, such as EEG,
 As the example record already has a hynogram, the EEG signal can be splitted using these epochs. The `epochs` function from the `rsleep` package split the signal according to these parameters. It returns a list of signal vectors. In the example, the last scored epoch of the hypnogram finishes after the end of the signal. The hynogram dataframe must be truncated accordingly.
 
 ```{r epoching}
-hypnogram <- hypnogram(events)[-1,]
+hypnogram <- head(hypnogram(events),-2)
 
 startTime <- as.numeric(as.POSIXct(s$startTime))
 
@@ -122,9 +122,7 @@ periodograms_df <- do.call("rbind", periodograms)
 Once coerced to a `dataframe`, raw periodogram values can be averaged by stage:
 
 ```{r pdg_aggregate}
-avg_periodograms <- aggregate(psd ~ hz+stage,
-                              periodograms_df,
-                              mean)
+avg_periodograms <- aggregate(psd ~ hz+stage, periodograms_df, mean)
 ```
 
 Aggregated periodograms can then be plotted using `ggplot2`.
@@ -172,24 +170,26 @@ bands <- lapply(epochs,function(x){
 })
 ```
 
-As...
+As `lapply` returns a list, results must be reshaped in order to obtain a dataframe object. 
 
 ```{r bands_reshape}
 bands_df <- data.frame(matrix(unlist(bands), nrow=length(bands), byrow=TRUE))
 
 colnames(bands_df) <- c("Delta","Theta","Alpha","Beta")
-
-bands_df$stage <- hypnogram$event[-1]
-
-bands_df$epoch <- c(1:nrow(bands_df))
 ```
 
-After some reshaping, bands psd distribution can be plotted per stage
+Stages can be retreived from the hypnogram.
+
+```{r bands_stages}
+bands_df$stage <- hypnogram$event
+```
+
+Now that the epochs bands PSD and their corresponding stages are stored in a dataframe, they can easily be plotted using boxplots from `ggplot2`.
 
 ```{r bands_plot, fig.width=7, message=FALSE, error=FALSE}
-bands_df_long <- reshape2::melt(bands_df, c("stage","epoch"))
+bands_df_long <- reshape2::melt(bands_df, "stage")
 
-paeltte <-c("#F98400", "#F2AD00", "#00A08A", "#FF0000", "#5BBCD6")
+palette <-c("#F98400", "#F2AD00", "#00A08A", "#FF0000", "#5BBCD6")
 
 ggplot(bands_df_long,
        aes(x=stage,y=value,color=stage)) +
@@ -201,53 +201,70 @@ ggplot(bands_df_long,
   theme(legend.position = "none")
 ```
 
-Spectral bands greatly simplify the EEG spectrum, but many data gets lost in this aggregation process. 
+Each stage show a different bands PSD profile. Bands greatly simplify the EEG spectrum. However, a lot of data get lost in this aggregation process. 
 
 ## Machine learning
 
-Would it be possible to classify sleep stage using periodogram of a single channel eeg?
+Using periodograms, would it be possible to classify sleep stages of a sleep record from a single channel EEG? 
 
-THe psd package @barbourPsdAdaptiveSine2014
+The example record can be divided into a training set and a testing set. 70% of the epochs periodograms can be used to train a random forest to classify stages. Then, an accuracy score can be computed using the 30% left, not used during the training step. In real life, training and testing sets would be recorded on different subjects, as EEG profiles significantly differ between different subjects.
 
-```{r ml}
+Others algorithm, such as multitapers, can be used to estimate PSD. The R package `psd` implements the adaptive, Sine-Multitaper Power Spectral Density Estimation from a method described by Riedel and Sidorenko @barbourPsdAdaptiveSine2014.
+
+The `psm` method from `rsleep` conveniently encapsulate this algorithm to return the periodogram as a dataframe. As for the previous example, it can be called using `mapply` to also iterate over hypnogram stages. As periodograms will be used for machine learning, the matrix must be in a wide format, thus an additional call to the transpose method `t`.
+
+```{r ml_psd}
+features <- mapply(x = epochs, y = hypnogram$event, 
+             FUN = function(x,y){
+  periodogram <- psm(x, sRate = s$sRate, 200)
+  periodogram <- periodogram[periodogram$hz <= 30,]
+  periodogram <- setNames(t(periodogram)[1,], t(periodogram)[2,])
+  periodogram <- c(periodogram, setNames(y,"stage"))
+}, SIMPLIFY = F)
+
+features <- as.data.frame(do.call("rbind", pw))
+
+features$stage <- as.factor(features$stage)
+```
+
+The `features` dataframe contains `r (ncol(features)-1)` values for each periodogram and an additional `stage` column containing the stage level. But before training a random forest model, this dataframe must be splitted into the train and test set. This cna be done using `createDataPartition` from the `caret` package.
+
+```{r split}
 set.seed(12345)
 
 library(caret)
-library(dplyr)
 
-pw <- mapply(x = epochs, y = hypnogram$event[-1], FUN = function(x,y){
-  periodogram <- psm(x, sRate = s$sRate, 200) %>%
-    dplyr::filter(hz <= 30) %>%
-    reshape2::dcast(formula = psd ~ hz,
-                    value.var = "psd")
-    
-  periodogram$psd <- NULL
-  periodogram$`0` <- NULL
-  
-  sapply(periodogram,function(x){
-    max(x,na.rm = TRUE)
-    })
+inTrain <- createDataPartition(df$stage, p=0.70, list=F)
 
-}, SIMPLIFY = F)
+training <- features[inTrain,]
+validation <- features[-inTrain,]
+```
 
-df <- as.data.frame(do.call("rbind", pw))
 
-df$stage <-  hypnogram$event[-1]
+```{r fit}
+library(parallel)
+library(doParallel)
 
-inTrain <- caret::createDataPartition(df$stage, p=0.80, list=F)
-training <- df[inTrain, ]
-validation <- df[-inTrain, ]
+cl <- makeCluster(detectCores())
+registerDoParallel(cl)
 
-cl <- parallel::makeCluster(parallel::detectCores())
-doParallel::registerDoParallel(cl)
-control <- caret::trainControl(method="cv", 3,allowParallel = TRUE)
+control <- caret::trainControl(method="cv", 3, allowParallel = TRUE)
 fit <- caret::train(stage ~ .,
-                    data= df,
+                    data= training,
                     method= 'rf')
 parallel::stopCluster(cl)
 
 results <- predict(fit, newdata = validation)
+
 fit
 ```
+
+```{r}
+library(psy)
+cohen.kappa
+```
+
+
+
 
 ## References
