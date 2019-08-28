@@ -205,11 +205,11 @@ Each stage show a different bands PSD profile. Bands greatly simplify the EEG sp
 
 ## Machine learning
 
-Using periodograms, would it be possible to classify sleep stages of a sleep record from a single channel EEG? 
+Using periodograms, would it be possible to automatically classify stages of a sleep record from a single channel EEG? 
 
 The example record can be divided into a training set and a testing set. 70% of the epochs periodograms can be used to train a random forest to classify stages. Then, an accuracy score can be computed using the 30% left, not used during the training step. In real life, training and testing sets would be recorded on different subjects, as EEG profiles significantly differ between different subjects.
 
-Others algorithm, such as multitapers, can be used to estimate PSD. The R package `psd` implements the adaptive, Sine-Multitaper Power Spectral Density Estimation from a method described by Riedel and Sidorenko @barbourPsdAdaptiveSine2014.
+Others algorithm, such as multitapers, can be used to estimate PSD. The R package `psd` implements the adaptive, Sine-Multitaper Power Spectral Density Estimation from a method described by Riedel and Sidorenko @barbourPsdAdaptiveSine2014 @riedelMinimumBiasMultiple1995.
 
 The `psm` method from `rsleep` conveniently encapsulate this algorithm to return the periodogram as a dataframe. As for the previous example, it can be called using `mapply` to also iterate over hypnogram stages. As periodograms will be used for machine learning, the matrix must be in a wide format, thus an additional call to the transpose method `t`.
 
@@ -227,7 +227,7 @@ features <- as.data.frame(do.call("rbind", pw))
 features$stage <- as.factor(features$stage)
 ```
 
-The `features` dataframe contains `r (ncol(features)-1)` values for each periodogram and an additional `stage` column containing the stage level. But before training a random forest model, this dataframe must be splitted into the train and test set. This cna be done using `createDataPartition` from the `caret` package.
+The `features` dataframe contains `r (ncol(features)-1)` values for each periodogram and an additional `stage` column containing the stage level. But before training a random forest model, this dataframe must be splitted into the train and test set. This can be done using `createDataPartition` from the `caret` package.
 
 ```{r split}
 set.seed(12345)
@@ -240,31 +240,24 @@ training <- features[inTrain,]
 validation <- features[-inTrain,]
 ```
 
+Using 3 folds cross-validation, `train` function from the `caret` package fits the random forest over the training set.
 
 ```{r fit}
-library(parallel)
-library(doParallel)
-
-cl <- makeCluster(detectCores())
-registerDoParallel(cl)
-
 control <- caret::trainControl(method="cv", 3, allowParallel = TRUE)
-fit <- caret::train(stage ~ .,
-                    data= training,
-                    method= 'rf')
-parallel::stopCluster(cl)
 
-results <- predict(fit, newdata = validation)
-
-fit
+fit <- train(stage ~ ., training, method= 'rf', trControl = control)
 ```
 
-```{r}
+
+
+```{r ck}
 library(psy)
-cohen.kappa
+
+results <- predict(fit, validation)
+
+ck <- ckappa(cbind(results,validation$stage))
+
+print(ck)
 ```
-
-
-
 
 ## References
