@@ -3,14 +3,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+# Do not run chunks if files are not present.
+knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 
-## ----download_edf_hidden, include=FALSE----------------------------------
-if(!file.exists("15012016HD.edf")){
-  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
-}
-
-## ----download_data_display, eval=FALSE-----------------------------------
-#  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
+## ----download, eval=FALSE------------------------------------------------
+#  download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 
 ## ----read_edf------------------------------------------------------------
 library(edfReader)
@@ -27,8 +24,8 @@ c3m2sr <- s$`C3-M2`$sRate
 ## ----fig.width = 7-------------------------------------------------------
 plot(c3m2[(c3m2sr*30):(c3m2sr*30*2)],type = "l")
 
-## ----download_events-----------------------------------------------------
-download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv", "wget", T)
+## ----download_events, eval=FALSE-----------------------------------------
+#  download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 
 ## ----read_events---------------------------------------------------------
 library(rsleep)

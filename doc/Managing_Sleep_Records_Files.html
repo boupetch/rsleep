@@ -310,7 +310,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="reading-edf-records-files" class="section level1">
 <h1>Reading EDF Records files</h1>
 <p>An example EDF file can be donwloaded using the following code:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">download.file</span>(<span class="st">&quot;http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download&quot;</span>, <span class="st">&quot;15012016HD.edf&quot;</span>, <span class="st">&quot;wget&quot;</span>, T)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">download.file</span>(<span class="st">&quot;https://osf.io/57j2u/download&quot;</span>, <span class="st">&quot;15012016HD.edf&quot;</span>)</a></code></pre></div>
 <p>This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library <a href="https://cran.r-project.org/web/packages/edfReader/index.html"><code>edfReader</code></a>. Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(edfReader)</a>
 <a class="sourceLine" id="cb2-2" title="2"></a>
@@ -329,7 +329,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h1>Events Files</h1>
 <p>While the EDF standard supports events since 2003, very few software allow events exportation directly in EDF files.</p>
 <p>Scoring of the previous sample record can be downloaded here.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">download.file</span>(<span class="st">&quot;http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download&quot;</span>, <span class="st">&quot;15012016HD.csv&quot;</span>, <span class="st">&quot;wget&quot;</span>, T)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">download.file</span>(<span class="st">&quot;https://osf.io/h4ysj/download&quot;</span>, <span class="st">&quot;15012016HD.csv&quot;</span>)</a></code></pre></div>
 <p>These events have been exported from Noxturnal, a sleep scoring software published by Resmed <span class="citation">[6]</span>. As they are stored using a particular convention, the <code>read_events_noxturnal</code> from the <code>rsleep</code> package helps us reading the file as clean dataframe.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">library</span>(rsleep)</a>
 <a class="sourceLine" id="cb6-2" title="2"></a>

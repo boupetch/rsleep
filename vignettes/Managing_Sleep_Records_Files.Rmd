@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+# Do not run chunks if files are not present.
+knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
 Records of physiological signals during sleep can take many forms. It starts with simple accelerometry @vanheesEstimatingSleepParameters2018 and goes up to full polysomnography (PSG) @AASMScoringManual, a simultaneous recording of more than ten physiological signals. But sleep records all share a common aspect: they are timeseries, collections of datapoints indexed in time order. Along these timeseries are found metadata: recording conditions, patient information, sample rates and such.
@@ -28,14 +30,8 @@ Since its publication, the EDF imposed itself as a standard for exchange of slee
 
 An example EDF file can be donwloaded using the following code:
 
-```{r download_edf_hidden, include=FALSE}
-if(!file.exists("15012016HD.edf")){
-  download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
-}
-```
-
-```{r download_data_display, eval=FALSE}
-download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download", "15012016HD.edf", "wget", T)
+```{r download, eval=FALSE}
+download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 ```
 
 This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.
@@ -68,8 +64,8 @@ While the EDF standard supports events since 2003, very few software allow event
 
 Scoring of the previous sample record can be downloaded here.
 
-```{r download_events}
-download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download", "15012016HD.csv", "wget", T)
+```{r download_events, eval=FALSE}
+download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
 These events have been exported from Noxturnal, a sleep scoring software published by Resmed @ResMedWebsite. As they are stored using a particular convention, the `read_events_noxturnal` from the `rsleep` package helps us reading the file as clean dataframe.

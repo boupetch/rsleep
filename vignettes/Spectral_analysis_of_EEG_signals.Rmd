@@ -100,9 +100,9 @@ summary(p)
 
 This epoch periodogram shows high PSD in lower frequencies of the spectrum. The peak at 50 Hertz is an artifact caused by the power line of the PSG recorder @motamedi-fakhrSignalProcessingTechniques2014a. As values are normalized using `log`, PSD are negative.
 
-### Stages averages
+### Stages profiles
 
-To compute average periodograms by stage, hypnogram and epochs can be iterated using the `mapply` function to compute periodograms associated to stages. Periodograms can be filtered at this step to discard values over 30 Hertz.
+To compute average periodograms by stage, hypnogram and epochs can be iterated simultaneously using the `mapply` function. Periodograms can be filtered at this step to discard values over 30 Hertz.
 
 ```{r avg_pdg_compute}
 periodograms <- mapply(x = epochs, y = hypnogram$event, FUN = function(x,y){
@@ -119,7 +119,7 @@ periodograms <- mapply(x = epochs, y = hypnogram$event, FUN = function(x,y){
 periodograms_df <- do.call("rbind", periodograms)
 ```
 
-Once coerced to a `dataframe`, raw periodogram values can be averaged by stage:
+Once coerced to a `dataframe`, raw periodogram values can be averaged by stage.
 
 ```{r pdg_aggregate}
 avg_periodograms <- aggregate(psd ~ hz+stage, periodograms_df, mean)
@@ -140,7 +140,7 @@ ggplot(avg_periodograms, aes(x=hz,y=psd,color=stage)) +
   xlab("Frequency (Hertz)") + ylab("PSD")
 ```
 
-Each sleep stage show a distinct average periodogram. If the N3 stage averages higher PSD values in the lower spectrum, it show way lower PSD in the upper frequencies compared to other stages.
+Each sleep stage show a distinct average periodogram. If the `N3` stage averages higher PSD values in the lower spectrum, it show way lower PSD in the upper frequencies compared to other stages.
 
 ## Bands
 
@@ -207,7 +207,7 @@ Each stage show a different bands PSD profile. Bands greatly simplify the EEG sp
 
 Using periodograms, would it be possible to automatically classify stages of a sleep record from a single channel EEG? 
 
-The example record can be divided into a training set and a testing set. 70% of the epochs periodograms can be used to train a random forest to classify stages. Then, an accuracy score can be computed using the 30% left, not used during the training step. In real life, training and testing sets would be recorded on different subjects, as EEG profiles significantly differ between different subjects.
+The example record can be divided into a training set and a testing set. 70% of the epochs periodograms can be used to train a random forest to classify stages. Then, an accuracy score can be computed using the 30% left, not used during the training step.
 
 Others algorithm, such as multitapers, can be used to estimate PSD. The R package `psd` implements the adaptive, Sine-Multitaper Power Spectral Density Estimation from a method described by Riedel and Sidorenko @barbourPsdAdaptiveSine2014 @riedelMinimumBiasMultiple1995.
 
@@ -222,19 +222,19 @@ features <- mapply(x = epochs, y = hypnogram$event,
   periodogram <- c(periodogram, setNames(y,"stage"))
 }, SIMPLIFY = F)
 
-features <- as.data.frame(do.call("rbind", pw))
+features <- as.data.frame(do.call("rbind", features))
 
 features$stage <- as.factor(features$stage)
 ```
 
-The `features` dataframe contains `r (ncol(features)-1)` values for each periodogram and an additional `stage` column containing the stage level. But before training a random forest model, this dataframe must be splitted into the train and test set. This can be done using `createDataPartition` from the `caret` package.
+The `features` dataframe contains values for each periodogram and an additional `stage` column containing the stage level. But before training a random forest model, this dataframe must be splitted into the train and test set. This can be done using `createDataPartition` from the `caret` package.
 
 ```{r split}
 set.seed(12345)
 
 library(caret)
 
-inTrain <- createDataPartition(df$stage, p=0.70, list=F)
+inTrain <- createDataPartition(features$stage, p=0.70, list=F)
 
 training <- features[inTrain,]
 validation <- features[-inTrain,]
@@ -248,16 +248,20 @@ control <- caret::trainControl(method="cv", 3, allowParallel = TRUE)
 fit <- train(stage ~ ., training, method= 'rf', trControl = control)
 ```
 
+Once model has been trained, stages can be predicted from the testing set using the `predict` function.
 
+```{r predict}
+results <- predict(fit, validation)
+```
+
+Cohen's Kappa score is very suitable to evaluates the model quality of predicition. Cohen's Kappa measures inter-rater reliability for qualitative @cohenCoefficientAgreementNominal1960. Originally designed for evaluation of reliability, an implementation of the Cohen's Kappa score can be found in the `psy` R package.
 
 ```{r ck}
 library(psy)
 
-results <- predict(fit, validation)
-
-ck <- ckappa(cbind(results,validation$stage))
-
-print(ck)
+ckappa(cbind(results,validation$stage))
 ```
+
+Score is very high, showing the model is reliable in this case. However, training and testing sets would be recorded on different subjects in real life, as EEG profiles significantly differ between different subjects. Recent neural networks architectures show similar results on large scale, pathological patients datasets @chambonDeepLearningArchitecture2017 @stephansenNeuralNetworkAnalysis2018. 
 
 ## References
