@@ -58,30 +58,127 @@ spectrogram <- function(signal,
 
 #' Computes spectral power of bands listed in the bands argument.
 #'
-#' @description `bands_power` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
+#' @description `bands_psd` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
 #' @param bands A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``
 #' @param signal Numerical vector of the signal.
 #' @param sRate Signal sample rate in Hertz.
 #' @param normalize A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.
 #' @return A list of bands powers.
 #' @examples
-#' bands_power(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
+#' bands_psd(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
 #' @export
-bands_power <- function(bands, signal , sRate, normalize = c(0.5,40)){
+bands_psd <- function(bands, signal , sRate, normalize = c(0.5,40), method="pwelch"){
 
-  s <- phonTools::pwelch(sound = signal,fs = sRate,points = 1000, show = FALSE)
-  s[,2] <- s[,2]+abs(min(s[,2]))
+  if(method == "pwelch"){
+    s <- pwelch(x = signal, sRate = sRate, points = 1000, show = FALSE)
+  } else if(method == "psm"){
+    s <- psm(x = signal, sRate = sRate)
+  } else{
+    stop("Choose between \"pwelch\" and \"psm\" for psd estimation method.")
+  }
 
   lapply(bands, function(band){
 
-    s_filtered <- s[s[,1] >= band[1] & s[,1] < band[2],]
+    s_filtered <-  s[s$hz >= band[1] & s$hz < band[2],]
 
     if(length(normalize) == 2){
-      s_broadband <- s[s[,1] >= normalize[1] & s[,1] < normalize[2],]
-      sum(s_filtered[,2])/sum(s_broadband[,2])
+      s_broadband <- s[s$hz >= normalize[1] & s$hz < normalize[2],]
+      sum(s_filtered$psd)/sum(s_broadband$psd)
     } else {
-      sum(s_filtered[,2])
+      sum(s_filtered$psd)
     }
 
   })
+}
+
+#' pwelch psd
+#'
+#' @description pwelch psd
+#' @param x todo
+#' @param sRate todo
+#' @param points todo
+#' @param overlap todo
+#' @param padding todo
+#' @param show todo
+#' @return peridodogram plotted or raw
+#' @examples
+#' pwelch(sin(c(1:10000)), 200)
+#' @export
+pwelch <- function(x,
+                   sRate,
+                   points = 0,
+                   overlap = 0,
+                   padding = 0,
+                   show = TRUE){
+  n = length(x)
+  if (points == 0)
+    points = ceiling(n/10)
+  x = c(x, rep(0, points))
+  spots = seq(1, n, points - overlap)
+  if ((points + padding)%%2 == 1)
+    padding = padding + 1
+  n = points + padding
+  psd = rep(0, n)
+  for (i in 1:length(spots)) {
+    tmp = x[spots[i]:(spots[i] + points - 1)] * signal::hamming(points)
+    tmp = c(tmp, rep(0, padding))
+    tmp = stats::fft(tmp)
+    tmp = tmp * Conj(tmp)
+    psd = psd + tmp
+  }
+  psd = psd/length(spots)
+  psd = psd[1:(n/2 + 1)]
+  psd = abs(psd)
+  psd = log(psd)
+  psd = psd - max(psd)
+  hz = seq(0, sRate/2, length.out = (n/2) + 1)
+  if (show == TRUE)
+    plot(hz, psd, type = "l", ylab = "PSD",
+         xlab = "Hz",
+         xaxs = "i")
+  invisible(data.frame("hz" = hz,
+            "psd" = psd))
+}
+
+#' sine multitaper psd
+#'
+#' @description sine multitaper psd from psd r package
+#' @param x Signal vector.
+#' @param sRate Sample rate of the signal.
+#' @param length periodogram resolution. 0 default to not resize.
+#' @return peridodogram plotted or raw
+#' @examples
+#' psm(sin(c(1:10000)), 200, 100)
+#' @export
+psm <- function(x, sRate, length=0){
+
+  library()$results[,1]
+
+  if(!("psd" %in% (.packages()))){
+    library(psd)
+  }
+
+  res <- psd::pspectrum(x,plot=FALSE,verbose=FALSE)
+
+  df <- data.frame("hz" = res$freq, "psd" = res$spec)
+
+  df$psd <- log(df$psd)
+
+  df$hz <- df$hz*sRate
+
+  if(length > 0){
+
+    psd <- signal::resample(x = df$psd,
+                            p = length,
+                            q = nrow(df))
+
+    hz <- signal::resample(x = df$hz,
+                           p = length,
+                           q = nrow(df))
+
+    df <- data.frame("psd" = psd,
+                     "hz" = hz)
+  }
+
+  df
 }

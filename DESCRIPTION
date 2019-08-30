@@ -19,6 +19,7 @@ Imports:
 Suggests:
   keras,
   knitr,
+  psd,
   rmarkdown,
   testthat
 RoxygenNote: 6.1.1
