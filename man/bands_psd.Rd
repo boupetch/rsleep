@@ -15,6 +15,8 @@ bands_psd(bands, signal, sRate, normalize = c(0.5, 40),
 \item{sRate}{Signal sample rate in Hertz.}
 
 \item{normalize}{A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.}
+
+\item{method}{pwelch or psm}
 }
 \value{
 A list of bands powers.

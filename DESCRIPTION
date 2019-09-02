@@ -15,11 +15,14 @@ Imports:
   ggplot2,
   jsonlite,
   phonTools,
+  psd,
   signal
 Suggests:
+  caret,
   keras,
   knitr,
-  psd,
+  psy,
+  reshape2,
   rmarkdown,
   testthat
 RoxygenNote: 6.1.1

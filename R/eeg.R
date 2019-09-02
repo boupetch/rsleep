@@ -63,6 +63,7 @@ spectrogram <- function(signal,
 #' @param signal Numerical vector of the signal.
 #' @param sRate Signal sample rate in Hertz.
 #' @param normalize A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.
+#' @param method pwelch or psm
 #' @return A list of bands powers.
 #' @examples
 #' bands_psd(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
@@ -133,7 +134,7 @@ pwelch <- function(x,
   psd = psd - max(psd)
   hz = seq(0, sRate/2, length.out = (n/2) + 1)
   if (show == TRUE)
-    plot(hz, psd, type = "l", ylab = "PSD",
+    graphics::plot(hz, psd, type = "l", ylab = "PSD",
          xlab = "Hz",
          xaxs = "i")
   invisible(data.frame("hz" = hz,
@@ -152,11 +153,26 @@ pwelch <- function(x,
 #' @export
 psm <- function(x, sRate, length=0){
 
-  library()$results[,1]
+  options(psd.ops=list(
+    tapmin = 1,
+    tapcap = 1000,
+    names = list(
+      fft = "working_fft",
+      fft.padded = "fft_even_demeaned_padded",
+      last.taper = "last_taper_sequence",
+      last.psdcore = "last_psdcore_psd",
+      last.psdcore.extrap = "last_psdcore_psd_extrap",
+      series.even = "ser_orig_even",
+      var.even = "ser_even_var",
+      n.even = "len_even",
+      n.even.half = "len_even_half",
+      series.orig = "ser_orig",
+      n.orig = "len_orig"
+    )
+  ))
 
-  if(!("psd" %in% (.packages()))){
-    library(psd)
-  }
+  psd::pspectrum(c(1:1000),plot=FALSE,verbose=FALSE)
+
 
   res <- psd::pspectrum(x,plot=FALSE,verbose=FALSE)
 
