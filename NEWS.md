@@ -7,6 +7,6 @@
   * `bands_power` renamed to `bands_psd`.
   * `bands_psd` does not normalize by band size anymore.
   * In `bands_psd`, broadband argument renamed to normalize. Can be set up to FALSE.
-  * Added HRV example in README.
+  * Spectral analysis & File management vignettes.
   * Write function `write_mdf` & `write_channel` use platform endian by default to write binary files.
   * Added automatic sleep staging functions.
