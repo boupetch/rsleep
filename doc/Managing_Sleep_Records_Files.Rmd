@@ -1,5 +1,6 @@
 ---
 title: "Managing sleep records files"
+author: "Paul Bouchequet"
 output: rmarkdown::html_vignette
 bibliography: Managing_Sleep_Records_Files.bibtex
 csl: vignettes.csl

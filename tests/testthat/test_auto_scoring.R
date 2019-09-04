@@ -20,7 +20,7 @@ test_that("Test automatic scoring", {
 
   p <- plot_hypnodensity(hypnodensity)
 
-  expect_equal(length(p), 9)
+  expect_equal(length(p), 8)
   expect_equal(class(p)[2], "ggplot")
 
 
