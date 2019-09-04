@@ -1,11 +1,14 @@
 ---
-title: "Spectral analysis of electroencephalography (EEG) signals in sleep data"
+title: "Spectral analysis of sleep electroencephalography signals"
 author: "Paul Bouchequet"
-output: rmarkdown::html_vignette
-bibliography: Spectral_analysis_of_EEG_signals.bibtex
+output: 
+  rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 3
+bibliography: Spectral_analysis_sleep_electroencephalography.bibtex
 csl: vignettes.csl
 vignette: >
-  %\VignetteIndexEntry{Spectral_analysis_of_EEG_signals}
+  %\VignetteIndexEntry{Spectral_analysis_sleep_electroencephalography}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -186,7 +189,7 @@ bands_df$stage <- hypnogram$event
 
 Now that the epochs bands PSD and their corresponding stages are stored in a dataframe, they can easily be plotted using boxplots from `ggplot2`.
 
-```{r bands_plot, fig.width=7, message=FALSE, error=FALSE}
+```{r bands_plot, fig.width=7, fig.height==10, message=FALSE, error=FALSE}
 bands_df_long <- reshape2::melt(bands_df, "stage")
 
 palette <-c("#F98400", "#F2AD00", "#00A08A", "#FF0000", "#5BBCD6")
@@ -254,7 +257,7 @@ Once model has been trained, stages can be predicted from the testing set using 
 results <- predict(fit, validation)
 ```
 
-Cohen's Kappa score is very suitable to evaluates the model quality of predicition. Cohen's Kappa measures inter-rater reliability for qualitative @cohenCoefficientAgreementNominal1960. Originally designed for evaluation of reliability in the domain of psychology, an implementation of the Cohen's Kappa score can be found in the `psy` R package.
+Cohen's Kappa score is very suitable to evaluate the model quality of predicition. It measures inter-rater reliability for qualitative scales @cohenCoefficientAgreementNominal1960. Originally designed for evaluation of reliability in the domain of psychology, an implementation of the Cohen's Kappa score can be found in the `psy` R package.
 
 ```{r ck}
 library(psy)

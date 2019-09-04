@@ -89,6 +89,10 @@ score_stages_edf <- function(edf,
                              channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
                              model_path = tempdir(), verbose = TRUE){
 
+  if(verbose){
+    message("Reading EDF file...")
+  }
+
   h <- edfReader::readEdfHeader(edf)
   s <- edfReader::readEdfSignals(h, signals = channels)
 
@@ -108,6 +112,10 @@ score_stages_edf <- function(edf,
   hypnodensity$begin <- as.POSIXct(h$startTime)+(c(0:(nrow(hypnodensity)-1))*30)
 
   hypnodensity$end <- hypnodensity$begin+30
+
+  hypnodensity$event <- apply(hypnodensity[,1:5], 1, function(x){
+    names(which.max(x))
+  })
 
   hypnodensity
 }

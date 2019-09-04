@@ -40,7 +40,7 @@ library(rsleep)
   - [Managing Sleep Records
     Files](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
   - [Spectral analysis of electroencephalography (EEG) signals in sleep
-    data](htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_of_EEG_signals.html)
+    data](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_of_EEG_signals.html)
 
 ## References
 

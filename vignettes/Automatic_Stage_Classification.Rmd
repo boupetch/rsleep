@@ -1,0 +1,50 @@
+---
+title: "Automatic Stage classification"
+author: "Paul Bouchequet"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{automatic-stage-classification}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+# Do not run chunks if files are not present.
+knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
+```
+
+First, load `rlseep`
+
+```{r setup}
+library(rsleep)
+```
+
+Then, call the `score_stages_edf` function to score stages from an EDF file.
+
+```{r}
+hypnodensity <- score_stages_edf("15012016HD.edf")
+```
+
+Plot the hypnodensity.
+
+```{r}
+plot_hypnodensity(hypnodensity)
+```
+
+Plot the hypnogram.
+
+```{r}
+plot_hypnogram(hypnodensity)
+```
+
+Plot the visually scored hypnogram as a comparison.
+
+```{r}
+plot_hypnogram(
+  read_events_noxturnal("15012016HD.csv"))
+```
