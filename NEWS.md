@@ -9,4 +9,4 @@
   * In `bands_psd`, broadband argument renamed to normalize. Can be set up to FALSE.
   * Spectral analysis & File management vignettes.
   * Write function `write_mdf` & `write_channel` use platform endian by default to write binary files.
-  * Added automatic sleep staging functions.
+  * Added automatic sleep staging functions and vignette.
