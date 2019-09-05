@@ -32,19 +32,19 @@ hypnodensity <- score_stages_edf("15012016HD.edf")
 
 Plot the hypnodensity.
 
-```{r}
+```{r, fig.width=7}
 plot_hypnodensity(hypnodensity)
 ```
 
 Plot the hypnogram.
 
-```{r}
+```{r, fig.width=7}
 plot_hypnogram(hypnodensity)
 ```
 
 Plot the visually scored hypnogram as a comparison.
 
-```{r}
+```{r, fig.width=7}
 plot_hypnogram(
   read_events_noxturnal("15012016HD.csv"))
 ```
