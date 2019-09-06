@@ -156,3 +156,130 @@ plot_hypnodensity <- function(hypnodensity){
     ggplot2::scale_fill_manual(values = pal)
 }
 
+#' Generates train batches for machine learning
+#'
+#' @description Generates train batches for machine learning
+#' @references Stephansen, J.B., Olesen, A.N., Olsen, M., Ambati, A., Leary, E.B., Moore, H.E., Carrillo, O., Lin, L., Han, F., Yan, H. and Sun, Y.L., 2018. Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy. Nature communications, 9(1), p.5229.
+#' @param records
+#' @param batches_path
+#' @param channels
+#' @param resample
+#' @param padding
+#' @param batches_size
+#' @param verbose Boolean, display messages or not.
+#' @export
+generate_batches <- function(records,
+                             batches_path = tempdir(),
+                             channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
+                             resample = 70,
+                             padding = 1,
+                             batches_size = 1024,
+                             verbose = TRUE){
+
+  batch_count <- 0
+
+  residual_x <- NA
+  residual_y <- NA
+
+  for(record in records){
+
+    if(verbose) message(paste0("Processing record ",basename(record)))
+
+    # Read MDF
+    mdf <- rsleep::read_mdf(mdfPath = record,
+                            channels = channels)
+    mdf$events <- rsleep::hypnogram(mdf$events)
+    mdf$events <- mdf$events[-nrow(mdf$events),]
+    mdf$events$event <- as.character(mdf$events$event)
+
+    # Epoching
+    epochs <- rsleep::epochs(signals = lapply(mdf$channels,function(x){x$signal}),
+                             sRates = lapply(mdf$channels,function(x){x$metadata$sRate}),
+                             resample = resample,
+                             epoch = rsleep::hypnogram(mdf$events),
+                             startTime = as.numeric(as.POSIXct(mdf$metadata$startTime)),
+                             padding = padding)
+
+    if(verbose) message(paste0("Found ",length(epochs)," epochs, normalizing..."))
+
+    # Normalization
+
+    epochs_normalized <- lapply(epochs, function(x){
+      x <- x[,channels]
+      x <- t(x)
+      t(apply(x,1,function(y){
+        y <- y-mean(y)
+        y <- y/sd(y)
+        y
+      }))
+    })
+
+    x <- abind <- abind(epochs_normalized,along=-1)
+
+    # Y processing
+    y <- mdf$events$event
+    y[y == "AWA"] <- 0
+    y[y == "REM"] <- 1
+    y[y == "N1"] <- 2
+    y[y == "N2"] <- 3
+    y[y == "N3"] <- 4
+    y <- keras::to_categorical(y,num_classes=5)
+
+    while(dim(x)[1] >= batches_size){
+
+      batch_x <- x[1:batches_size,,]
+      batch_y <- y[1:batches_size,]
+
+      batch_count <- batch_count + 1
+      if(verbose) message(paste0("Batch ",batch_count))
+      saveRDS(object = list(keras::array_reshape(batch_x, c(dim(batch_x)[1], dim(batch_x)[2], dim(batch_x)[3],1)),
+                            batch_y),
+              file = paste0(batches_path,"/",batch_count,".rds"))
+
+      if(dim(x)[1] > batches_size){
+        x <- x[(batches_size+1):dim(x)[1],,]
+        y <- y[(batches_size+1):dim(y)[1],]
+      } else if(dim(x)[1] == batches_size){
+        x <- x[0,,]
+        y <- y[0,]
+      }
+
+
+    }
+
+    if(dim(x)[1] > 0){
+
+      if(is.na(residual_x)){
+
+        residual_x <- x
+        residual_y <- y
+
+      } else {
+
+        residual_x <- abind(residual_x,x,along = 1)
+        residual_y <- abind(residual_y,y,along = 1)
+
+        while(dim(residual_x)[1] >= batches_size){
+
+          batch_x <- residual_x[1:batches_size,,]
+          batch_y <- residual_y[1:batches_size,]
+
+          batch_count <- batch_count + 1
+          if(verbose) message(paste0("Residual batch ", batch_count))
+          saveRDS(object = list(keras::array_reshape(batch_x, c(dim(batch_x)[1], dim(batch_x)[2], dim(batch_x)[3],1)),
+                                batch_y),
+                  file = paste0(batches_path,"/",batch_count,".rds"))
+
+          if(dim(residual_x)[1] > batches_size){
+            residual_x <- residual_x[(batches_size+1):dim(residual_x)[1],,]
+            residual_y <- residual_y[(batches_size+1):dim(residual_y)[1],]
+
+          } else if(dim(residual_x)[1] == batches_size){
+            residual_x <- residual_x[0,,]
+            residual_x <- residual_x[0,]
+          }
+        }
+      }
+    }
+  }
+}
