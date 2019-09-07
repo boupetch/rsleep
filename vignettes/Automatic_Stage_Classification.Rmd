@@ -48,3 +48,5 @@ Plot the visually scored hypnogram as a comparison.
 plot_hypnogram(
   read_events_noxturnal("15012016HD.csv"))
 ```
+
+

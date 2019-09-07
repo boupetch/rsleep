@@ -16,12 +16,12 @@ Imports:
   jsonlite,
   phonTools,
   psd,
+  psy,
   signal
 Suggests:
   caret,
   keras,
   knitr,
-  psy,
   reshape2,
   rmarkdown,
   testthat
