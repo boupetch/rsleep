@@ -41,7 +41,7 @@ download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 
 The `.edf` file contains signals and metadata. The `.csv` file contains the scoring, exported from Noxturnal, a visual analysis software for sleep data published by Resmed.
 
-This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
+This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
 
 ```{r edf}
 library(edfReader)

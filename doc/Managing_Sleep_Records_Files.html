@@ -313,7 +313,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h1>Reading EDF Records files</h1>
 <p>An example EDF file can be donwloaded using the following code:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">download.file</span>(<span class="st">&quot;https://osf.io/57j2u/download&quot;</span>, <span class="st">&quot;15012016HD.edf&quot;</span>)</a></code></pre></div>
-<p>This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library <a href="https://cran.r-project.org/web/packages/edfReader/index.html"><code>edfReader</code></a>. Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.</p>
+<p>This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library <a href="https://CRAN.R-project.org/package=edfReader"><code>edfReader</code></a>. Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(edfReader)</a>
 <a class="sourceLine" id="cb2-2" title="2"></a>
 <a class="sourceLine" id="cb2-3" title="3">h &lt;-<span class="st"> </span><span class="kw">readEdfHeader</span>(<span class="st">&quot;15012016HD.edf&quot;</span>)</a>

@@ -24,6 +24,12 @@ First, load `rlseep`
 library(rsleep)
 ```
 
+Download example edf
+
+```{r download_edf, eval=FALSE}
+download.file("https://osf.io/57j2u/download", "15012016HD.edf")
+```
+
 Then, call the `score_stages_edf` function to score stages from an EDF file.
 
 ```{r}
@@ -45,6 +51,10 @@ plot_hypnogram(hypnodensity)
 Plot the visually scored hypnogram as a comparison.
 
 ```{r, fig.width=7}
+download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
+
 plot_hypnogram(
   read_events_noxturnal("15012016HD.csv"))
 ```
+
+

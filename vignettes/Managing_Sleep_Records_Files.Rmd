@@ -35,7 +35,7 @@ An example EDF file can be donwloaded using the following code:
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 ```
 
-This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://cran.r-project.org/web/packages/edfReader/index.html). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.
+This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://CRAN.R-project.org/package=edfReader). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.
 
 ```{r read_edf}
 library(edfReader)
