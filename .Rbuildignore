@@ -10,3 +10,4 @@ README.csl
 .travis.yml
 ^doc$
 ^Meta$
+Dockerfile
