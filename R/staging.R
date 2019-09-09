@@ -29,7 +29,7 @@ score_stages <- function(signals,
     if(verbose) message(paste0("Model missing or outdated. Downloading to ",model_fullpath))
 
     if(.Platform$OS.type == "unix") {
-      utils::download.file(model_url, model_fullpath, "wget", T)
+      utils::download.file(model_url, model_fullpath)
     } else {
       utils::download.file(model_url, model_fullpath, method = "wininet", T)
     }
