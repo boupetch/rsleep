@@ -50,7 +50,10 @@ library(rsleep)
 
 [![Hypnogram](man/figures/README-example_hypnogram-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
 
-[![Hypnodensity](man/figures/README-example_hypnodensity-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
+[![Hypnodensity](man/figures/README-example_hypnodensity-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Automatic_Stage_Classification.html)
+
+[![EEG Spectral
+profiles](man/figures/README-example_spectral-profiles-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_sleep_electroencephalography.html)
 
 ## Docker
 
@@ -66,7 +69,7 @@ Automatic sleep stages scoring using rsleep Docker image:
 
     wget -O 15012016HD.edf https://osf.io/57j2u/download 
     
-    docker run --rm  -v $(pwd):/shared boupetch/rsleep R -e " write.csv(rsleep::score_stages_edf('/shared/15012016HD.edf'),'/shared/hypnodensity.csv')"
+    docker run --rm  -v $(pwd):/shared boupetch/rsleep R -e "write.csv(rsleep::score_stages_edf('/shared/15012016HD.edf'),'/shared/hypnodensity.csv')"
 
 ## References
 
