@@ -17,6 +17,6 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
   && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable" \
   && apt-get update \
   && apt-get -y install docker-ce docker-compose  \
-  && R -e "install.packages(c('devtools'))" \
+  && R -e "install.packages(c('devtools','keras'))" \
   && R -e "devtools::install_github(\"boupetch/rsleep\")" \
   && R -e "library(keras);install_keras()" \
