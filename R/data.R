@@ -9,6 +9,6 @@
 #' Example hypnogram scored on 30 seconds.
 #'
 #' @format Dataframe
-#' @source \url{http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download}
+#' @source \url{http://www.sommeil-vigilance.fr/}
 #'
 "example_hypnogram_30s"

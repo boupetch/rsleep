@@ -6,7 +6,7 @@
 \title{Example hypnogram scored on 30 seconds.}
 \format{Dataframe}
 \source{
-\url{http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download}
+\url{http://www.sommeil-vigilance.fr/}
 }
 \usage{
 example_hypnogram_30s
