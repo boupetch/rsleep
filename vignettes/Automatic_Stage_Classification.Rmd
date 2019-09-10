@@ -18,16 +18,30 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
-First, load `rlseep`
-
-```{r setup}
-library(rsleep)
-```
-
-Download example edf
+To begin with, an example file can be downloaded using the following code line. 
 
 ```{r download_edf, eval=FALSE}
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
+```
+
+This EDF file have been recorded at the Center for Sleep and Vigilance of the Hôtel-Dieu, Paris, France, on a healthy subject. Only physiological signals are contained in this file. The objective is to create an hypnogram from those raw sleep signals.
+
+The hypnogram show sleep stages over time using consecutive 30 seconds epochs. Sleep experts usually score sleep records visually following the guidelines from the American Association of Sleep Medicine (AASM) @AASMScoringManual. Five stages can be observed:
+
+  * **AWA**: Awakeness.
+  * **REM**: Rapid-Eye-Movement (REM) sleep, or paradoxical sleep, highlighted in red.
+  * **N1**: Light sleep transitional stage.
+  * **N2**: Light sleep.
+  * **N3**: Slow-wave sleep.
+  
+Visual scoring is an emprical science and requires a considerable amount of clinical knowledge @tongQuantitativeEEGAnalysis2009. However, many publications showed that sleep stages scoring can be achieved by machine learning algorithms. In this field, deep neural networks showed the best results, similar to human sleep expert.
+
+The rsleep library provides a pretrained model to score stages from raw sleep signals. This model have been firstly trained on more than a hundred sleep records from the Hôtel-Dieu using the deep neural network described by Stanislas Chamban & Al. in "". 
+
+First, load the `rlseep` package.
+
+```{r setup}
+library(rsleep)
 ```
 
 Then, call the `score_stages_edf` function to score stages from an EDF file.
