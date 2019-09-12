@@ -171,9 +171,6 @@ psm <- function(x, sRate, length=0){
     )
   ))
 
-  psd::pspectrum(c(1:1000),plot=FALSE,verbose=FALSE)
-
-
   res <- psd::pspectrum(x,plot=FALSE,verbose=FALSE)
 
   df <- data.frame("hz" = res$freq, "psd" = res$spec)
