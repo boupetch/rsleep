@@ -1,50 +1,90 @@
 ---
-title: "Automatic Stage classification"
+title: "Sleep Stages Classification Using Deep Learning"
 author: "Paul Bouchequet"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{automatic-stage-classification}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r, include = FALSE}
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
 # Do not run chunks if files are not present.
-knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
+knitr::opts_chunk$set(
+  eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
+
 ```
 
-To begin with, an example file can be downloaded using the following code line. 
+# Introduction
+
+`rsleep` provides function to score sleep stages from polysomnography data using
+deep neural networks. A pre-trained model can be downloaded and applied. As
+this model have been trained using polysomnography data from a single recorder
+(Nox A1, Resmed), a new model can be trained on new data after generating a 
+training database.
+
+# The Hypnogram
+
+First, download an example polysomnography file:
 
 ```{r download_edf, eval=FALSE}
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 ```
 
-This EDF file have been recorded at the Center for Sleep and Vigilance of the Hôtel-Dieu, Paris, France, on a healthy subject. Only physiological signals are contained in this file. The objective is to create an hypnogram from those raw sleep signals.
+This polysomnography have been recorded at the Center for Sleep and Vigilance of
+the Hôtel-Dieu, Paris, France, on a healthy subject. Only physiological signals 
+are contained in this file. 
+The objective is to score sleep stages and create an hypnogram from those raw
+signals.
 
-The hypnogram show sleep stages over time using consecutive 30 seconds epochs. Sleep experts usually score sleep records visually following the guidelines from the American Association of Sleep Medicine (AASM) @AASMScoringManual. Five stages can be observed:
+The hypnogram show sleep stages over time using consecutive 30 seconds epochs. 
+Sleep experts usually score sleep records visually following the guidelines from
+the American Association of Sleep Medicine (AASM) @AASMScoringManual. 
+Five stages can be observed:
 
   * **AWA**: Awakeness.
-  * **REM**: Rapid-Eye-Movement (REM) sleep, or paradoxical sleep, highlighted in red.
+  * **REM**: Rapid-Eye-Movement, REM (paradoxical) sleep, highlighted in red.
   * **N1**: Light sleep transitional stage.
   * **N2**: Light sleep.
   * **N3**: Slow-wave sleep.
   
-Visual scoring is an emprical science and requires a considerable amount of clinical knowledge @tongQuantitativeEEGAnalysis2009. However, many publications showed that sleep stages scoring can be achieved by machine learning algorithms. In this field, deep neural networks showed the best results, similar to human sleep expert.
+This polysomnography has been visually scored by a sleep expert. Results of this
+scoring can be downloded and plotted using the `rsleep` package:
 
-The rsleep library provides a pretrained model to score stages from raw sleep signals. This model have been firstly trained on more than a hundred sleep records from the Hôtel-Dieu using the deep neural network described by Stanislas Chamban & Al. in "". 
-
-First, load the `rlseep` package.
-
-```{r setup}
+```{r, fig.width=7}
 library(rsleep)
+
+download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
+
+plot_hypnogram(read_events_noxturnal("15012016HD.csv"))
 ```
 
-Then, call the `score_stages_edf` function to score stages from an EDF file.
+# Pre-trained network
+
+Visual scoring is an emprical science and requires a considerable amount of 
+clinical knowledge @tongQuantitativeEEGAnalysis2009. However, many publications
+showed scoring can be achieved by machine learning algorithms. In this field, 
+deep neural networks showed the best results, similar to human sleep expert.
+
+The `rsleep` package provides a pretrained model to score stages from raw sleep
+signals. This model have been firstly trained on more than a hundred sleep 
+records from the Hôtel-Dieu using the deep neural network described by Stanislas
+Chamban & Al. in "A Deep Learning Architecture for Temporal Sleep Stage 
+Classification Using Multivariate and Multimodal Time Series". 
+@chambonDeepLearningArchitecture2017
+
+To use this pre-trained model, call the `score_stages_edf()` function to score 
+stages from the previously downloaded EDF file. `score_stages_edf()` returns
+hypnodensity results, the probability of each sleep stage by epoch. Hypnodensity
+has been introduced by Stephansen & Al. in 2018 in "".
 
 ```{r}
 hypnodensity <- score_stages_edf("15012016HD.edf")
@@ -56,7 +96,7 @@ Plot the hypnodensity.
 plot_hypnodensity(hypnodensity)
 ```
 
-Plot the hypnogram.
+Hypnogram can be computed form the hypnodensity taking the highest probability
 
 ```{r, fig.width=7}
 plot_hypnogram(hypnodensity)
@@ -64,11 +104,15 @@ plot_hypnogram(hypnodensity)
 
 Plot the visually scored hypnogram as a comparison.
 
-```{r, fig.width=7}
-download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
+# Training a new model
 
-plot_hypnogram(
-  read_events_noxturnal("15012016HD.csv"))
-```
+Unfortunately, 
+
+## Generating a traiing database
+
+## Training the model
+
+## Reusing the model
+
 
 
