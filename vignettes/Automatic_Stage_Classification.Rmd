@@ -108,7 +108,7 @@ Plot the visually scored hypnogram as a comparison.
 
 Unfortunately, 
 
-## Generating a traiing database
+## Generating a training database
 
 ## Training the model
 
