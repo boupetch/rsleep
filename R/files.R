@@ -180,6 +180,50 @@ read_events_noxturnal <- function(dir){
   return(events)
 }
 
+#' Read a SleepEDFX events file EDF+
+#'
+#' @param dir EDF+ path
+#' @param update merge N3 and N4 or not
+#' @return A dataframe of scored events.
+#' @export
+read_events_sleepedfx <- function(dir, update = TRUE){
+
+  h <- edfReader::readEdfHeader(dir)
+  s <- edfReader::readEdfSignals(h)
+  events <- s[["annotations"]]
+  events$begin <- events$onset + as.numeric(s[["startTime"]])
+  events$end <- events$end + as.numeric(s[["startTime"]])
+  events$event[events$annotation == "Sleep stage W"] <- "AWA"
+  events$event[events$annotation == "Sleep stage 1"] <- "N1"
+  events$event[events$annotation == "Sleep stage 2"] <- "N2"
+  events$event[events$annotation == "Sleep stage 3"] <- "N3"
+  events$event[events$annotation == "Sleep stage 4"] <- "N4"
+  events$event[events$annotation == "Sleep stage R"] <- "REM"
+  events <- events[,c("begin","end","event")]
+  events_final <- utils::head(events,0)
+  events <- events[order(events$begin),]
+  events$duration <- events$end - events$begin
+  events$epochs <- events$duration/30
+
+  begin <- min(events$begin)
+  for(i in c(1:nrow(events))){
+    for(j in c(1:events[i,]$epochs)){
+      end <- begin + 30
+      events_final[nrow(events_final)+1,] <- list(begin,end,events[i,]$event)
+      begin <- begin + 30
+    }
+  }
+
+  if(update){
+    events_final$event[events_final$event == "N4"] <- "N3"
+  }
+
+  events_final$begin <- as.POSIXlt(events_final$begin,origin= "1970-01-01 00:00.00 UTC")
+  events_final$end <-  as.POSIXlt(events_final$end,origin= "1970-01-01 00:00.00 UTC")
+
+  return(stats::na.omit(events_final))
+}
+
 #' Read a Morpheo Data Format (MDF) directory to a list.
 #'
 #' @references P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48/49, march 2018.
