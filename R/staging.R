@@ -159,8 +159,13 @@ plot_hypnodensity <- function(hypnodensity){
 #' Generates train batches to be used by the `train_chambn2018` function.
 #'
 #' @description Generates train batches to be used by the `train_chambn2018` function.
-#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
+#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort,
+#'A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification
+#'Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems
+#'and Rehabilitation Engineering 26:(758-769).
 #' @param records Character vector of MDF records to be included in the train batches.
+#' @param events List of events dataframes containing hypnograms corresponding
+#' to records in the records character vector
 #' @param batches_path Character. Path where batches files will be saved.
 #' @param channels Character vector. Channels labels to include in the dataset.
 #' @param resample Integer. Sample rate to resample signals.
@@ -168,44 +173,42 @@ plot_hypnodensity <- function(hypnodensity){
 #' @param batches_size Number of epoch by batch.
 #' @param verbose Boolean, display messages or not.
 #' @export
-generate_batches <- function(records,
-                             batches_path = tempdir(),
-                             channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
-                             resample = 70,
-                             padding = 1,
-                             batches_size = 1024,
-                             verbose = TRUE){
+generate_batches <- function(
+  records, events, batches_path = tempdir(),
+  channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1", "1-2"),
+  resample = 70, padding = 2, batches_size = 1024, verbose = TRUE){
 
   batch_count <- 0
 
   residual_x <- NA
   residual_y <- NA
 
-  for(record in records){
+  for(i in c(1:length(records))){
 
-    if(verbose) message(paste0("Processing record ",basename(record)))
+    if(verbose) message(
+      paste0("Processing record ",basename(records[i])))
 
-    # Read MDF
-    mdf <- rsleep::read_mdf(mdfPath = record,
-                            channels = channels)
-    mdf$events <- rsleep::hypnogram(mdf$events)
-    mdf$events <- mdf$events[-nrow(mdf$events),]
-    mdf$events$event <- as.character(mdf$events$event)
+    edf <- edfReader::readEdfHeader(fileName = records[i])
+    edf <- edfReader::readEdfSignals(edf, signals = channels)
 
-    # Epoching
-    epochs <- rsleep::epochs(signals = lapply(mdf$channels,function(x){x$signal}),
-                             sRates = lapply(mdf$channels,function(x){x$metadata$sRate}),
-                             resample = resample,
-                             epoch = rsleep::hypnogram(mdf$events),
-                             startTime = as.numeric(as.POSIXct(mdf$metadata$startTime)),
-                             padding = padding)
+    events[[i]] <- rsleep::hypnogram(events[[i]])
+    events[[i]]$event <- as.character(events[[i]]$event)
 
-    if(verbose) message(paste0("Found ",length(epochs)," epochs, normalizing..."))
+    epochs <- rsleep::epochs(
+      signals = lapply(channels, function(x) edf[[x]]$signal),
+      sRates = lapply(channels,function(x){edf[[x]]$sRate}),
+      resample = resample,
+      epoch = rsleep::hypnogram(events[[i]]),
+      startTime = as.numeric(as.POSIXct(edf[[1]]$startTime)),
+      padding = padding)
+
+    if(verbose) message(
+      paste0("Found ",length(epochs)," epochs, normalizing..."))
 
     # Normalization
 
     epochs_normalized <- lapply(epochs, function(x){
-      x <- x[,channels]
+      #x <- x[,channels]
       x <- t(x)
       t(apply(x,1,function(y){
         y <- y-mean(y)
@@ -217,7 +220,7 @@ generate_batches <- function(records,
     x <- abind::abind(epochs_normalized,along=-1)
 
     # Y processing
-    y <- mdf$events$event
+    y <- events[[i]]$event
     y[y == "AWA"] <- 0
     y[y == "REM"] <- 1
     y[y == "N1"] <- 2
@@ -232,9 +235,14 @@ generate_batches <- function(records,
 
       batch_count <- batch_count + 1
       if(verbose) message(paste0("Batch ",batch_count))
-      saveRDS(object = list(keras::array_reshape(batch_x, c(dim(batch_x)[1], dim(batch_x)[2], dim(batch_x)[3],1)),
-                            batch_y),
-              file = paste0(batches_path,"/batch_",batch_count,".rds"))
+      saveRDS(
+        object = list(keras::array_reshape(
+          batch_x, c(
+            dim(batch_x)[1],
+            dim(batch_x)[2],
+            dim(batch_x)[3],1)),
+          batch_y),
+        file = paste0(batches_path,"/batch_",batch_count,".rds"))
 
       if(dim(x)[1] > batches_size){
         x <- x[(batches_size+1):dim(x)[1],,]
@@ -266,9 +274,9 @@ generate_batches <- function(records,
 
           batch_count <- batch_count + 1
           if(verbose) message(paste0("Residual batch ", batch_count))
-          saveRDS(object = list(keras::array_reshape(batch_x, c(dim(batch_x)[1], dim(batch_x)[2], dim(batch_x)[3],1)),
-                                batch_y),
-                  file = paste0(batches_path,"/batch_",batch_count,".rds"))
+          saveRDS(object = list(
+            keras::array_reshape(batch_x, c(dim(batch_x)[1], dim(batch_x)[2], dim(batch_x)[3],1)), batch_y),
+            file = paste0(batches_path,"/batch_",batch_count,".rds"))
 
           if(dim(residual_x)[1] > batches_size){
             residual_x <- residual_x[(batches_size+1):dim(residual_x)[1],,]
