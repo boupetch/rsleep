@@ -30,6 +30,21 @@ epochs <- function(signals,
   }, x = signals,
   y = sRates)
 
+  # Min norm, when sRtes 1
+  if(is.list(resampled_signals)){
+    max_length <- max(unlist(lapply(resampled_signals,function(x){length(x)})))
+    resampled_signals <- lapply(resampled_signals, function(x){
+      l <- length(x)
+      if(l < max_length){
+        c(x,rep(x[length(x)],max_length-l))
+      } else x
+    })
+    resampled_signals <- matrix(
+      unlist(resampled_signals),
+      ncol = length(resampled_signals),
+      byrow = TRUE)
+  }
+
   if(is.numeric(epoch)){
 
     epochs <- lapply(
