@@ -26,7 +26,7 @@ score_stages <- function(signals,
 
     model_fullpath <- paste0(model_path,"/",model_fname)
 
-    if(verbose) message(paste0("Model missing or outdated. Downloading to ",model_fullpath))
+    if(verbose) message(paste0("Model missing or outdated. Downloading to ", model_fullpath))
 
     if(.Platform$OS.type == "unix") {
       utils::download.file(model_url, model_fullpath)
@@ -46,7 +46,14 @@ score_stages <- function(signals,
   }
 
   if(verbose) message("Reading model...")
-  model <- keras::load_model_hdf5(model_fullpath)
+
+  ext <- tools::file_ext(model_fullpath)
+
+  if(ext == "rds"){
+    model <- keras::unserialize_model(readRDS(model_fullpath))
+  } else {
+    model <- keras::load_model_hdf5(model_fullpath)
+  }
 
   if(verbose) message("Epoching signals...")
   epochs <- epochs(signals = signals,
@@ -57,14 +64,14 @@ score_stages <- function(signals,
 
   if(verbose) message("Normalizing signals...")
   epochs <- lapply(epochs, function(x){
-      #x <- x[,c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")]
-      x <- t(x)
-      t(apply(x,1,function(y){
-        y <- y-mean(y)
-        y <- y/stats::sd(y)
-        y
-      }))
-    })
+    #x <- x[,c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")]
+    x <- t(x)
+    t(apply(x,1,function(y){
+      y <- y-mean(y)
+      y <- y/stats::sd(y)
+      y
+    }))
+  })
 
   x <- abind::abind(epochs,along=-1)
 
@@ -74,7 +81,8 @@ score_stages <- function(signals,
   stats::predict(model, x)
 }
 
-#' Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
+#' Convenient wrapper for `score_stage` to score 30 seconds epochs directly from
+#' European Data Format (EDF) files.
 #'
 #' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
 #' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
@@ -85,9 +93,9 @@ score_stages <- function(signals,
 #' @param verbose Boolean. Display or not status messages.
 #' @return A dataframe containing predicted hypnodensity values of the record.
 #' @export
-score_stages_edf <- function(edf,
-                             channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
-                             model_path = tempdir(), verbose = TRUE){
+score_stages_edf <- function(
+  edf, channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
+  model_path = tempdir(), verbose = TRUE){
 
   if(verbose){
     message("Reading EDF file...")
@@ -176,7 +184,7 @@ plot_hypnodensity <- function(hypnodensity){
 generate_batches <- function(
   records, events, batches_path = tempdir(),
   channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1", "1-2"),
-  resample = 70, padding = 2, batches_size = 1024, verbose = TRUE){
+  resample = 70, padding = 1, batches_size = 1024, verbose = TRUE){
 
   batch_count <- 0
 
