@@ -19,7 +19,10 @@ knitr::opts_chunk$set(
 
 # Do not run chunks if files are not present.
 knitr::opts_chunk$set(
-  eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
+  eval = all(file.exists(
+    "15012016HD.edf","15012016HD.csv",
+    "SC4001E0-PSG.edf", "SC4002E0-PSG.edf",
+    "SC4001EC-Hypnogram.edf", "SC4002EC-Hypnogram.edf")))
 
 ```
 
@@ -31,9 +34,9 @@ this model have been trained using polysomnography data from a single recorder
 (Nox A1, Resmed), a new model can be trained on new data after generating a 
 training database.
 
-# The Hypnogram
+# Example data
 
-First, download an example polysomnography file:
+First, download an example polysomnography record:
 
 ```{r download_edf, eval=FALSE}
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
@@ -41,9 +44,12 @@ download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 
 This polysomnography have been recorded at the Center for Sleep and Vigilance of
 the Hôtel-Dieu, Paris, France, on a healthy subject. Only physiological signals 
-are contained in this file. 
-The objective is to score sleep stages and create an hypnogram from those raw
-signals.
+are contained in this file. The corresponding hypnogram can be downloaded using 
+using the following line:
+
+```{r  download_hypnogram, eval=FALSE}
+download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
+```
 
 The hypnogram show sleep stages over time using consecutive 30 seconds epochs. 
 Sleep experts usually score sleep records visually following the guidelines from
@@ -57,19 +63,24 @@ Five stages can be observed:
   * **N3**: Slow-wave sleep.
   
 This polysomnography has been visually scored by a sleep expert. Results of this
-scoring can be downloded and plotted using the `rsleep` package:
+scoring can be found in the downloaded `.csv` file. This file has been exported 
+from Noxturnal, a visual sleep scoring software published by Resmed. The 
+`read_events_noxturnal()` function from the `rsleep` package can read this export
+and clean it to produce a standardized events dataframe. Then, the 
+`plot_hypnogram()` function plots the hypnogram related events into a stage/time
+figure.
 
 ```{r, fig.width=7}
 library(rsleep)
 
-download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
+events <- read_events_noxturnal("15012016HD.csv")
 
-plot_hypnogram(read_events_noxturnal("15012016HD.csv"))
+plot_hypnogram(events)
 ```
 
-# Pre-trained network
+# Applying a pre-trained model
 
-Visual scoring is an emprical science and requires a considerable amount of 
+Visual sleep scoring is an emprical science requiring a considerable amount of 
 clinical knowledge @tongQuantitativeEEGAnalysis2009. However, many publications
 showed scoring can be achieved by machine learning algorithms. In this field, 
 deep neural networks showed the best results, similar to human sleep expert.
@@ -108,11 +119,91 @@ Plot the visually scored hypnogram as a comparison.
 
 Unfortunately, 
 
+```{r}
+library(DiagrammeR)
+
+create_graph() %>%
+  add_node(label = "generate_batches()") %>%
+  add_node(label = "train_batches()") %>%
+  add_node(label = "score_stages_edf()") %>%
+  add_edge(from = 1, to = 2) %>%
+  add_edge(from = 2, to = 3) %>%
+  render_graph(layout = "tree")
+```
+
+
 ## Generating a training database
+
+```{r}
+records <- c("SC4001E0-PSG.edf", "SC4002E0-PSG.edf")
+
+hypnograms <- c("SC4001EC-Hypnogram.edf", "SC4002EC-Hypnogram.edf")
+
+for(file in c(records,hypnograms)){
+  if(!file.exists(file)){
+    download.file(url = paste0(
+      "https://physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/",
+      file, "?download"
+    ), destfile = file)
+  }
+}
+```
+
+
+```{r}
+hypnogram <- read_events_sleepedfx("SC4001EC-Hypnogram.edf")[-1,]
+
+generate_batches(
+  records = c("SC4001E0-PSG.edf"),
+  events = list(hypnogram),
+  batches_path = "./", batches_size = 128,
+  channels = c("EEG Fpz-Cz","EEG Pz-Oz",
+               "EOG horizontal","EMG submental",
+               "Temp rectal"))
+```
+
+## Defining the model architecture
+
+```{r}
+model <- model_stagesdl(batch = "./batch_1.rds")
+
+summary(model)
+```
 
 ## Training the model
 
-## Reusing the model
+```{r}
+batches <- list.files(pattern = "batch*")
+
+model <- train_batches(
+  model = model_stagesdl(batches[1]),
+  batches = batches)
+```
+
+
+## Applying the model
+
+```{r}
+saveRDS(object = keras::serialize_model(model),
+        file = "model_stagesdl.rds")
+
+hypnodensity <- score_stages_edf(
+  edf = "SC4002E0-PSG.edf",
+  model_path = "model_stagesdl.rds",
+  channels = c("EEG Fpz-Cz","EEG Pz-Oz",
+               "EOG horizontal","EMG submental",
+               "Temp rectal"))
+
+plot_hypnodensity(hypnodensity)
+
+plot_hypnogram(read_events_sleepedfx("SC4002EC-Hypnogram.edf")[-1,])
+```
+
+```{r}
+file.remove(list.files(pattern = "*batch*"))
+```
+
+
 
 
 

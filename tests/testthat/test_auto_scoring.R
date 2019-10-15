@@ -16,11 +16,11 @@ test_that("Automatic scoring", {
   download.file("https://osf.io/57j2u/download", edf_path, quiet = TRUE)
   download.file("https://osf.io/h4ysj/download", csv_path, quiet = TRUE)
 
-  # Write MDF
-  mdf_path <- paste0(tempdir(),"/15012016HD")
-  write_mdf(edfPath = edf_path,
-            mdfPath = paste0(tempdir(),"/15012016HD"),
-            events = read_events_noxturnal(csv_path))
+  # # Write MDF
+  # mdf_path <- paste0(tempdir(),"/15012016HD")
+  # write_mdf(edfPath = edf_path,
+  #           mdfPath = paste0(tempdir(),"/15012016HD"),
+  #           events = read_events_noxturnal(csv_path))
 
   # Stages clasification
   hypnodensity <- score_stages_edf(edf_path)
@@ -35,12 +35,14 @@ test_that("Automatic scoring", {
   expect_equal(class(p)[2], "ggplot")
 
   # Train model
-  # generate_batches(records = mdf_path,
-  #                  batches_path = tempdir(),
-  #                  resample = 100,
-  #                  padding = 3,
-  #                  batches_size = 50,
-  #                  verbose = FALSE)
+  generate_batches(
+    records = edf_path,
+    events = list(read_events_noxturnal(csv_path)),
+    batches_path = tempdir(),
+    resample = 100,
+    padding = 3,
+    batches_size = 1024,
+    verbose = FALSE)
   #
   # batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
   #
