@@ -41,7 +41,7 @@ test_that("Automatic scoring", {
     batches_path = tempdir(),
     resample = 100,
     padding = 3,
-    batches_size = 1024,
+    batches_size = 128,
     verbose = FALSE)
   #
   # batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
