@@ -79,9 +79,9 @@ test_that("Generate batches", {
     batches_size = 128,
     verbose = FALSE)
 
-  batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
-
-  trained_model <- train_batches(batches[1], 1)
+  # batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
+  #
+  # trained_model <- train_batches(batches[1], 1)
 })
 
 
