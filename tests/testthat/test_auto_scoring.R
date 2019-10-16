@@ -68,3 +68,26 @@ test_that("Automatic scoring", {
 
 })
 
+test_that("Generate batches", {
+
+  skip_if_no_keras()
+
+  # Download test files
+  edf_path <- file.path(tempdir(),"15012016HD.edf")
+  csv_path <- file.path(tempdir(),"15012016HD.csv")
+
+  download.file("https://osf.io/57j2u/download", edf_path, quiet = TRUE)
+  download.file("https://osf.io/h4ysj/download", csv_path, quiet = TRUE)
+
+  generate_batches(
+    records = edf_path,
+    events = list(read_events_noxturnal(csv_path)),
+    batches_path = tempdir(),
+    resample = 10,
+    padding = 1,
+    batches_size = 128,
+    verbose = FALSE)
+
+})
+
+
