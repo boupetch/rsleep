@@ -34,16 +34,7 @@ test_that("Automatic scoring", {
 
   expect_equal(class(p)[2], "ggplot")
 
-  # Train model
-  # generate_batches(
-  #   records = edf_path,
-  #   events = list(read_events_noxturnal(csv_path)),
-  #   batches_path = tempdir(),
-  #   resample = 100,
-  #   padding = 3,
-  #   batches_size = 128,
-  #   verbose = FALSE)
-  #
+
   # batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
   #
   # trained_model <- train_chambon2018(batches[1:2], 2)
@@ -88,6 +79,9 @@ test_that("Generate batches", {
     batches_size = 128,
     verbose = FALSE)
 
+  batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
+
+  trained_model <- train_chambon2018(batches[1], 1)
 })
 
 
