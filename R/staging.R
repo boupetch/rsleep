@@ -323,7 +323,8 @@ train_batches <- function(model, batches, epochs = 10){
       file <- batch_files[[next_file]]
 
       rds <- readRDS(file)
-      rds
+
+      list(rds[[1]],rds[[2]])
     }
   }
 
@@ -336,10 +337,10 @@ train_batches <- function(model, batches, epochs = 10){
 
 }
 
-#' Deep Learning Architecture for Temporal Sleep Stage Classification.
+#' Deep Learning Architecture for Temporal Sleep Stage Classification implemantation in Keras
 #'
-#' @description Keras model for sleep stages classification.
-#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769). @param records
+#' @description Deep Learning Architecture for Temporal Sleep Stage Classification implemantation in Keras for R.
+#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
 #' @param batch First batch for model parameters.
 #' @return A Keras sequential model.
 #' @export
@@ -380,8 +381,7 @@ model_stagesdl <- function(batch){
                  loss = "categorical_crossentropy",
                  optimizer = keras::optimizer_adam(
                    lr = 0.0001, decay = 1e-6),
-                 metrics = "accuracy"
-  )
+                 metrics = "accuracy")
 
   model
 }
