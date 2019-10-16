@@ -74,14 +74,14 @@ test_that("Generate batches", {
     records = edf_path,
     events = list(read_events_noxturnal(csv_path)),
     batches_path = tempdir(),
-    resample = 10,
+    resample = 70,
     padding = 1,
     batches_size = 128,
     verbose = FALSE)
 
   batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
 
-  trained_model <- train_chambon2018(batches[1], 1)
+  trained_model <- train_batches(batches[1], 1)
 })
 
 
