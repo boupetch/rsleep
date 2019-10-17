@@ -358,3 +358,95 @@ chambon2018 <- function(
   model
 }
 
+#' Automated Classification of Sleep Stages in Mice with Deep
+#' Learning implementation in Keras.
+#'
+#' @description Model inspired by the article "Automated Classification of
+#' Sleep Stages and EEG Artifacts in Mice with Deep Learning". Implemented
+#' using Keras. Adapted to use minimum 2 channels and to not score artifact
+#' epochs.
+#' @references Schwabedal, Justus T. C., Daniel Sippel, Moritz D. Brandt, and
+#' Stephan Bialonski. “Automated Classification of Sleep Stages and EEG
+#' Artifacts in Mice with Deep Learning.” ArXiv:1809.08443 [Cs, q-Bio],
+#' September 22, 2018. http://arxiv.org/abs/1809.08443.
+#' @param channels Number of channels.
+#' @param samples Number of samples in each epoch.
+#' @return A Keras sequential model.
+#' @export
+schwabedal2018 <- function(channels = 2,
+                           samples = 8000){
+
+  model <- keras::keras_model_sequential()
+
+  # Layer 1
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(channels,5),
+    activation = 'relu', input_shape = c(channels, samples, 1),
+    strides = c(1,1))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 2
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(1, 5),
+    activation = 'relu', strides = c(2,2))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 3
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(1,5),
+    activation = 'relu', strides = c(1,1))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 4
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(1,5),
+    activation = 'relu', strides = c(2,2))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 5
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(1,5),
+    activation = 'relu', strides = c(1,1))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 6
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(1,5),
+    activation = 'relu', strides = c(2,2))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 7
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(1,5),
+    activation = 'relu', strides = c(1,1))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 8
+  model <- keras::layer_conv_2d(
+    model, filters = 64, kernel_size = c(1,5),
+    activation = 'relu', strides = c(2,2))
+
+  model <- keras::layer_batch_normalization(model)
+
+  # Layer 9
+  model <- keras::layer_flatten(model)
+
+  model <- keras::layer_dense(model,units = 80, activation = 'relu')
+
+  model <- keras::layer_dense(model, units = 3, activation = 'softmax')
+
+  keras::compile(
+    model,
+    loss = "categorical_crossentropy",
+    optimizer = keras::optimizer_rmsprop(lr = 0.0001),
+    metrics = "categorical_accuracy")
+
+}
+
