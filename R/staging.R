@@ -10,52 +10,15 @@
 #' @export
 score_stages <- function(signals,
                          sRates,
-                         model_path = tempdir(),
+                         model,
                          verbose = TRUE){
 
   if(!("keras" %in%  utils::installed.packages()[,1])){
     stop("Keras packagae required. Please install the Keras R package to continue: https://keras.rstudio.com/")
   }
 
-  model_fname <- "hd_conv_v3.h5"
-  model_f_md5 <- "5a757f2258c0675010ef617eb3e6f563"
-  model_url <- "https://osf.io/axcvf/download"
-
-  if((!utils::file_test("-f", model_path) && dir.exists(model_path)) |
-     (file.exists(paste0(model_path,"/",model_fname)) && digest::digest(object = paste0(model_path,"/",model_fname), algo = "md5") != model_f_md5) ){
-
-    model_fullpath <- paste0(model_path,"/",model_fname)
-
-    if(verbose) message(paste0("Model missing or outdated. Downloading to ", model_fullpath))
-
-    if(.Platform$OS.type == "unix") {
-      utils::download.file(model_url, model_fullpath)
-    } else {
-      utils::download.file(model_url, model_fullpath, method = "wininet", T)
-    }
-
-  } else if (!utils::file_test("-f", model_path) && !dir.exists(model_path)){
-
-    stop("Model directory does not exist.")
-
-  } else {
-
-    if(verbose) message(paste0("Model found."))
-    model_fullpath <- model_path
-
-  }
-
-  if(verbose) message("Reading model...")
-
-  ext <- tools::file_ext(model_fullpath)
-
-  if(ext == "rds"){
-    model <- keras::unserialize_model(readRDS(model_fullpath))
-  } else {
-    model <- keras::load_model_hdf5(model_fullpath)
-  }
-
   if(verbose) message("Epoching signals...")
+
   epochs <- epochs(signals = signals,
                    sRates = sRates,
                    resample = 70,
@@ -81,7 +44,7 @@ score_stages <- function(signals,
   stats::predict(model, x)
 }
 
-#' Convenient wrapper for `score_stage` to score 30 seconds epochs directly from
+#' Wrapper for the `score_stage()` to score 30 seconds epochs directly from
 #' European Data Format (EDF) files.
 #'
 #' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
@@ -110,7 +73,9 @@ score_stages_edf <- function(
 
   res <- score_stages(signals = signals,
                       sRates = sRates,
-                      model_path = model_path,
+                      model = chambon2018(channels = length(channels),
+                                          samples = 70*30*3,
+                                          weights = TRUE),
                       verbose = verbose)
 
   hypnodensity <- as.data.frame(res)
@@ -337,30 +302,56 @@ train_batches <- function(model, batches, epochs = 10){
 
 }
 
-#' Deep Learning Architecture for Temporal Sleep Stage Classification implemantation in Keras
+#' Deep Learning Architecture for Temporal Sleep Stage Classification implementation in Keras
 #'
 #' @description Deep Learning Architecture for Temporal Sleep Stage Classification implemantation in Keras for R.
 #' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
-#' @param batch First batch for model parameters.
+#' @param channels Number of channels.
+#' @param samples Number of samples in each epoch.
+#' @param samples Boolean. Returns or not a weighted model.
 #' @return A Keras sequential model.
 #' @export
-model_stagesdl <- function(batch){
+chambon2018 <- function(
+  channels, samples, weights = FALSE, verbose = TRUE){
 
-  val <- readRDS(batch)
+  if(weights){
+
+    model_path <- file.path(tempdir(), "hd_conv_v3.h5")
+
+    if(file.exists(model_path) &&
+       (digest::digest(object = paste0(
+           model_path,"/",model_fname),
+         algo = "md5") == "5a757f2258c0675010ef617eb3e6f563")){
+
+      return(
+        keras::load_model_hdf5(model_path))
+
+    } else {
+
+      if(verbose) message(paste0("Model missing or outdated. Downloading to ", model_fullpath))
+
+      utils::download.file(
+        "https://osf.io/axcvf/download", model_path)
+    }
+
+    return(
+      keras::load_model_hdf5(model_path))
+  }
 
   model <- keras::keras_model_sequential()
 
   model <- keras::layer_conv_2d(
     model,
-    filters = dim(val[[1]])[2],
+    filters = channels,
     kernel_size = c(1,32),
     activation = 'linear',
-    input_shape = c(dim(val[[1]])[2],dim(val[[1]])[3],dim(val[[1]])[4]))
+    input_shape = c(channels,samples,1))
 
   model <- keras::layer_conv_2d(
-    model,filters = 32, kernel_size = c(1,32), activation = 'relu')
+    model, filters = 32, kernel_size = c(1,32), activation = 'relu')
 
-  model <- keras::layer_max_pooling_2d(model, pool_size = c(1, 8))
+  model <- keras::layer_max_pooling_2d(
+    model, pool_size = c(1, 8))
 
   model <- keras::layer_conv_2d(
     model,filters = 32, kernel_size = c(1,32), activation = 'relu')
