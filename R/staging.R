@@ -1,21 +1,33 @@
-#' Score stages from polysomnography signals. Provided for research purposes. Do not use in production.
+#' Score 30 seconds epochs directly from European Data Format (EDF) files.
 #'
-#' @description Score stages from polysomnography signals using a pre-trained convolutional neural network (See references for model architecture). Model have been pre-trained on data from the Hotel-Dieu, Paris, recorded with Resmed Nox polysomnography device. The model may not be suitable for data recorded with other kind of device. It is provided for research purposes. Do not use in production. Model needs 6 channels to predict sleep stage over 30 seconds epochs: Electroencephalogram:`C3-M2`,`C4-M1`,`O1-M2`; Electrooculogram:`E1-M2`,`E2-M1`, Electromyogram:`1-2`.
+#'
+#' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
 #' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
-#' @param signals A list of the 7 signals vectors. Must be ordered in the following order: `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
-#' @param sRates A vector of the sample rates of the 7 signals passed in the `signals` parameter.
+#' @references Kemp, B., Värri, A., Rosa, A.C., Nielsen, K.D. and Gade, J., 1992. A simple format for exchange of digitized polygraphic recordings. Electroencephalography and clinical neurophysiology, 82(5), pp.391-393.
+#' @param edf The EDF file path.
+#' @param channels A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
 #' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
 #' @param verbose Boolean. Display or not status messages.
-#' @return A matrix containing hypnodensity values for each epoch and each of the 5 stages: `AWA`, `REM`, `N1`, `N2`, `N3`.
+#' @return A dataframe containing predicted hypnodensity values of the record.
 #' @export
-score_stages <- function(signals,
-                         sRates,
-                         model,
-                         verbose = TRUE){
+score_stages_edf <- function(
+  edf, channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
+  model_path = tempdir(), verbose = TRUE){
 
   if(!("keras" %in%  utils::installed.packages()[,1])){
     stop("Keras packagae required. Please install the Keras R package to continue: https://keras.rstudio.com/")
   }
+
+  if(verbose){
+    message("Reading EDF file...")
+  }
+
+  h <- edfReader::readEdfHeader(edf)
+  s <- edfReader::readEdfSignals(h, signals = channels)
+
+  signals = lapply(channels,function(x){s[[x]]$signal})
+
+  sRates = lapply(channels,function(x){s[[x]]$sRate})
 
   if(verbose) message("Epoching signals...")
 
@@ -26,6 +38,7 @@ score_stages <- function(signals,
                    padding = 1)
 
   if(verbose) message("Normalizing signals...")
+
   epochs <- lapply(epochs, function(x){
     #x <- x[,c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")]
     x <- t(x)
@@ -41,42 +54,8 @@ score_stages <- function(signals,
   x <- keras::array_reshape(x,dim = c(dim(x)[1],dim(x)[2],dim(x)[3],1))
 
   if(verbose) message("Performing prediction...")
-  stats::predict(model, x)
-}
 
-#' Wrapper for the `score_stage()` to score 30 seconds epochs directly from
-#' European Data Format (EDF) files.
-#'
-#' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
-#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
-#' @references Kemp, B., Värri, A., Rosa, A.C., Nielsen, K.D. and Gade, J., 1992. A simple format for exchange of digitized polygraphic recordings. Electroencephalography and clinical neurophysiology, 82(5), pp.391-393.
-#' @param edf The EDF file path.
-#' @param channels A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
-#' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
-#' @param verbose Boolean. Display or not status messages.
-#' @return A dataframe containing predicted hypnodensity values of the record.
-#' @export
-score_stages_edf <- function(
-  edf, channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
-  model_path = tempdir(), verbose = TRUE){
-
-  if(verbose){
-    message("Reading EDF file...")
-  }
-
-  h <- edfReader::readEdfHeader(edf)
-  s <- edfReader::readEdfSignals(h, signals = channels)
-
-  signals = lapply(channels,function(x){s[[x]]$signal})
-
-  sRates = lapply(channels,function(x){s[[x]]$sRate})
-
-  res <- score_stages(signals = signals,
-                      sRates = sRates,
-                      model = chambon2018(channels = length(channels),
-                                          samples = 70*30*3,
-                                          weights = TRUE),
-                      verbose = verbose)
+  res <- stats::predict(model, x)
 
   hypnodensity <- as.data.frame(res)
 
@@ -328,7 +307,7 @@ chambon2018 <- function(
 
     } else {
 
-      if(verbose) message(paste0("Model missing or outdated. Downloading to ", model_fullpath))
+      if(verbose) message(paste0("Model missing or outdated. Downloading to ", model_path))
 
       utils::download.file(
         "https://osf.io/axcvf/download", model_path)
