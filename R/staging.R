@@ -11,8 +11,10 @@
 #' @return A dataframe containing predicted hypnodensity values of the record.
 #' @export
 score_stages_edf <- function(
-  edf, channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
-  model_path = tempdir(), verbose = TRUE){
+  edf,
+  channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
+  model = chambon2018(6,3*30*70,TRUE,TRUE),
+  verbose = TRUE){
 
   if(!("keras" %in%  utils::installed.packages()[,1])){
     stop("Keras packagae required. Please install the Keras R package to continue: https://keras.rstudio.com/")
