@@ -10,3 +10,4 @@
   * Spectral analysis & File management vignettes.
   * Write function `write_mdf` & `write_channel` use platform endian by default to write binary files.
   * Added automatic sleep staging functions and vignette.
+  * Added `read_stages_compumedics()` function.
