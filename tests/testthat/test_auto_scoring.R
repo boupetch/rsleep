@@ -84,12 +84,11 @@ test_that("Generate batches", {
   # trained_model <- train_batches(batches[1], 1)
 })
 
-test_that("Automatic scoring for mices", {
+test_that("Automatic scoring for mice", {
 
   skip_if_no_keras()
 
   model <- schwabedal2018()
-
 
   expect_equal(class(model)[1], "keras.engine.sequential.Sequential")
 })
