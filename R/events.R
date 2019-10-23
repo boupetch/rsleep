@@ -92,3 +92,44 @@ hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
   stages <- stages[order(stages$begin),]
   return(stages)
 }
+
+#' Plot a hypnodensity graph using `ggplot2`.
+#'
+#' @description Plot a hypnodensity graph using `ggplot2` from the values returned from `score_stages_edf` function.
+#' @references Stephansen, J.B., Olesen, A.N., Olsen, M., Ambati, A., Leary, E.B., Moore, H.E., Carrillo, O., Lin, L., Han, F., Yan, H. and Sun, Y.L., 2018. Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy. Nature communications, 9(1), p.5229.
+#' @param hypnodensity A hypnodensity dataframe as returned by the `score_stages_edf` function.
+#' @param stages Vector of stages labels to plot.
+#' @return A `ggplot2` hypnodensity graph.
+#' @export
+plot_hypnodensity <- function(hypnodensity,
+                              stages = c("AWA","REM","N1","N2","N3")){
+
+  pal <- c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00", "#F98400")
+
+  if(length(stages) == 3){
+    pal <- c("#5BBCD6","#F2AD00","#FF0000")
+  }
+
+  melt <- stats::reshape(data = hypnodensity,
+                         direction = "long",
+                         varying = 1:length(stages),
+                         idvar='begin',
+                         timevar = "stage",
+                         v.names = "likelihood",
+                         times = stages,
+                         sep="")
+
+  row.names(melt) <- NULL
+
+  melt$stage <- factor(melt$stage, levels = stages)
+
+  ggplot2::ggplot(melt, ggplot2::aes_string(x = "begin",
+                                            y= "likelihood",
+                                            fill = "stage")) +
+    ggplot2::geom_area(position = 'stack') +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.position = "bottom",
+                   legend.title = ggplot2::element_blank()) +
+    ggplot2::xlab("") + ggplot2::ylab("Stage likelihood") +
+    ggplot2::scale_fill_manual(values = pal)
+}

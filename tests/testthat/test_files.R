@@ -10,14 +10,18 @@ test_that("Writing all channels and overwriting with events", {
   expect_equal(length(list.dirs("data/sample")), 91)
 
   # Overwrite
-  events <- read_events_noxturnal("data/noxturnal_events_example_unicode.csv")
-  write_mdf(edfPath = "data/subject1.edf",
-            mdfPath = "data/sample",
-            channels = c("Activity","Airflow"),
-            events = read_events_noxturnal("data/noxturnal_events_example_unicode.csv"))
+  events <- read_events_noxturnal(
+    "data/noxturnal_events_example_unicode.csv")
+  write_mdf(
+    edfPath = "data/subject1.edf",
+    mdfPath = "data/sample",
+    channels = c("Activity","Airflow"),
+    events = read_events_noxturnal(
+      "data/noxturnal_events_example_unicode.csv"))
   expect_equal(length(list.dirs("data/sample")), 3)
 
-  events.write <- jsonlite::read_json("data/sample/events.json",simplifyVector = TRUE)
+  events.write <- jsonlite::read_json(
+    "data/sample/events.json",simplifyVector = TRUE)
   expect_equal(length(events.write), length(events))
   expect_equal(nrow(events.write), nrow(events))
 })
