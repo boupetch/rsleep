@@ -13,8 +13,8 @@
 #' @return A Keras sequential model.
 #' @export
 chambon2018 <- function(
-  channels,
-  samples,
+  channels = 6,
+  samples = 6300,
   weights = FALSE,
   verbose = TRUE){
 
