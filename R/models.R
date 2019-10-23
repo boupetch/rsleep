@@ -100,10 +100,35 @@ schwabedal2018 <- function(channels = 2,
                            samples = 8000,
                            weights = FALSE,
                            verbose = TRUE){
-  #
-  # if(weights){
-  #   https://osf.io/k5fxh/download
-  # }
+
+  if(weights){
+
+    file_path <- file.path(
+      tempdir(), "schwabedal2018")
+
+    if(verbose){
+      message(paste0(
+        "Downloading model to ",
+        file_path
+      ))
+    }
+
+    download.file(
+      url = "https://osf.io/k5fxh/download",
+      destfile = file_path)
+
+    model <- readRDS(file_path)
+
+    if(verbose) message("Unserializing model...")
+
+    model <- keras::unserialize_model(model)
+
+    if(verbose) message("Removing model file.")
+
+    file.remove(file_path)
+
+    return(model)
+  }
 
   model <- keras::keras_model_sequential()
 
