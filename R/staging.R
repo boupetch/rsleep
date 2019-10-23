@@ -115,9 +115,10 @@ plot_hypnodensity <- function(hypnodensity,
     ggplot2::scale_fill_manual(values = pal)
 }
 
-#' Generates train batches to be used by the `train_chambn2018` function.
+#' Generates train batches to be used by the `train_batches()` function.
 #'
-#' @description Generates train batches to be used by the `train_chambn2018` function.
+#' @description Generates train batches to be used by the `train_batches()`
+#' function.
 #' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort,
 #'A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification
 #'Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems
@@ -298,7 +299,10 @@ train_batches <- function(model, batches, epochs = 10){
 #' @return A Keras sequential model.
 #' @export
 chambon2018 <- function(
-  channels, samples, weights = FALSE, verbose = TRUE){
+  channels,
+  samples,
+  weights = FALSE,
+  verbose = TRUE){
 
   if(weights){
 
@@ -379,7 +383,13 @@ chambon2018 <- function(
 #' @return A Keras sequential model.
 #' @export
 schwabedal2018 <- function(channels = 2,
-                           samples = 8000){
+                           samples = 8000,
+                           weights = FALSE,
+                           verbose = TRUE){
+  #
+  # if(weights){
+  #   https://osf.io/k5fxh/download
+  # }
 
   model <- keras::keras_model_sequential()
 
