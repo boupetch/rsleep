@@ -2,3 +2,7 @@
 *.R
 *.edf
 *.rds
+*.txt
+*.csv
+*.RData
+*.xml
