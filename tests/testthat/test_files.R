@@ -77,4 +77,13 @@ test_that("Read events Noxturnal 3", {
   expect_equal(nrow(events), 2073)
 })
 
+test_that("Read and write Compumedics file", {
+
+  ex_file <- file.path(tempdir(), "hyp_compumedics.txt")
+  write.table(data.frame(x=c(0,1,0,2)),ex_file)
+  hypnogram <- read_stages_compumedics(ex_file,startTime = Sys.time())
+  expect_equal(nrow(hypnogram), 4)
+  write_hypnogram_compumedics(hypnogram,
+                              file.path(tempdir(), "hyp_compumedics.xml"))
+})
 
