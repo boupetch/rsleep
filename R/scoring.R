@@ -1,78 +1,4 @@
-#' Score 30 seconds epochs directly from European Data Format (EDF) files.
-#'
-#'
-#' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
-#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
-#' @references Kemp, B., Värri, A., Rosa, A.C., Nielsen, K.D. and Gade, J., 1992. A simple format for exchange of digitized polygraphic recordings. Electroencephalography and clinical neurophysiology, 82(5), pp.391-393.
-#' @param edf The EDF file path.
-#' @param channels A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
-#' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
-#' @param verbose Boolean. Display or not status messages.
-#' @return A dataframe containing predicted hypnodensity values of the record.
-#' @export
-score_stages_edf <- function(
-  edf,
-  channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
-  model = chambon2018(6,3*30*70,TRUE,TRUE),
-  verbose = TRUE){
-
-  if(!("keras" %in%  utils::installed.packages()[,1])){
-    stop("Keras packagae required. Please install the Keras R package to continue: https://keras.rstudio.com/")
-  }
-
-  if(verbose){
-    message("Reading EDF file...")
-  }
-
-  h <- edfReader::readEdfHeader(edf)
-  s <- edfReader::readEdfSignals(h, signals = channels)
-
-  signals = lapply(channels,function(x){s[[x]]$signal})
-
-  sRates = lapply(channels,function(x){s[[x]]$sRate})
-
-  if(verbose) message("Epoching signals...")
-
-  epochs <- epochs(signals = signals,
-                   sRates = sRates,
-                   resample = 70,
-                   epoch = 30,
-                   padding = 1)
-
-  if(verbose) message("Normalizing signals...")
-
-  epochs <- lapply(epochs, function(x){
-    #x <- x[,c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")]
-    x <- t(x)
-    t(apply(x,1,function(y){
-      y <- y-mean(y)
-      y <- y/stats::sd(y)
-      y
-    }))
-  })
-
-  x <- abind::abind(epochs,along=-1)
-
-  x <- keras::array_reshape(x,dim = c(dim(x)[1],dim(x)[2],dim(x)[3],1))
-
-  if(verbose) message("Performing prediction...")
-
-  res <- stats::predict(model, x)
-
-  hypnodensity <- as.data.frame(res)
-
-  colnames(hypnodensity) <- c("AWA","REM","N1","N2","N3")
-
-  hypnodensity$begin <- as.POSIXct(h$startTime)+(c(0:(nrow(hypnodensity)-1))*30)
-
-  hypnodensity$end <- hypnodensity$begin+30
-
-  hypnodensity$event <- apply(hypnodensity[,1:5], 1, function(x){
-    names(which.max(x))
-  })
-
-  hypnodensity
-}
+# Polysomnography ----
 
 #' Generates train batches to be used by the `train_batches()` function.
 #'
@@ -92,7 +18,7 @@ score_stages_edf <- function(
 #' @param batches_size Number of epoch by batch.
 #' @param verbose Boolean, display messages or not.
 #' @export
-generate_batches <- function(
+write_batches_psg <- function(
   records, events, batches_path = tempdir(),
   channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1", "1-2"),
   resample = 70, padding = 1, batches_size = 1024, verbose = TRUE){
@@ -211,6 +137,259 @@ generate_batches <- function(
   }
 }
 
+#' Score 30 seconds epochs directly from European Data Format (EDF) files.
+#'
+#'
+#' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
+#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
+#' @references Kemp, B., Värri, A., Rosa, A.C., Nielsen, K.D. and Gade, J., 1992. A simple format for exchange of digitized polygraphic recordings. Electroencephalography and clinical neurophysiology, 82(5), pp.391-393.
+#' @param edf The EDF file path.
+#' @param channels A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
+#' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
+#' @param verbose Boolean. Display or not status messages.
+#' @return A dataframe containing predicted hypnodensity values of the record.
+#' @export
+score_stages_edf <- function(
+  edf,
+  channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
+  model = chambon2018(6,3*30*70,TRUE,TRUE),
+  verbose = TRUE){
+
+  if(!("keras" %in%  utils::installed.packages()[,1])){
+    stop("Keras packagae required. Please install the Keras R package to continue: https://keras.rstudio.com/")
+  }
+
+  if(verbose){
+    message("Reading EDF file...")
+  }
+
+  h <- edfReader::readEdfHeader(edf)
+  s <- edfReader::readEdfSignals(h, signals = channels)
+
+  signals = lapply(channels,function(x){s[[x]]$signal})
+
+  sRates = lapply(channels,function(x){s[[x]]$sRate})
+
+  if(verbose) message("Epoching signals...")
+
+  epochs <- epochs(signals = signals,
+                   sRates = sRates,
+                   resample = 70,
+                   epoch = 30,
+                   padding = 1)
+
+  if(verbose) message("Normalizing signals...")
+
+  epochs <- lapply(epochs, function(x){
+    #x <- x[,c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")]
+    x <- t(x)
+    t(apply(x,1,function(y){
+      y <- y-mean(y)
+      y <- y/stats::sd(y)
+      y
+    }))
+  })
+
+  x <- abind::abind(epochs,along=-1)
+
+  x <- keras::array_reshape(x,dim = c(dim(x)[1],dim(x)[2],dim(x)[3],1))
+
+  if(verbose) message("Performing prediction...")
+
+  res <- stats::predict(model, x)
+
+  hypnodensity <- as.data.frame(res)
+
+  colnames(hypnodensity) <- c("AWA","REM","N1","N2","N3")
+
+  hypnodensity$begin <- as.POSIXct(h$startTime)+(c(0:(nrow(hypnodensity)-1))*30)
+
+  hypnodensity$end <- hypnodensity$begin+30
+
+  hypnodensity$event <- apply(hypnodensity[,1:5], 1, function(x){
+    names(which.max(x))
+  })
+
+  hypnodensity
+}
+
+# Mice -----
+
+write_batches_mice <- function(
+  records,
+  events,
+  batches_path = "./",
+  batch_size = 128,
+  classes_nb = 3,
+  padding = 2,
+  resample = 400,
+  verbose = TRUE){
+
+  channels <- c("EEG", "EMG")
+
+  buffer_x <- list()
+  buffer_y <- list()
+  batch_count <- 1
+
+  for(i in c(1:length(records))){
+
+    if(verbose) message(paste0("Processing record ", basename(record)))
+
+    h <- edfReader::readEdfHeader(records[i])
+
+    labels <- unlist(lapply(channels, function(x){
+      h$sHeaders$label[x == substr(h$sHeaders$label,1,3)][1]
+    }))
+
+    s <- edfReader::readEdfSignals(h, signals = unlist(labels))
+
+    events <- rsleep::read_stages_compumedics(
+      txt = events[1], startTime = h$startTime)
+
+    events <- events[(1+padding):(nrow(events)-padding-1),]
+
+    te <- table(events$event)
+
+    if(length(te) != classes_nb){
+      warning("Num class diff")
+      next
+    }
+
+    idx <- lapply(names(te),function(x){
+      sample(which(events$event == x))[1:min(te)]
+    })
+
+    while(length(idx[[1]]) != 0){
+
+      for(j in c(1:length(idx))){
+
+        epoch_idx <- idx[[j]][1]
+
+        epoch <- lapply(labels, function(x){
+
+          sig <- s[[x]]$signal[
+            (((as.numeric(events[epoch_idx,]$begin)-
+                 as.numeric(as.POSIXlt(h$startTime)))*
+                s[[x]]$sRate)-(padding*s[[x]]$sRate*4)+1):
+              (((as.numeric(events[epoch_idx,]$end)-
+                   as.numeric(as.POSIXlt(h$startTime)))*
+                  s[[x]]$sRate)+(padding*s[[x]]$sRate*4))]
+
+          sig <- signal::resample(sig,resample,s[[x]]$sRate)
+          sig <- sig - mean(sig)
+          sig <- sig/sd(sig)
+          sig
+
+        })
+
+        epoch <- abind::abind(epoch,along = -1)
+
+        buffer_x[[length(buffer_x)+1]] <- epoch
+        buffer_y[[length(buffer_x)+1]] <- events[epoch_idx,]$event
+
+        if(length(buffer_x) == (batch_size*length(te))){
+
+          if(verbose) message(paste0("Writing batch", batch_count))
+
+          saveRDS(object = list(
+            abind::abind(buffer_x, along = -1),
+            abind::abind(buffer_y, along = -1)
+          ), file = paste0(batches_path,"batch_",batch_count,".rds"))
+
+          buffer_x <- list()
+          buffer_y <- list()
+          batch_count <- batch_count + 1
+
+        }
+
+        idx[[j]] <- idx[[j]][-1]
+        print(paste0(length(buffer_x),"/",(batch_size*length(te))))
+      }
+    }
+  }
+}
+
+score_mice <- function(
+  edf,
+  model = schwabedal2018(weights = TRUE),
+  verbose = TRUE){
+
+  padding <- 2
+  epoch_dur <- 4
+  channels <- c("EEG","EMG")
+
+  h <- edfReader::readEdfHeader(edf)
+
+  channels <- unlist(lapply(channels, function(x){
+    h$sHeaders$label[x == substr(h$sHeaders$label,1,3)][1]
+  }))
+
+  s <- edfReader::readEdfSignals(h, signals = channels)
+
+  epochs <- trunc(length(s[[channels[1]]]$signal)/s[[channels[1]]]$sRate/4)
+
+  if(verbose){
+    pb <- utils::txtProgressBar(
+      min = 1, max = epochs,
+      style = 3)#length(epochs), )
+  }
+
+  #results <- lapply(c(3:(epochs-3)),function(i){
+  results <- lapply(c(1:epochs), function(i){
+
+    if(verbose){
+      utils::setTxtProgressBar(pb, i)
+    }
+
+    epoch <- lapply(channels,function(x){
+
+      if(i <= padding){
+
+        cs <- s[[x]]$signal[
+          ((1+((i-1)*s[[x]]$sRate*4))):
+            ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4))+4000)]
+        cs <- c(rep(0,4000),cs)
+
+      } else if (i >= (length(epochs) - padding)){
+
+        cs <- s[[x]]$signal[
+          ((1+((i-1)*s[[x]]$sRate*4))-4000):
+            ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4)))]
+        cs <- c(cs,rep(0,4000))
+
+      } else {
+
+        cs <- s[[x]]$signal[
+          ((1+((i-1)*s[[x]]$sRate*4))-4000):
+            ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4))+4000)]
+
+      }
+
+      cs <- signal::resample(cs,400,s[[x]]$sRate)
+      cs <- cs-mean(cs)
+      cs <- cs/stats::sd(cs)
+
+    })
+
+    epoch <- abind::abind(epoch,along=-1)
+    epoch <- keras::array_reshape(epoch,c(1,2,8000,1))
+
+    predict(model,epoch)
+  })
+
+  hypnodensity <- data.frame(matrix(unlist(results), nrow=length(results), byrow=T))
+
+  colnames(hypnodensity) <- c("AWA","NREM","REM")
+
+  hypnodensity$begin <- as.POSIXct(h$startTime)
+  hypnodensity$begin <- hypnodensity$begin + 4*(c(1:nrow(hypnodensity))-1)
+  hypnodensity$end <- hypnodensity$begin +4
+
+  hypnodensity
+}
+
+# Model training ----
+
 #' Trains a model from files batches.
 #'
 #' @description Trains a model from files batches.
@@ -248,6 +427,4 @@ train_batches <- function(model, batches, epochs = 10){
   keras::serialize_model(model)
 
 }
-
-
 

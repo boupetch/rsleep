@@ -5,7 +5,7 @@ skip_if_no_keras <- function(version = NULL) {
     # nocov end
 }
 
-test_that("Automatic scoring", {
+test_that("Polysomnography scoring", {
 
   skip_if_no_keras()
 
@@ -15,12 +15,6 @@ test_that("Automatic scoring", {
 
   download.file("https://osf.io/57j2u/download", edf_path, quiet = TRUE)
   download.file("https://osf.io/h4ysj/download", csv_path, quiet = TRUE)
-
-  # # Write MDF
-  # mdf_path <- paste0(tempdir(),"/15012016HD")
-  # write_mdf(edfPath = edf_path,
-  #           mdfPath = paste0(tempdir(),"/15012016HD"),
-  #           events = read_events_noxturnal(csv_path))
 
   # Stages clasification
   hypnodensity <- score_stages_edf(edf_path)
@@ -34,43 +28,19 @@ test_that("Automatic scoring", {
 
   expect_equal(class(p)[2], "ggplot")
 
-
-  # batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
-  #
-  # trained_model <- train_chambon2018(batches[1:2], 2)
-  #
-  # expect_true(("keras.engine.training.Model" %in% class(trained_model)))
-  #
-  # test <- readRDS(batches[10])
-  #
-  # val_res <- predict(trained_model,test[[1]])
-  #
-  # ypred <- apply(val_res,1,function(x){
-  #   which(x == max(x))
-  # })
-  #
-  # ytrue <- apply(test[[2]],1,function(x){
-  #   which(x == max(x))
-  # })
-  #
-  # ck <- psy::ckappa(cbind(ypred, ytrue))
-  #
-  # expect_equal(length(ck), 2)
-
 })
 
-test_that("Generate batches", {
+test_that("Polysomnography batches", {
 
   skip_if_no_keras()
 
-  # Download test files
   edf_path <- file.path(tempdir(),"15012016HD.edf")
   csv_path <- file.path(tempdir(),"15012016HD.csv")
 
   download.file("https://osf.io/57j2u/download", edf_path, quiet = TRUE)
   download.file("https://osf.io/h4ysj/download", csv_path, quiet = TRUE)
 
-  generate_batches(
+  write_batches_psg(
     records = edf_path,
     events = list(read_events_noxturnal(csv_path)),
     batches_path = tempdir(),
@@ -79,12 +49,9 @@ test_that("Generate batches", {
     batches_size = 128,
     verbose = FALSE)
 
-  # batches <- list.files(tempdir(),pattern = "batch*", recursive = FALSE,full.names = TRUE)
-  #
-  # trained_model <- train_batches(batches[1], 1)
 })
 
-test_that("Automatic scoring for mice", {
+test_that("Mice sleep scoring", {
 
   skip_if_no_keras()
 
