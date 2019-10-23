@@ -111,6 +111,39 @@ write_channel <- function(channel, signals, headers, mdfPath, endian=.Platform$e
 
 }
 
+#' Write a XML file containing scored stages for Compumedics software.
+#'
+#' @param hypnogram A rsleep hypnogram dataframe.
+#' @param filename character File name to write on disk.
+#' @export
+write_hypnogram_compumedics <- function(hypnogram, filename){
+
+  header <- paste0(
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+    "<CMPPSGSCOREDATA><AUTHOR>Compumedics</AUTHOR><CREATEDON>",
+    as.character(format(Sys.time(),"%m/%d/%Y %H:%M%:%S")),
+    "</CREATEDON><LASTMODIFIEDBY>Compumedics</LASTMODIFIEDBY><LASTMODIFIEDON>",
+    as.character(format(Sys.time(),"%m/%d/%Y %H:%M%:%S")),
+    "</LASTMODIFIEDON><MODE>1</MODE><COMMENTS>souris1</COMMENTS>",
+    "<SCOREDEVENTS/><SLEEPSTAGES>")
+
+  stages <- hypnogram$event
+  stages <- ifelse(stages == "NREM", "1",stages)
+  stages <- ifelse(stages == "AWA", "10",stages)
+  stages <- ifelse(stages == "REM", "2",stages)
+  stages <- paste0("<SLEEPSTAGE>",stages,"</SLEEPSTAGE>")
+  stages <- paste0(stages,collapse = "")
+
+  footer <- "</SLEEPSTAGES></CMPPSGSCOREDATA>"
+
+  xml <- paste0(header, stages, footer, collapse = "")
+
+  fileConn <- file(filename)
+  writeLines(xml, fileConn)
+  close(fileConn)
+
+}
+
 #' Read a Noxturnal events file (Unicode CSV format)
 #'
 #' @param dir Noxturnal events file path.
