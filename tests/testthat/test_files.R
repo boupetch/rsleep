@@ -1,4 +1,6 @@
-context("Writing records")
+context("Reading and writing files")
+
+# Records ----
 
 test_that("Writing all channels and overwriting with events", {
 
@@ -67,6 +69,8 @@ test_that("Read selected channels from MDF", {
   unlink("data/sample",recursive = TRUE)
 })
 
+# Resmed ----
+
 test_that("Read events Noxturnal 2", {
   events <- read_events_noxturnal("data/noxturnal_events_example_unicode_2.csv")
   expect_equal(nrow(events), 1412)
@@ -76,6 +80,8 @@ test_that("Read events Noxturnal 3", {
   events <- read_events_noxturnal("data/noxturnal_events_example_unicode_3.csv")
   expect_equal(nrow(events), 2073)
 })
+
+# Compumedics ----
 
 test_that("Read and write Compumedics file", {
 
