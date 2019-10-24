@@ -40,7 +40,7 @@ normalize_cycles <- function(events){
   return(cycles)
 }
 
-#' Draw a hypnogram with ggplot2.
+#' Draw a sleep hypnogram with ggplot2.
 #'
 #' @description A hypnogram represents the stages of sleep as a function of time. \code{plot_hypnogram()} plot a hypnogram using the \code{ggplot2} library from stages sleep in an event dataframe. \code{REM} stage is higlighted in red.
 #' @references Silber MH, Ancoli-Israel S, Bonnet MH, Chokroverty S, Grigg-Damberger MM, et al. (2007). "The visual scoring of sleep in adults". Journal of Clinical Sleep Medicine. 3 (2): 121–31. PMID 17557422
@@ -54,22 +54,39 @@ normalize_cycles <- function(events){
 #' plot_hypnogram(e)
 #' @export
 plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
+
   stages <- hypnogram(events, labels)
+
   stages$begin <- as.POSIXct(stages$begin)
   stages$end <- as.POSIXct(stages$end)
-  hypnogram <- ggplot2::ggplot(stages,ggplot2::aes_string(x="begin",y="event",group=1)) +
+
+  hypnogram <- ggplot2::ggplot(
+    stages,
+    ggplot2::aes_string(
+      x="begin",
+      y="event",
+      group=1)) +
     ggplot2::geom_line() +
     ggplot2::theme_bw() +
     ggplot2::xlab("") +
     ggplot2::ylab("")
+
   rem = stages[stages$event == "REM",]
+
   if(nrow(rem) > 0){
     for(i in c(1:nrow(rem))){
-      df <- stats::reshape(rem[i,], idvar = "event", varying = c("begin","end"),
-                           v.names = "value", direction = "long")
-      hypnogram <- hypnogram+ggplot2::geom_line(data=df,mapping = ggplot2::aes_string(x="value",y="event",group=1),colour='red')
+      df <- stats::reshape(
+        rem[i,],
+        idvar = "event",
+        varying = c("begin","end"),
+        v.names = "value", direction = "long")
+      hypnogram <- hypnogram+ggplot2::geom_line(
+        data=df,
+        mapping = ggplot2::aes_string(
+          x="value",y="event",group=1),colour='red')
     }
   }
+
   return(hypnogram)
 }
 
