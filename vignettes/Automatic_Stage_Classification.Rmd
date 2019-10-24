@@ -88,26 +88,22 @@ The `rsleep` package provides a pretrained model to score stages from raw sleep
 signals. This model have been firstly trained on more than a hundred sleep 
 records from the Hôtel-Dieu using the deep neural network described by Stanislas
 Chamban & Al. in "A Deep Learning Architecture for Temporal Sleep Stage 
-Classification Using Multivariate and Multimodal Time Series". 
-@chambonDeepLearningArchitecture2017
+Classification Using Multivariate and Multimodal Time Series"
+@chambonDeepLearningArchitecture2017.
 
-To use this pre-trained model, call the `score_stages_edf()` function to score 
-stages from the previously downloaded EDF file. `score_stages_edf()` returns
-hypnodensity results, the probability of each sleep stage by epoch. Hypnodensity
-has been introduced by Stephansen & Al. in 2018 in "Neural network analysis of 
-sleep stages enables efficient diagnosis of narcolepsy" .
+To use this pre-trained model, call the `score_stages_edf()` function to score stages from the previously downloaded EDF file. `score_stages_edf()`, used with default parameters, downloads a pretrained model, preprocess the data, apply the model and returns the hypnodensity of the record. Hypnodensity shows the probabilities of each sleep stage by epoch. It has been introduced by Stephansen & Al. in "Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy" @stephansenNeuralNetworkAnalysis2018.
 
 ```{r}
 hypnodensity <- score_stages_edf("15012016HD.edf")
 ```
 
-Plot the hypnodensity.
+Returned hypnodensity can by plotted using the `plot_hypnodensity()` function.
 
 ```{r, fig.width=7}
 plot_hypnodensity(hypnodensity)
 ```
 
-Hypnogram can be computed form the hypnodensity taking the highest probability
+The hypnogram can be computed form the hypnodensity taking the highest probability of each epoch.
 
 ```{r, fig.width=7}
 plot_hypnogram(hypnodensity)
@@ -115,10 +111,9 @@ plot_hypnogram(hypnodensity)
 
 # Training a new model
 
-Unfortunately, the weighted model provided by `rsleep` has only been trainedon sleep records from a single polysomnograph. As it was roughly trained without extended preprocessing, trying to apply it to data from different recorders may result in false classifications. [Bit depth](https://etc.usf.edu/techease/win/images/what-is-bit-depth/), original sampling rate or [electrodes types](https://www.brainlatam.com/blog/wet-dry-active-and-passive-electrodes.-what-are-they-and-what-to-choose-413) can vary from a model to another and produce a different physiological signal.
+Unfortunately, the weighted model provided by `rsleep` has only been trained on sleep records from a single polysomnograph. As it was roughly trained without extended preprocessing, trying to apply it to data from different recorders may result in false classifications. [Bit depth](https://etc.usf.edu/techease/win/images/what-is-bit-depth/), original sampling rate or [electrodes types](https://www.brainlatam.com/blog/wet-dry-active-and-passive-electrodes.-what-are-they-and-what-to-choose-413) can indeed vary between polysomnographs and produce different physiological signals.
 
-The process to train a model using rlseep is pretty straightforward. First, the generate_batches() function creates batches files from EDF and events files. Then, the train_batc
-
+The process to train a model using `rlseep` is pretty straightforward. First, the `generate_batches()` function creates batches files from EDF and events files. Then, the `train_batch()` trains the model using the previously generated batches. The model can be applied to new data using `score_stages_edf()` using the corresponding parameter.
 
 ```{r ml_workflow, echo=FALSE}
 library(DiagrammeR)
@@ -138,43 +133,62 @@ create_graph() %>%
   render_graph(layout = "tree")
 ```
 
+## Download example data
+
+To illustrate the process of training a deep learning algorithm to classify sleep stages, let's download the first three records from the SleepEDFX extended database @kempAnalysisSleepdependentNeuronal2000 @goldbergerPhysioBankPhysioToolkitPhysioNet2000:
+
+```{r sleepedfx_download}
+records <- c("SC4001E0-PSG.edf", 
+             "SC4002E0-PSG.edf",
+             "SC4011E0-PSG.edf")
+
+hypnograms <- c("SC4001EC-Hypnogram.edf", 
+                "SC4002EC-Hypnogram.edf",
+                "SC4011EH-Hypnogram.edf")
+
+for(file in c(records,hypnograms)){
+  if(!file.exists(file)){
+    download.file(url = paste0(
+      "https://physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/",
+      file, "?download"
+    ), destfile = file)
+  }
+}
+```
 
 ## Generating a training database
 
-```{r}
-records <- c("SC4001E0-PSG.edf", "SC4002E0-PSG.edf")
-
-hypnograms <- c("SC4001EC-Hypnogram.edf", "SC4002EC-Hypnogram.edf")
-
-# for(file in c(records,hypnograms)){
-#   if(!file.exists(file)){
-#     download.file(url = paste0(
-#       "https://physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/",
-#       file, "?download"
-#     ), destfile = file)
-#   }
-# }
-```
-
+Six channels will be used to classify sleep stages:
 
 ```{r}
-hypnogram <- read_events_sleepedfx("SC4001EC-Hypnogram.edf")[-1,]
-
 channels <- c(
   "EEG Fpz-Cz",
   "EEG Pz-Oz",
   "EOG horizontal",
   "EMG submental",
   "Temp rectal")
+```
 
+`write_batches_psg()` does not read events and stages in text files. Stages must be read from files previously and stored in a list:
+
+```{r}
+hypnograms <- lapply(hypnograms, function(x){
+  read_events_sleepedfx(x)[-1,]
+})
+```
+
+```{r}
 write_batches_psg(
-  records = c("SC4001E0-PSG.edf"),
-  events = list(hypnogram),
-  batches_path = "./", batches_size = 128,
+  records = records[1:2],
+  events = hypnograms[1:2],
+  batches_path = "./", 
+  batches_size = 1000,
   channels = channels)
 ```
 
 ## Defining the model architecture
+
+Sequential model implementation in Keras can be retreived using the `chambon2018()` @chambonDeepLearningArchitecture2017 function. Adding the parameter `weights` to `TRUE` downloads the weighted model. Number of channels input to the model is set using the `channels` parameters.
 
 ```{r}
 model <- chambon2018(
@@ -184,6 +198,8 @@ summary(model)
 ```
 
 ## Training the model
+
+`train_batches()` 
 
 ```{r}
 batches <- list.files(pattern = "batch*")
@@ -197,7 +213,6 @@ model <- train_batches(
 ## Applying the model
 
 ```{r}
-
 hypnodensity <- score_stages_edf(
   edf = "SC4002E0-PSG.edf",
   model = keras::unserialize_model(model),
@@ -207,14 +222,10 @@ plot_hypnodensity(hypnodensity)
 
 plot_hypnogram(
   read_events_sleepedfx("SC4002EC-Hypnogram.edf")[-1,])
-
 ```
 
 ```{r cleanup, include=FALSE}
 file.remove(list.files(pattern = "*batch*"))
 ```
 
-
-
-
-
+# References
