@@ -2,6 +2,7 @@
 title: "Sleep Stages Classification Using Deep Learning"
 author: "Paul Bouchequet"
 output: rmarkdown::html_vignette
+bibliography: Automatic_Stage_Classification.bibtex
 vignette: >
   %\VignetteIndexEntry{automatic-stage-classification}
   %\VignetteEncoding{UTF-8}
@@ -26,13 +27,12 @@ knitr::opts_chunk$set(
 
 ```
 
-# Introduction
-
-`rsleep` provides function to score sleep stages from polysomnography data using
-deep neural networks. A pre-trained model can be downloaded and applied. As
-this model have been trained using polysomnography data from a single recorder
-(Nox A1, Resmed), a new model can be trained on new data after generating a 
-training database.
+`rsleep` provides functions to score sleep stages from polysomnography data 
+using deep neural networks. A pre-trained model can be downloaded and applied. 
+As this model have been trained using polysomnography data from a single 
+recorder( [Nox A1](https://noxmedical.com/products/nox-a1-psg-system/) designed 
+by [Resmed](https://www.resmed.com/fr-fr/consumer.html) ), model can be trained 
+on new data after generating a training database.
 
 # Example data
 
@@ -64,11 +64,10 @@ Five stages can be observed:
   
 This polysomnography has been visually scored by a sleep expert. Results of this
 scoring can be found in the downloaded `.csv` file. This file has been exported 
-from Noxturnal, a visual sleep scoring software published by Resmed. The 
-`read_events_noxturnal()` function from the `rsleep` package can read this export
-and clean it to produce a standardized events dataframe. Then, the 
-`plot_hypnogram()` function plots the hypnogram related events into a stage/time
-figure.
+from Noxturnal, the visual sleep scoring software published by Resmed. The 
+`read_events_noxturnal()` function from the `rsleep` package can read this 
+export and clean it to produce a standardized events dataframe. Then, the 
+`plot_hypnogram()` function plots the hypnogram into a stage/time figure.
 
 ```{r, fig.width=7}
 library(rsleep)
@@ -95,7 +94,8 @@ Classification Using Multivariate and Multimodal Time Series".
 To use this pre-trained model, call the `score_stages_edf()` function to score 
 stages from the previously downloaded EDF file. `score_stages_edf()` returns
 hypnodensity results, the probability of each sleep stage by epoch. Hypnodensity
-has been introduced by Stephansen & Al. in 2018 in "".
+has been introduced by Stephansen & Al. in 2018 in "Neural network analysis of 
+sleep stages enables efficient diagnosis of narcolepsy" .
 
 ```{r}
 hypnodensity <- score_stages_edf("15012016HD.edf")
@@ -113,19 +113,26 @@ Hypnogram can be computed form the hypnodensity taking the highest probability
 plot_hypnogram(hypnodensity)
 ```
 
-Plot the visually scored hypnogram as a comparison.
-
 # Training a new model
 
-Unfortunately, 
+Unfortunately, the weighted model provided by `rsleep` has only been trainedon sleep records from a single polysomnograph. As it was roughly trained without extended preprocessing, trying to apply it to data from different recorders may result in false classifications. [Bit depth](https://etc.usf.edu/techease/win/images/what-is-bit-depth/), original sampling rate or [electrodes types](https://www.brainlatam.com/blog/wet-dry-active-and-passive-electrodes.-what-are-they-and-what-to-choose-413) can vary from a model to another and produce a different physiological signal.
 
-```{r}
+The process to train a model using rlseep is pretty straightforward. First, the generate_batches() function creates batches files from EDF and events files. Then, the train_batc
+
+
+```{r ml_workflow, echo=FALSE}
 library(DiagrammeR)
 
 create_graph() %>%
-  add_node(label = "generate_batches()") %>%
-  add_node(label = "train_batches()") %>%
-  add_node(label = "score_stages_edf()") %>%
+  add_node(label = "generate_batches()",
+           node_aes = node_aes(fixedsize = FALSE,
+                               shape = "rectangle")) %>%
+  add_node(label = "train_batches()",
+           node_aes = node_aes(fixedsize = FALSE,
+                               shape = "rectangle")) %>%
+  add_node(label = "score_stages_edf()",
+           node_aes = node_aes(fixedsize = FALSE,
+                               shape = "rectangle")) %>%
   add_edge(from = 1, to = 2) %>%
   add_edge(from = 2, to = 3) %>%
   render_graph(layout = "tree")
@@ -139,33 +146,39 @@ records <- c("SC4001E0-PSG.edf", "SC4002E0-PSG.edf")
 
 hypnograms <- c("SC4001EC-Hypnogram.edf", "SC4002EC-Hypnogram.edf")
 
-for(file in c(records,hypnograms)){
-  if(!file.exists(file)){
-    download.file(url = paste0(
-      "https://physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/",
-      file, "?download"
-    ), destfile = file)
-  }
-}
+# for(file in c(records,hypnograms)){
+#   if(!file.exists(file)){
+#     download.file(url = paste0(
+#       "https://physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/",
+#       file, "?download"
+#     ), destfile = file)
+#   }
+# }
 ```
 
 
 ```{r}
 hypnogram <- read_events_sleepedfx("SC4001EC-Hypnogram.edf")[-1,]
 
-generate_batches(
+channels <- c(
+  "EEG Fpz-Cz",
+  "EEG Pz-Oz",
+  "EOG horizontal",
+  "EMG submental",
+  "Temp rectal")
+
+write_batches_psg(
   records = c("SC4001E0-PSG.edf"),
   events = list(hypnogram),
   batches_path = "./", batches_size = 128,
-  channels = c("EEG Fpz-Cz","EEG Pz-Oz",
-               "EOG horizontal","EMG submental",
-               "Temp rectal"))
+  channels = channels)
 ```
 
 ## Defining the model architecture
 
 ```{r}
-model <- model_stagesdl(batch = "./batch_1.rds")
+model <- chambon2018(
+  channels = length(channels))
 
 summary(model)
 ```
@@ -176,30 +189,28 @@ summary(model)
 batches <- list.files(pattern = "batch*")
 
 model <- train_batches(
-  model = model_stagesdl(batches[1]),
-  batches = batches)
+  model = model,
+  batches = batches,
+  epochs = 5)
 ```
-
 
 ## Applying the model
 
 ```{r}
-saveRDS(object = keras::serialize_model(model),
-        file = "model_stagesdl.rds")
 
 hypnodensity <- score_stages_edf(
   edf = "SC4002E0-PSG.edf",
-  model_path = "model_stagesdl.rds",
-  channels = c("EEG Fpz-Cz","EEG Pz-Oz",
-               "EOG horizontal","EMG submental",
-               "Temp rectal"))
+  model = keras::unserialize_model(model),
+  channels = channels)
 
 plot_hypnodensity(hypnodensity)
 
-plot_hypnogram(read_events_sleepedfx("SC4002EC-Hypnogram.edf")[-1,])
+plot_hypnogram(
+  read_events_sleepedfx("SC4002EC-Hypnogram.edf")[-1,])
+
 ```
 
-```{r}
+```{r cleanup, include=FALSE}
 file.remove(list.files(pattern = "*batch*"))
 ```
 
