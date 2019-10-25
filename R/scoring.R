@@ -149,7 +149,7 @@ write_batches_psg <- function(
 #' @param verbose Boolean. Display or not status messages.
 #' @return A dataframe containing predicted hypnodensity values of the record.
 #' @export
-score_stages_edf <- function(
+score_psg <- function(
   edf,
   channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
   model = chambon2018(6,3*30*70,TRUE,TRUE),

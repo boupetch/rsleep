@@ -4,7 +4,6 @@ output:
   rmarkdown::html_vignette:
      toc: true
      toc_depth: 3
-output: rmarkdown::html_vignette
 bibliography: Managing_Sleep_Records_Files.bibtex
 csl: vignettes.csl
 vignette: >

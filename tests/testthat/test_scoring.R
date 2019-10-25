@@ -17,7 +17,7 @@ test_that("Polysomnography scoring", {
   download.file("https://osf.io/h4ysj/download", csv_path, quiet = TRUE)
 
   # Stages clasification
-  hypnodensity <- score_stages_edf(edf_path)
+  hypnodensity <- score_psg(edf_path)
 
   expect_equal(nrow(hypnodensity), 1472)
   expect_equal(ncol(hypnodensity), 8)

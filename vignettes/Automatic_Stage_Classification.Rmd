@@ -4,7 +4,6 @@ output:
   rmarkdown::html_vignette:
      toc: true
      toc_depth: 3
-output: rmarkdown::html_vignette
 csl: vignettes.csl
 bibliography: Automatic_Stage_Classification.bibtex
 vignette: >
@@ -31,12 +30,7 @@ knitr::opts_chunk$set(
 
 ```
 
-`rsleep` provides functions to score sleep stages from polysomnography data 
-using deep neural networks. A pre-trained model can be downloaded and applied. 
-As this model have been trained using polysomnography data from a single 
-recorder( [Nox A1](https://noxmedical.com/products/nox-a1-psg-system/) designed 
-by [Resmed](https://www.resmed.com/fr-fr/consumer.html) ), model can be trained 
-on new data after generating a training database.
+`rsleep` provides functions to score sleep stages from polysomnography data using deep neural networks. A pre-trained model can be downloaded and applied. As this model have been trained using polysomnography data from a single recorder ( [Nox A1](https://noxmedical.com/products/nox-a1-psg-system/) designed by [Resmed](https://www.resmed.com/fr-fr/consumer.html) ), model can be trained on new data after generating a training database.
 
 # Example data
 
@@ -95,10 +89,10 @@ Chamban & Al. in "A Deep Learning Architecture for Temporal Sleep Stage
 Classification Using Multivariate and Multimodal Time Series"
 @chambonDeepLearningArchitecture2017.
 
-To use this pre-trained model, call the `score_stages_edf()` function to score stages from the previously downloaded EDF file. `score_stages_edf()`, used with default parameters, downloads a pretrained model, preprocess the data, apply the model and returns the hypnodensity of the record. Hypnodensity shows the probabilities of each sleep stage by epoch. It has been introduced by Stephansen & Al. in "Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy" @stephansenNeuralNetworkAnalysis2018.
+To use this pre-trained model, call the `score_psg()` function to score stages from the previously downloaded EDF file. `score_psg()`, used with default parameters, downloads a pretrained model, preprocess the data, apply the model and returns the hypnodensity of the record. Hypnodensity shows the probabilities of each sleep stage by epoch. It has been introduced by Stephansen & Al. in "Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy" @stephansenNeuralNetworkAnalysis2018.
 
 ```{r}
-hypnodensity <- score_stages_edf("15012016HD.edf")
+hypnodensity <- score_psg("15012016HD.edf")
 ```
 
 Returned hypnodensity can by plotted using the `plot_hypnodensity()` function.
@@ -117,19 +111,19 @@ plot_hypnogram(hypnodensity)
 
 Unfortunately, the weighted model provided by `rsleep` has only been trained on sleep records from a single polysomnograph. As it was roughly trained without extended preprocessing, trying to apply it to data from different recorders may result in false classifications. [Bit depth](https://etc.usf.edu/techease/win/images/what-is-bit-depth/), original sampling rate or [electrodes types](https://www.brainlatam.com/blog/wet-dry-active-and-passive-electrodes.-what-are-they-and-what-to-choose-413) can indeed vary between polysomnographs and produce different physiological signals.
 
-The process to train a model using `rlseep` is pretty straightforward. First, the `generate_batches()` function creates batches files from EDF and events files. Then, the `train_batch()` trains the model using the previously generated batches. The model can be applied to new data using `score_stages_edf()` using the corresponding parameter.
+The process to train a model using `rlseep` is pretty straightforward. First, the `generate_batches()` function creates batches files from EDF and events files. Then, the `train_batch()` trains the model using the previously generated batches. The model can be applied to new data using `score_psg()` using the corresponding parameter.
 
 ```{r ml_workflow, echo=FALSE}
 library(DiagrammeR)
 
 create_graph() %>%
-  add_node(label = "generate_batches()",
+  add_node(label = "write_batches_psg()",
            node_aes = node_aes(fixedsize = FALSE,
                                shape = "rectangle")) %>%
   add_node(label = "train_batches()",
            node_aes = node_aes(fixedsize = FALSE,
                                shape = "rectangle")) %>%
-  add_node(label = "score_stages_edf()",
+  add_node(label = "score_psg()",
            node_aes = node_aes(fixedsize = FALSE,
                                shape = "rectangle")) %>%
   add_edge(from = 1, to = 2) %>%
@@ -216,10 +210,10 @@ model <- train_batches(
 
 ## Applying the model
 
-Once the model has been trained, it can be reused using the `score_stages_edf()` function. The model needs to be unserialized first. Like for the pre-trained model, `score_stages_edf()` returns the hypnodensity for a given record. In this example, the third record, not used in the training process, is used:
+Once the model has been trained, it can be reused using the `score_psg()` function. The model needs to be unserialized first. Like for the pre-trained model, `score_psg()` returns the hypnodensity for a given record. In this example, the third record, not used in the training process, is used:
 
 ```{r}
-hypnodensity <- score_stages_edf(
+hypnodensity <- score_psg(
   edf = "SC4002E0-PSG.edf",
   model = keras::unserialize_model(model),
   channels = channels)

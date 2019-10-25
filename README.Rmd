@@ -70,7 +70,7 @@ rsleep::plot_hypnogram(hypnogram)
 dev.off()
 
 # Hypnodensity
-hypnodensity <- score_stages_edf("vignettes/15012016HD.edf")
+hypnodensity <- score_psg("vignettes/15012016HD.edf")
 png(filename="man/figures/README-example_hypnodensity-1.png",width = 500, height = 200)
 rsleep::plot_hypnodensity(hypnodensity)
 dev.off()
@@ -120,7 +120,7 @@ Automatic sleep stages scoring using rsleep Docker image:
 ```
 wget -O 15012016HD.edf https://osf.io/57j2u/download 
 
-docker run --rm  -v $(pwd):/shared boupetch/rsleep R -e "write.csv(rsleep::score_stages_edf('/shared/15012016HD.edf'),'/shared/hypnodensity.csv')"
+docker run --rm  -v $(pwd):/shared boupetch/rsleep R -e "write.csv(rsleep::score_psg('/shared/15012016HD.edf'),'/shared/hypnodensity.csv')"
 ```
   
 ## References
