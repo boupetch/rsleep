@@ -10,9 +10,10 @@
 #' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to platform endian.
 #' @examples
 #' \donttest{
-#' download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download",
+#' download.file(
+#' "https://osf.io/57j2u/download",
 #' paste0(tempdir(),"/15012016HD.edf"))
-#' download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download",
+#' download.file("https://osf.io/h4ysj/download",
 #' paste0(tempdir(),"15012016HD.csv"))
 #' mdfPath = paste0(tempdir(),"/15012016HD/")
 #' channels = c("C3-M2","ECG")
