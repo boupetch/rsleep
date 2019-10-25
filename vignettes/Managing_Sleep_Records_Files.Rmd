@@ -1,6 +1,9 @@
 ---
-title: "Managing sleep records files"
-author: "Paul Bouchequet"
+title: "Reading Sleep Files"
+output: 
+  rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 3
 output: rmarkdown::html_vignette
 bibliography: Managing_Sleep_Records_Files.bibtex
 csl: vignettes.csl
@@ -18,14 +21,15 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 # Do not run chunks if files are not present.
-knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
+knitr::opts_chunk$set(
+  eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
-Records of physiological signals during sleep can take many forms. It starts with simple accelerometry @vanheesEstimatingSleepParameters2018 and goes up to full polysomnography (PSG) @AASMScoringManual, a simultaneous recording of more than ten physiological signals. But sleep records all share a common aspect: they are timeseries, collections of datapoints indexed in time order. Along these timeseries are found metadata: recording conditions, patient information, sample rates and such.
+Recording physiological signals during sleep can take many forms. It starts with simple accelerometry @vanheesEstimatingSleepParameters2018 and goes up to full polysomnography (PSG) @AASMScoringManual, a simultaneous recording of more than ten physiological signals. But sleep records all share a common aspect: they are timeseries, collections of datapoints indexed in time order. Next to these timeseries are found metadata: recording conditions, patient information, sample rates and such.
 
-The European Data Format (EDF) has been firstly described in 1992 to ease medical timeseries storage and exchange @Kemp1992. Primarily conceived to store polygraphic signals, the design has been updated in 2003 to support events data, thus renaming the format to EDF+ @Kemp2003. Another update in 2013 implemented video storage @Kemp2013. A small website recaps history and lists a few databases, softwares and users of the EDF format: [http://edfplus.info/](http://edfplus.info/).
+The European Data Format (EDF) has been firstly described in 1992 to ease medical timeseries storage and exchange @Kemp1992. Firstly conceived to store polygraphic signals, the design has been updated in 2003 to support annotations data (events), thus renaming the format to EDF+ @Kemp2003. Another update in 2013 implemented video storage @Kemp2013. A small website recaps history and lists a few databases, softwares and users of the EDF format: [http://edfplus.info/](http://edfplus.info/).
 
-Since its publication, the EDF imposed itself as a standard for exchange of sleep records. Files size come from few hundred megabytes to a few gigabytes, accoring to the number, length and resolution of signals.
+Since its publication, the EDF imposed itself as a standard for exchange of sleep records. Files size come from megabytes to gigabytes, accoring to the number, length and resolution of signals.
 
 # Reading EDF Records files
 
@@ -35,17 +39,18 @@ An example EDF file can be donwloaded using the following code:
 download.file("https://osf.io/57j2u/download", "15012016HD.edf")
 ```
 
-This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://CRAN.R-project.org/package=edfReader). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only the needed data.
+This night has been recorded at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. To read EDF files, we can use the R library [`edfReader`](https://CRAN.R-project.org/package=edfReader). Reading an EDF file takes two steps: First reading the headers, then reading the signals. Signals can be filtered to read only selected ones.
 
 ```{r read_edf}
 library(edfReader)
 
 h <- readEdfHeader("15012016HD.edf")
 
-s <- readEdfSignals(h, signals = c("C3-M2", "ECG"))
+s <- readEdfSignals(
+  h, signals = c("C3-M2", "ECG"))
 ```
 
-The variable `s` now contains signals and their metadata in a convenient list object. For instance, the electroencephalographic (EEG) derivation `C3-M2` signal and sample rate can be accessed like this:
+The variable `s` now contains signals and their metadata in a convenient list object. The electroencephalographic (EEG) derivation `C3-M2` raw signal and sample rate can be accessed like this:
 
 ```{r}
 c3m2 <- s$`C3-M2`$signal
@@ -61,15 +66,15 @@ plot(c3m2[(c3m2sr*30):(c3m2sr*30*2)],type = "l")
 
 # Events Files
 
-While the EDF standard supports events since 2003, very few software allow events exportation directly in EDF files.
+Despite the EDF standard supporting events since 2003, very few software allow events (annotations) exportation directly in EDF files.
 
-Scoring of the previous sample record can be downloaded here.
+Scored events of the previous sample record can be downloaded here:
 
 ```{r download_events, eval=FALSE}
 download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
-These events have been exported from Noxturnal, a sleep scoring software published by Resmed @ResMedWebsite. As they are stored using a particular convention, the `read_events_noxturnal` from the `rsleep` package helps us reading the file as clean dataframe.
+These events have been exported from Noxturnal, a sleep scoring software published by Resmed @ResMedWebsite. As they are stored using a particular convention, the `read_events_noxturnal` from the `rsleep` package helps us reading the file as clean dataframe:
 
 ```{r read_events}
 library(rsleep)
@@ -79,13 +84,13 @@ events <- read_events_noxturnal("15012016HD.csv")
 summary(events)
 ```
 
-Events are characterized by a `start`  and an `end` timestamp, and an `event` label. This schema is applicable to all the kind of events found in sleep databases.
+Events are characterized by a `start`  and an `end` timestamp, and an `event` label. This design is applicable to all the kind of events found in sleep databases.
 
 ```{r unique_events}
 unique(events$event)
 ```
 
-Using events dataframe containing sleep stage scoring, `rsleep` can plot hypnograms.
+Using events dataframe containing sleep stages scoring, `rsleep` can plot the corresponding hypnogram:
 
 ```{r hypnogram, fig.width = 7}
 plot_hypnogram(events)
@@ -138,7 +143,7 @@ mdf <- read_mdf("15012016HD")
 
 `read_mdf` quickly reads the record as list. Signals and metadata can be accessed in the same way as the EDF file. 
 
-For instance, 10 seconds of ECG signal would look like this:
+10 seconds of ECG signal would look like this:
 
 ```{r ecg_example, fig.width = 7}
 ecgSrate <- mdf$channels$ECG$metadata$sRate

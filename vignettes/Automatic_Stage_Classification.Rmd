@@ -1,7 +1,11 @@
 ---
 title: "Sleep Stages Classification Using Deep Learning"
-author: "Paul Bouchequet"
+output: 
+  rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 3
 output: rmarkdown::html_vignette
+csl: vignettes.csl
 bibliography: Automatic_Stage_Classification.bibtex
 vignette: >
   %\VignetteIndexEntry{automatic-stage-classification}
@@ -177,7 +181,7 @@ hypnograms <- lapply(hypnograms, function(x){
 })
 ```
 
-```{r}
+```{r message=FALSE}
 write_batches_psg(
   records = records[1:2],
   events = hypnograms[1:2],
@@ -199,7 +203,7 @@ summary(model)
 
 ## Training the model
 
-`train_batches()` 
+`train_batches()` takes the model, a character vector of batches file paths and the number of epochs. In this example, the model is only ran three times over the batches from only two records. In reality, deep neural network need more training epochs and way more reocords to train on.
 
 ```{r}
 batches <- list.files(pattern = "batch*")
@@ -207,22 +211,34 @@ batches <- list.files(pattern = "batch*")
 model <- train_batches(
   model = model,
   batches = batches,
-  epochs = 5)
+  epochs = 3)
 ```
 
 ## Applying the model
+
+Once the model has been trained, it can be reused using the `score_stages_edf()` function. The model needs to be unserialized first. Like for the pre-trained model, `score_stages_edf()` returns the hypnodensity for a given record. In this example, the third record, not used in the training process, is used:
 
 ```{r}
 hypnodensity <- score_stages_edf(
   edf = "SC4002E0-PSG.edf",
   model = keras::unserialize_model(model),
   channels = channels)
-
-plot_hypnodensity(hypnodensity)
-
-plot_hypnogram(
-  read_events_sleepedfx("SC4002EC-Hypnogram.edf")[-1,])
 ```
+
+Plot it using `plot_hypnodensity()`:
+
+```{r}
+plot_hypnodensity(hypnodensity)
+```
+
+And compare it to the visual hypnogram from the database:
+
+```{r}
+plot_hypnogram(
+  read_events_sleepedfx("SC4002EC-Hypnogram.edf"))
+```
+
+Of course, results are debatable. In this example, the model has been trained on too few records to produce a valuable result. However, with more records (and time), the model designed by Chambon & Al. showed accuracy close to human scorers @chambonDeepLearningArchitecture2017.
 
 ```{r cleanup, include=FALSE}
 file.remove(list.files(pattern = "*batch*"))

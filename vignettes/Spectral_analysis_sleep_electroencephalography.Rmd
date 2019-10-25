@@ -1,6 +1,5 @@
 ---
-title: "Spectral analysis of sleep electroencephalography signals"
-author: "Paul Bouchequet"
+title: "Spectral Analysis of Sleep EEG Signals"
 output: 
   rmarkdown::html_vignette:
      toc: true
@@ -21,7 +20,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 # Do not run chunks if files are not present.
-knitr::opts_chunk$set(eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
+knitr::opts_chunk$set(
+  eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
 Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial activity over time. Electrodes are typically arranged using the standardized International 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, allowing reproductibility of the results between recordings. 
