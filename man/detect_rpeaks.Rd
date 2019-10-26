@@ -28,10 +28,6 @@ A vector of each detected R peaks in seconds from the start.
 \description{
 Implements the first part of the Pan & Tompkins algorithms to detect R peaks from a raw ECG signal. Inspiration from https://zenodo.org/record/826614.
 }
-\examples{
-data("example_ecg_200hz")
-detect_rpeaks(example_ecg_200hz, 200)
-}
 \references{
 Pan, Jiapu, and Willis J. Tompkins. "A real-time QRS detection algorithm." IEEE Trans. Biomed. Eng 32, no. 3 (1985): 230-236.
 }

@@ -2,37 +2,32 @@
 % Please edit documentation in R/scoring.R
 \name{write_batches_psg}
 \alias{write_batches_psg}
-\title{Generates train batches to be used by the `train_batches()` function.}
+\title{Generates files batches from PSG data.}
 \usage{
 write_batches_psg(records, events, batches_path = tempdir(),
   channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1", "1-2"),
   resample = 70, padding = 1, batches_size = 1024, verbose = TRUE)
 }
 \arguments{
-\item{records}{Character vector of MDF records to be included in the train batches.}
+\item{records}{Character vector of EDF files paths to be included in the train batches.}
 
-\item{events}{List of events dataframes containing hypnograms corresponding
-to records in the records character vector}
+\item{events}{List of events dataframes containing hypnograms corresponding to EDF records in `records` parameter.}
 
 \item{batches_path}{Character. Path where batches files will be saved.}
 
 \item{channels}{Character vector. Channels labels to include in the dataset.}
 
-\item{resample}{Integer. Sample rate to resample signals.}
+\item{resample}{Integer. Sample rate to resample selected signals.}
 
 \item{padding}{Epochs added before and after each epoch.}
 
-\item{batches_size}{Number of epoch by batch.}
+\item{batches_size}{Number of epochs in each batch file.}
 
-\item{verbose}{Boolean, display messages or not.}
+\item{verbose}{Boolean, display status messages or not.}
 }
 \description{
-Generates train batches to be used by the `train_batches()`
-function.
+Generates train batches from PSG data to be used by the `train_batches()` function.
 }
 \references{
-Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort,
-A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification
-Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems
-and Rehabilitation Engineering 26:(758-769).
+Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
 }

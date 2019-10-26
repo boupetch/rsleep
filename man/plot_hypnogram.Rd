@@ -2,7 +2,7 @@
 % Please edit documentation in R/events.R
 \name{plot_hypnogram}
 \alias{plot_hypnogram}
-\title{Draw a hypnogram with ggplot2.}
+\title{Draw a sleep hypnogram with ggplot2.}
 \usage{
 plot_hypnogram(events, labels = c("N3", "N2", "N1", "REM", "AWA"))
 }

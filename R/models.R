@@ -23,8 +23,7 @@ chambon2018 <- function(
     model_path <- file.path(tempdir(), "hd_conv_v3.h5")
 
     if(file.exists(model_path) &&
-       (digest::digest(object = paste0(
-         model_path,"/",model_fname),
+       (digest::digest(object = paste0(model_path),
          algo = "md5") == "5a757f2258c0675010ef617eb3e6f563")){
 
       return(
@@ -113,7 +112,7 @@ schwabedal2018 <- function(channels = 2,
       ))
     }
 
-    download.file(
+    utils::download.file(
       url = "https://osf.io/k5fxh/download",
       destfile = file_path)
 

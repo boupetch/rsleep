@@ -10,9 +10,6 @@
 #' @param integration_window Convolution window size.
 #' @param refractory Minimal space between peaks in milliseconds.
 #' @return A vector of each detected R peaks in seconds from the start.
-#' @examples
-#' data("example_ecg_200hz")
-#' detect_rpeaks(example_ecg_200hz, 200)
 #' @export
 detect_rpeaks <- function(signal,
                           sRate,

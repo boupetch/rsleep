@@ -265,7 +265,7 @@ read_events_sleepedfx <- function(dir, update = TRUE){
 #' @return A dataframe of stages.
 #' @export
 read_stages_compumedics <- function(txt, startTime){
-  hypno <- read.table(txt, stringsAsFactors = FALSE, col.names = "event")
+  hypno <- utils::read.table(txt, stringsAsFactors = FALSE, col.names = "event")
   hypno$begin <- as.POSIXlt(startTime) + ((c(1:nrow(hypno))-1)*4)
   hypno$end <- hypno$begin+4
   hypno$event <- as.character(hypno$event)

@@ -141,13 +141,13 @@ write_batches_psg <- function(
   }
 }
 
-#' Score 30 seconds epochs directly from European Data Format (EDF) files.
+#' Score 30 seconds epochs from European Data Format (EDF) files.
 #'
 #'
-#' @description Convenient wrapper for `score_stage` to score 30 seconds epochs directly from European Data Format (EDF) files.
+#' @description Score 30 seconds epochs from European Data Format (EDF) files.
 #' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
 #' @references Kemp, B., Värri, A., Rosa, A.C., Nielsen, K.D. and Gade, J., 1992. A simple format for exchange of digitized polygraphic recordings. Electroencephalography and clinical neurophysiology, 82(5), pp.391-393.
-#' @param edf The EDF file path.
+#' @param edf Character. European Data Format (EDF) file path.
 #' @param channels A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
 #' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
 #' @param verbose Boolean. Display or not status messages.
@@ -282,7 +282,7 @@ write_batches_mice <- function(
 
           sig <- signal::resample(sig,resample,s[[x]]$sRate)
           sig <- sig - mean(sig)
-          sig <- sig/sd(sig)
+          sig <- sig/stats::sd(sig)
           sig
 
         })
@@ -379,7 +379,7 @@ score_mice <- function(
     epoch <- abind::abind(epoch,along=-1)
     epoch <- keras::array_reshape(epoch,c(1,2,8000,1))
 
-    predict(model,epoch)
+    stats::predict(model,epoch)
   })
 
   hypnodensity <- data.frame(matrix(unlist(results), nrow=length(results), byrow=T))

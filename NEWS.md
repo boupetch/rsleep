@@ -12,3 +12,4 @@
   * Write function `write_mdf` & `write_channel` use platform endian by default to write binary files.
   * Added automatic sleep staging functions and vignette.
   * Added `read_stages_compumedics()` and `write_hypnogram_compumedics()` functions.
+  * Removed `examples example_ecg_200hz` and `example_hypnogram_30s`.
