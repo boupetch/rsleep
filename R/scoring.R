@@ -124,7 +124,9 @@ write_batches_psg <- function(
           batch_count <- batch_count + 1
           if(verbose) message(paste0("Residual batch ", batch_count))
           saveRDS(object = list(
-            keras::array_reshape(batch_x, c(dim(batch_x)[1], dim(batch_x)[2], dim(batch_x)[3],1)), batch_y),
+            keras::array_reshape(
+              batch_x,
+              c(dim(batch_x)[1], dim(batch_x)[2], dim(batch_x)[3],1)), batch_y),
             file = paste0(batches_path,"/batch_",batch_count,".rds"))
 
           if(dim(residual_x)[1] > batches_size){
@@ -220,6 +222,18 @@ score_psg <- function(
 
 # Mice -----
 
+#' Write batches from mice records
+#'
+#' @description Write batches from mice records
+#' @param records
+#' @param events
+#' @param batches_path
+#' @param batch_size
+#' @param classes_nb
+#' @param padding
+#' @param resample
+#' @param verbose Boolean. Display or not status messages.
+#' @export
 write_batches_mice <- function(
   records,
   events,
@@ -238,7 +252,7 @@ write_batches_mice <- function(
 
   for(i in c(1:length(records))){
 
-    if(verbose) message(paste0("Processing record ", basename(record)))
+    if(verbose) message(paste0("Processing record ", basename(records[i])))
 
     h <- edfReader::readEdfHeader(records[i])
 
@@ -314,6 +328,15 @@ write_batches_mice <- function(
   }
 }
 
+#' Score mice sleep from European Data Format (EDF) files.
+#'
+#'
+#' @description Score mice sleep from European Data Format (EDF) files.
+#' @param edf Character. European Data Format (EDF) file path.
+#' @param model model
+#' @param verbose Boolean. Display or not status messages.
+#' @return A dataframe containing predicted hypnodensity values of the record.
+#' @export
 score_mice <- function(
   edf,
   model = schwabedal2018(weights = TRUE),
