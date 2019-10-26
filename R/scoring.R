@@ -1,27 +1,31 @@
 # Polysomnography ----
 
-#' Generates train batches to be used by the `train_batches()` function.
+#' Generates files batches from PSG data.
 #'
-#' @description Generates train batches to be used by the `train_batches()`
-#' function.
-#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort,
-#'A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification
-#'Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems
-#'and Rehabilitation Engineering 26:(758-769).
-#' @param records Character vector of MDF records to be included in the train batches.
-#' @param events List of events dataframes containing hypnograms corresponding
-#' to records in the records character vector
+#' @description Generates train batches from PSG data to be used by the `train_batches()` function.
+#' @references Chambon, S., Galtier, M., Arnal, P., Wainrib, G. and Gramfort, A. (2018) A Deep Learning Architecture for Temporal Sleep Stage Classification Using Multivariate and Multimodal Time Series. IEEE Trans. on Neural Systems and Rehabilitation Engineering 26:(758-769).
+#' @param records Character vector of EDF files paths to be included in the train batches.
+#' @param events List of events dataframes containing hypnograms corresponding to EDF records in `records` parameter.
 #' @param batches_path Character. Path where batches files will be saved.
 #' @param channels Character vector. Channels labels to include in the dataset.
-#' @param resample Integer. Sample rate to resample signals.
+#' @param resample Integer. Sample rate to resample selected signals.
 #' @param padding Epochs added before and after each epoch.
-#' @param batches_size Number of epoch by batch.
-#' @param verbose Boolean, display messages or not.
+#' @param batches_size Number of epochs in each batch file.
+#' @param verbose Boolean, display status messages or not.
 #' @export
 write_batches_psg <- function(
-  records, events, batches_path = tempdir(),
+  records,
+  events,
+  batches_path = tempdir(),
   channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1", "1-2"),
-  resample = 70, padding = 1, batches_size = 1024, verbose = TRUE){
+  resample = 70,
+  padding = 1,
+  batches_size = 1024,
+  verbose = TRUE){
+
+  if(length(records) != length(events)){
+    stop("Parameters record & events dot not have the same length.")
+  }
 
   batch_count <- 0
 
@@ -202,7 +206,8 @@ score_psg <- function(
 
   colnames(hypnodensity) <- c("AWA","REM","N1","N2","N3")
 
-  hypnodensity$begin <- as.POSIXct(h$startTime)+(c(0:(nrow(hypnodensity)-1))*30)
+  hypnodensity$begin <- as.POSIXct(h$startTime) +
+    (c(0:(nrow(hypnodensity)-1))*30)
 
   hypnodensity$end <- hypnodensity$begin+30
 

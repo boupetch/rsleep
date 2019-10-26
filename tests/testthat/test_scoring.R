@@ -40,6 +40,11 @@ test_that("Polysomnography batches", {
   download.file("https://osf.io/57j2u/download", edf_path, quiet = TRUE)
   download.file("https://osf.io/h4ysj/download", csv_path, quiet = TRUE)
 
+  expect_error(
+    write_batches_psg(
+      records = c(edf_path,edf_path),
+      events = list(read_events_noxturnal(csv_path))))
+
   write_batches_psg(
     records = edf_path,
     events = list(read_events_noxturnal(csv_path)),
