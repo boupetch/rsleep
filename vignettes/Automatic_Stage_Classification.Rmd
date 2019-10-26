@@ -219,20 +219,7 @@ hypnodensity <- score_psg(
   channels = channels)
 ```
 
-Plot it using `plot_hypnodensity()`:
-
-```{r}
-plot_hypnodensity(hypnodensity)
-```
-
-And compare it to the visual hypnogram from the database:
-
-```{r}
-plot_hypnogram(
-  read_events_sleepedfx("SC4002EC-Hypnogram.edf"))
-```
-
-Of course, results are debatable. In this example, the model has been trained on too few records to produce a valuable result. However, with more records (and time), the model designed by Chambon & Al. showed accuracy close to human scorers @chambonDeepLearningArchitecture2017.
+Resulting hypnodensity can then be plotted using `plot_hypnodensity()`. Of course, results are debatable. In this example, the model has been trained on too few records to produce a valuable result. However, with more records (and time), the model designed by Chambon & Al. showed accuracy close to human scorers @chambonDeepLearningArchitecture2017.
 
 ```{r cleanup, include=FALSE}
 file.remove(list.files(pattern = "*batch*"))
