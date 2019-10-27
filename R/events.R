@@ -120,10 +120,15 @@ check_events <- function(events){
 #' @param labels Sleep stages labels. Defaults to \code{c("N3","N2","N1","REM","AWA")}.
 #' @return a ggplot object.
 #' @examples
-#' e <- data.frame(begin = as.POSIXlt(c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
-#' e$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), origin = "1970-01-01")
-#' e$event = c("N3","N3","REM")
-#' plot_hypnogram(e)
+#' hypnogram <- data.frame(begin = as.POSIXlt(c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
+#' hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), origin = "1970-01-01")
+#' hypnogram$event = c("N3","N3","REM")
+#' plot_hypnogram(hypnogram)
+#'
+#' fpath <- paste0(tempdir(),"SC4001EC-Hypnogram.edf")
+#' download.file("https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4001EC-Hypnogram.edf?download",fpath)
+#' hypnogram <- read_events_sleepedfx(fpath)
+#' plot_hypnogram(hypnogram)
 #' @export
 plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 
