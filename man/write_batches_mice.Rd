@@ -9,6 +9,20 @@ write_batches_mice(records, events, batches_path = "./",
   verbose = TRUE)
 }
 \arguments{
+\item{records}{Character. Records paths}
+
+\item{events}{List of events}
+
+\item{batches_path}{Path to write batches}
+
+\item{batch_size}{size of each batch}
+
+\item{classes_nb}{number of classes}
+
+\item{padding}{consecutive epochs to add}
+
+\item{resample}{resample rate}
+
 \item{verbose}{Boolean. Display or not status messages.}
 }
 \description{

@@ -2,29 +2,29 @@
 % Please edit documentation in R/models.R
 \name{schwabedal2018}
 \alias{schwabedal2018}
-\title{Automated Classification of Sleep Stages in Mice with Deep
-Learning implementation in Keras.}
+\title{Automated Classification of Sleep Stages in Mice with Deep Learning model implementation in Keras.}
 \usage{
 schwabedal2018(channels = 2, samples = 8000, weights = FALSE,
   verbose = TRUE)
 }
 \arguments{
-\item{channels}{Number of channels.}
+\item{channels}{Number of channels in each input.}
 
-\item{samples}{Number of samples in each epoch.}
+\item{samples}{Number of samples in each channel.}
+
+\item{weights}{Boolean. Returns or not a weighted model. Weighted model is downloaded from a distant URL.}
 }
 \value{
 A Keras sequential model.
 }
 \description{
-Model inspired by the article "Automated Classification of
-Sleep Stages and EEG Artifacts in Mice with Deep Learning". Implemented
-using Keras. Adapted to use minimum 2 channels and to not score artifact
-epochs.
+Model inspired by the article "Automated Classification of Sleep Stages and EEG Artifacts in Mice with Deep Learning". Implemented using Keras. Adapted to use minimum 2 channels and to not score artifact epochs.
+}
+\examples{
+model <- schwabedal2018()
+
+summary(model)
 }
 \references{
-Schwabedal, Justus T. C., Daniel Sippel, Moritz D. Brandt, and
-Stephan Bialonski. “Automated Classification of Sleep Stages and EEG
-Artifacts in Mice with Deep Learning.” ArXiv:1809.08443 [Cs, q-Bio],
-September 22, 2018. http://arxiv.org/abs/1809.08443.
+Schwabedal, Justus T. C., Daniel Sippel, Moritz D. Brandt, and Stephan Bialonski. “Automated Classification of Sleep Stages and EEG Artifacts in Mice with Deep Learning.” ArXiv:1809.08443 [Cs, q-Bio], September 22, 2018. http://arxiv.org/abs/1809.08443.
 }

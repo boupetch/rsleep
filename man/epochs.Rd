@@ -2,7 +2,7 @@
 % Please edit documentation in R/epochs.R
 \name{epochs}
 \alias{epochs}
-\title{Split signals into a list of epochs according to an events dataframe or an epoch duration.}
+\title{Split signals into  epochs according to an events dataframe or an epoch duration.}
 \usage{
 epochs(signals, sRates, resample = max(sRates), epoch = 30,
   startTime = 0, padding = 0)
@@ -14,7 +14,7 @@ epochs(signals, sRates, resample = max(sRates), epoch = 30,
 
 \item{resample}{The sample rate to resample all signals. Defaults to to the max of the provided sample rates.}
 
-\item{epoch}{Epochs reference. Can be an events dataframe or the number of seconds of each epoch. Defaults to 30.}
+\item{epoch}{Epochs reference. Can be an events dataframe or the number of seconds of each epoc Defaults to 30.}
 
 \item{startTime}{The start timestamp of the signal, used to join events to epoch.}
 
@@ -24,7 +24,7 @@ epochs(signals, sRates, resample = max(sRates), epoch = 30,
 A list of signal chunks
 }
 \description{
-Split signals into a list of epochs according to an events dataframe or an epoch duration.
+Split long signals into a list of consecutive epochs according to an events dataframe or an epoch duration.
 }
 \examples{
 epochs(list(rep(c(1,2,3,4),100),rep(c(5,6,7,8),100)),4,4,1,padding = 2)

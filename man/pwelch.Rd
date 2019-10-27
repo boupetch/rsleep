@@ -2,14 +2,14 @@
 % Please edit documentation in R/eeg.R
 \name{pwelch}
 \alias{pwelch}
-\title{pwelch psd}
+\title{Power spectral density using Welch's method.}
 \usage{
 pwelch(x, sRate, points = 0, overlap = 0, padding = 0, show = TRUE)
 }
 \arguments{
-\item{x}{todo}
+\item{x}{Signal vector.}
 
-\item{sRate}{todo}
+\item{sRate}{Sample rate of the signal.}
 
 \item{points}{todo}
 
@@ -23,8 +23,13 @@ pwelch(x, sRate, points = 0, overlap = 0, padding = 0, show = TRUE)
 peridodogram plotted or raw
 }
 \description{
-pwelch psd
+Power spectral density using Welch's method.
 }
 \examples{
-pwelch(sin(c(1:10000)), 200)
+x <- sin(c(1:10000))
+psd <- pwelch(sin(c(1:10000)), 200)
+head(psd)
+}
+\references{
+Welch, P. “The Use of Fast Fourier Transform for the Estimation of Power Spectra: A Method Based on Time Averaging over Short, Modified Periodograms.” IEEE Transactions on Audio and Electroacoustics 15, no. 2 (June 1967): 70–73. https://doi.org/10.1109/TAU.1967.1161901.
 }

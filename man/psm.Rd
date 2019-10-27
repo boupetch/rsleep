@@ -2,9 +2,9 @@
 % Please edit documentation in R/eeg.R
 \name{psm}
 \alias{psm}
-\title{sine multitaper psd}
+\title{Power spectral density using adaptive sine multitaper.}
 \usage{
-psm(x, sRate, length = 0)
+psm(x, sRate, length = 0, show = TRUE)
 }
 \arguments{
 \item{x}{Signal vector.}
@@ -12,13 +12,20 @@ psm(x, sRate, length = 0)
 \item{sRate}{Sample rate of the signal.}
 
 \item{length}{periodogram resolution. 0 default to not resize.}
+
+\item{show}{todo}
 }
 \value{
-peridodogram plotted or raw
+peridodogram plotted or raw.
 }
 \description{
-sine multitaper psd from psd r package
+Power spectral density using adaptive sine multitaper.
 }
 \examples{
-psm(sin(c(1:10000)), 200, 100)
+x <- sin(c(1:10000))
+psd <- psm(x, 200, 100)
+head(psd)
+}
+\references{
+Barbour, A. J. and R. L. Parker (2014), psd: Adaptive, sine multitaper power spectral density estimation for R, Computers & Geosciences, Volume 63, February 2014, Pages 1-8, ISSN 0098-3004, http://dx.doi.org/10.1016/j.cageo.2013.09.015
 }

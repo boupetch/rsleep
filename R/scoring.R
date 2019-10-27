@@ -225,13 +225,13 @@ score_psg <- function(
 #' Write batches from mice records
 #'
 #' @description Write batches from mice records
-#' @param records
-#' @param events
-#' @param batches_path
-#' @param batch_size
-#' @param classes_nb
-#' @param padding
-#' @param resample
+#' @param records Character. Records paths
+#' @param events List of events
+#' @param batches_path Path to write batches
+#' @param batch_size size of each batch
+#' @param classes_nb number of classes
+#' @param padding consecutive epochs to add
+#' @param resample resample rate
 #' @param verbose Boolean. Display or not status messages.
 #' @export
 write_batches_mice <- function(

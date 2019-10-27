@@ -2,7 +2,7 @@
 % Please edit documentation in R/eeg.R
 \name{bands_psd}
 \alias{bands_psd}
-\title{Computes spectral power of bands listed in the bands argument.}
+\title{Compute spectral power of bands listed in the bands argument.}
 \usage{
 bands_psd(bands, signal, sRate, normalize = c(0.5, 40),
   method = "pwelch")
@@ -25,5 +25,5 @@ A list of bands powers.
 `bands_psd` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
 }
 \examples{
-bands_psd(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
+bands_psd(bands = list(c(0,4),c(4,8)), signal = sin(c(1:10000)), sRate = 200)
 }

@@ -1,6 +1,6 @@
-#' Detects R peaks in raw ECG signal.
+#' Detect R peaks in raw ECG signal.
 #'
-#' @description Implements the first part of the Pan & Tompkins algorithms to detect R peaks from a raw ECG signal. Inspiration from https://zenodo.org/record/826614.
+#' @description `detect_rpeaks` implements the first part of the Pan & Tompkins algorithms to detect R peaks from a raw ECG signal.
 #' @references Pan, Jiapu, and Willis J. Tompkins. "A real-time QRS detection algorithm." IEEE Trans. Biomed. Eng 32, no. 3 (1985): 230-236.
 #' @param signal Numerical vector of ECG signal.
 #' @param sRate ECG signal sample rate.
@@ -11,13 +11,25 @@
 #' @param refractory Minimal space between peaks in milliseconds.
 #' @return A vector of each detected R peaks in seconds from the start.
 #' @export
-detect_rpeaks <- function(signal,
-                          sRate,
-                          lowcut = 0,
-                          highcut = 15,
-                          filter_order = 1,
-                          integration_window = 15,
-                          refractory = 200){
+#' @examples
+#' path <- paste0(tempdir(),"rec_1.dat")
+#' download.file("https://physionet.org/files/ecgiddb/1.0.0/Person_01/rec_1.dat?download",path)
+#' ecg <- readBin(path,integer(),500*30)
+#' peaks <- detect_rpeaks(ecg, sRate = 500)
+#' print(peaks)
+#' ecg.df <- data.frame(ECG = ecg,Seconds = c(1:length(ecg))/500)
+#' library(ggplot2)
+#' ggplot(ecg.df,aes(x = Seconds,y = ECG)) +
+#'   geom_line() + theme_bw() +
+#'   geom_vline(data.frame(p = peaks),mapping = aes(xintercept = p), linetype="dashed",color = "red")
+detect_rpeaks <- function(
+  signal,
+  sRate,
+  lowcut = 0,
+  highcut = 15,
+  filter_order = 1,
+  integration_window = 15,
+  refractory = 200){
 
   nyquist_freq = 0.5 * sRate
   low = lowcut / nyquist_freq

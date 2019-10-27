@@ -1,22 +1,3 @@
-#' Check events dataframe.
-#'
-#' @param e Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
-check_events <- function(e){
-  if(!("begin" %in% colnames(e))){
-    stop("Events dataframe must contain a 'begin' column.")
-  } else if(!("end" %in% colnames(e))){
-    stop("Events dataframe must contain a 'end' column.")
-  } else  if(!("event" %in% colnames(e))){
-    stop("Events dataframe must contain a 'event' column.")
-  } else if(!("POSIXt" %in% class(e$begin))){
-    stop("'begin' column must be a datetime.")
-  } else if(!("POSIXt" %in% class(e$end))){
-    stop("'end' column must be a datetime.")
-  } else if(!("character" %in% class(e$event))){
-    stop("'events' column must be character type.")
-  }
-}
-
 #' Get stages events related stats in a named vector.
 #'
 #' \code{stages_stats} computes stages related stats.

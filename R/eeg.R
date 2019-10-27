@@ -56,7 +56,7 @@ spectrogram <- function(signal,
   }
 }
 
-#' Computes spectral power of bands listed in the bands argument.
+#' Compute spectral power of bands listed in the bands argument.
 #'
 #' @description `bands_psd` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
 #' @param bands A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``
@@ -66,9 +66,14 @@ spectrogram <- function(signal,
 #' @param method pwelch or psm
 #' @return A list of bands powers.
 #' @examples
-#' bands_psd(bands = list(c(0,4),c(4,8)),signal = sin(c(1:10000)),sRate = 200)
+#' bands_psd(bands = list(c(0,4),c(4,8)), signal = sin(c(1:10000)), sRate = 200)
 #' @export
-bands_psd <- function(bands, signal , sRate, normalize = c(0.5,40), method="pwelch"){
+bands_psd <- function(
+  bands,
+  signal,
+  sRate,
+  normalize = c(0.5,40),
+  method= "pwelch"){
 
   if(method == "pwelch"){
     s <- pwelch(x = signal, sRate = sRate, points = 1000, show = FALSE)
@@ -92,18 +97,21 @@ bands_psd <- function(bands, signal , sRate, normalize = c(0.5,40), method="pwel
   })
 }
 
-#' pwelch psd
+#' Power spectral density using Welch's method.
 #'
-#' @description pwelch psd
-#' @param x todo
-#' @param sRate todo
+#' @description Power spectral density using Welch's method.
+#' @references Welch, P. “The Use of Fast Fourier Transform for the Estimation of Power Spectra: A Method Based on Time Averaging over Short, Modified Periodograms.” IEEE Transactions on Audio and Electroacoustics 15, no. 2 (June 1967): 70–73. https://doi.org/10.1109/TAU.1967.1161901.
+#' @param x Signal vector.
+#' @param sRate Sample rate of the signal.
 #' @param points todo
 #' @param overlap todo
 #' @param padding todo
 #' @param show todo
 #' @return peridodogram plotted or raw
 #' @examples
-#' pwelch(sin(c(1:10000)), 200)
+#' x <- sin(c(1:10000))
+#' psd <- pwelch(sin(c(1:10000)), 200)
+#' head(psd)
 #' @export
 pwelch <- function(x,
                    sRate,
@@ -141,17 +149,21 @@ pwelch <- function(x,
             "psd" = psd))
 }
 
-#' sine multitaper psd
+#' Power spectral density using adaptive sine multitaper.
 #'
-#' @description sine multitaper psd from psd r package
+#' @description Power spectral density using adaptive sine multitaper.
+#' @references Barbour, A. J. and R. L. Parker (2014), psd: Adaptive, sine multitaper power spectral density estimation for R, Computers & Geosciences, Volume 63, February 2014, Pages 1-8, ISSN 0098-3004, http://dx.doi.org/10.1016/j.cageo.2013.09.015
 #' @param x Signal vector.
 #' @param sRate Sample rate of the signal.
 #' @param length periodogram resolution. 0 default to not resize.
-#' @return peridodogram plotted or raw
+#' @param show todo
+#' @return peridodogram plotted or raw.
 #' @examples
-#' psm(sin(c(1:10000)), 200, 100)
+#' x <- sin(c(1:10000))
+#' psd <- psm(x, 200, 100)
+#' head(psd)
 #' @export
-psm <- function(x, sRate, length=0){
+psm <- function(x, sRate, length=0, show = TRUE){
 
   options(psd.ops=list(
     tapmin = 1,
@@ -193,5 +205,9 @@ psm <- function(x, sRate, length=0){
                      "hz" = hz)
   }
 
-  df
+  if (show == TRUE)
+    graphics::plot(hz, psd, type = "l", ylab = "PSD",
+                   xlab = "Hz",
+                   xaxs = "i")
+  invisible(df)
 }
