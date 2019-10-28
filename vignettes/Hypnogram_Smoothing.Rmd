@@ -15,6 +15,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+# Do not run chunks if files are not present.
+knitr::opts_chunk$set(
+  eval = all(file.exists(
+    "15012016HD.edf","15012016HD.csv")))
 ```
 
 ```{r setup}
