@@ -227,3 +227,34 @@ plot_hypnodensity <- function(hypnodensity,
     ggplot2::xlab("") + ggplot2::ylab("Stage likelihood") +
     ggplot2::scale_fill_manual(values = pal)
 }
+
+#' Smooth hypnograms epoch, simulating human scorers behaviour.
+#'
+#' @description Smooth hypnograms epoch, simulating human scorers behaviour.
+#' @references Liang, Sheng-Fu, Chin-En Kuo, Yu-Han Hu, Yu-Hsiang Pan, and Yung-Hung Wang. "Automatic stage scoring of single-channel sleep EEG by using multiscale entropy and autoregressive models." IEEE Transactions on Instrumentation and Measurement 61, no. 6 (2012): 1649-1657.
+#' @param hypnogram A hypnogram dataframe.
+#' @param event Central stage label.
+#' @param neighbors Extremities stages labels.
+#' @param count Number of consecutive central stages.
+#' @return A hypnogram dataframe.
+#' @examples
+#' hypnogram <- data.frame(begin = as.POSIXlt(c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
+#' hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), origin = "1970-01-01")
+#' hypnogram$event = c("REM","N2","REM")
+#' smooth_hypnogram(hypnogram, "N2","REM",1)
+#' @export
+smooth_hypnogram <- function(
+  hypnogram,
+  event = "N2",
+  neighbors = "REM",
+  count = 2){
+
+  for(i in c((1+count):(nrow(hypnogram)-count))){
+    if(hypnogram$event[i-1] == neighbors &&
+       hypnogram$event[i+count] == neighbors &&
+       all(hypnogram$event[c(i):c(i+count-1)] == event)){
+      hypnogram$event[c(i):c(i+count-1)] <- neighbors
+    }
+  }
+  hypnogram
+}

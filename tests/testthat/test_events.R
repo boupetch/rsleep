@@ -43,3 +43,18 @@ test_that("Events file check", {
   expect_error(hypnogram(events))
 
 })
+
+test_that::test_that("Hypnogram smoothing",{
+
+  hypnogram <- data.frame(
+    begin = as.POSIXlt(c(1536967800,1536967830,1536967860),
+                       origin = "1970-01-01"))
+  hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890),
+                              origin = "1970-01-01")
+  hypnogram$event = c("REM","N2","REM")
+  hypnogram <- smooth_hypnogram(hypnogram, "N2","REM", 1)
+
+  expect_true(all(hypnogram$event == "REM"))
+
+})
+

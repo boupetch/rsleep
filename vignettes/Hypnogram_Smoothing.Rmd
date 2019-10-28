@@ -1,0 +1,52 @@
+---
+title: "Hypnogram Smoothing"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Hypnogram_Smoothing}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rsleep)
+
+knitr::opts_chunk$set(
+  val = all(file.exists("15012016HD.edf","15012016HD.csv")))
+```
+
+```{r download_edf, eval=FALSE}
+download.file("https://osf.io/57j2u/download", "15012016HD.edf")
+```
+
+```{r  download_hypnogram, eval=FALSE}
+download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
+```
+
+```{r perform_prediction}
+hypnodensity <- score_psg("15012016HD.edf")
+```
+
+```{r smoothing}
+smoothed_hypnogram <- hypnodensity
+
+for(i in c(1:5)) 
+  smoothed_hypnogram <- smooth_hypnogram(smoothed_hypnogram, "N2", "REM",i)
+```
+
+```{r plot}
+gridExtra::grid.arrange(
+  plot_hypnogram(read_events_noxturnal("15012016HD.csv")) + ggtitle("Visual"),
+  plot_hypnogram(hypnodensity) + ggtitle("Algorithm"),
+  plot_hypnogram(smoothed_hypnogram) + ggtitle("Algorithm + Smoothing"),
+  nrow = 3)
+```
+
