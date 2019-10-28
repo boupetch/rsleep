@@ -78,7 +78,7 @@ bands_psd <- function(
   if(method == "pwelch"){
     s <- pwelch(x = signal, sRate = sRate, points = 1000, show = FALSE)
   } else if(method == "psm"){
-    s <- psm(x = signal, sRate = sRate)
+    s <- psm(x = signal, sRate = sRate, show = FALSE)
   } else{
     stop("Choose between \"pwelch\" and \"psm\" for psd estimation method.")
   }
@@ -113,7 +113,7 @@ bands_psd <- function(
 #' psd <- pwelch(sin(c(1:10000)), 200)
 #' head(psd)
 #' @export
-pwelch <- function(x,
+  pwelch <- function(x,
                    sRate,
                    points = 0,
                    overlap = 0,
