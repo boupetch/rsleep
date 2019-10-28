@@ -44,7 +44,7 @@ test_that("Events file check", {
 
 })
 
-test_that::test_that("Hypnogram smoothing",{
+test_that("Hypnogram smoothing",{
 
   hypnogram <- data.frame(
     begin = as.POSIXlt(c(1536967800,1536967830,1536967860),
