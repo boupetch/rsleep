@@ -16,6 +16,9 @@ test_that("Polysomnography scoring", {
   download.file("https://osf.io/57j2u/download", edf_path, quiet = TRUE)
   download.file("https://osf.io/h4ysj/download", csv_path, quiet = TRUE)
 
+  # Model
+  model <- chambon2018(6,6000)
+
   # Stages clasification
   hypnodensity <- score_psg(edf_path)
 
