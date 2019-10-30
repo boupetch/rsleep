@@ -21,11 +21,12 @@ knitr::opts_chunk$set(
     "15012016HD.edf","15012016HD.csv")))
 ```
 
+```{r include=FALSE}
+devtools::install_github("boupetch/rsleep")
+```
+
 ```{r setup}
 library(rsleep)
-
-knitr::opts_chunk$set(
-  val = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
 ```{r download_edf, eval=FALSE}
@@ -37,21 +38,21 @@ download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 ```
 
 ```{r perform_prediction}
-hypnodensity <- score_psg("15012016HD.edf")
+hypnodensity <- rsleep::score_psg("15012016HD.edf")
 ```
 
 ```{r smoothing}
 smoothed_hypnogram <- hypnodensity
 
 for(i in c(1:5)) 
-  smoothed_hypnogram <- smooth_hypnogram(smoothed_hypnogram, "N2", "REM",i)
+  smoothed_hypnogram <- rsleep::smooth_hypnogram(smoothed_hypnogram, "N2", "REM",i)
 ```
 
 ```{r plot}
 gridExtra::grid.arrange(
-  plot_hypnogram(read_events_noxturnal("15012016HD.csv")) + ggtitle("Visual"),
-  plot_hypnogram(hypnodensity) + ggtitle("Algorithm"),
-  plot_hypnogram(smoothed_hypnogram) + ggtitle("Algorithm + Smoothing"),
+  rsleep::plot_hypnogram(rsleep::read_events_noxturnal("15012016HD.csv")) + ggplot2::ggtitle("Visual"),
+  rsleep::plot_hypnogram(hypnodensity) + ggplot2::ggtitle("Algorithm"),
+  rsleep::plot_hypnogram(smoothed_hypnogram) + ggplot2::ggtitle("Algorithm + Smoothing"),
   nrow = 3)
 ```
 
