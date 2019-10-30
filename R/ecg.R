@@ -9,7 +9,7 @@
 #' @param filter_order Butterworth bandpass filter order value.
 #' @param integration_window Convolution window size.
 #' @param refractory Minimal space between peaks in milliseconds.
-#' @return A vector of each detected R peaks in seconds from the start.
+#' @return A numeric vector of detected R peaks, expressed in seconds from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
 #' @export
 #' @examples
 #' path <- paste0(tempdir(),"rec_1.dat")
@@ -17,6 +17,7 @@
 #' ecg <- readBin(path,integer(),500*30)
 #' peaks <- detect_rpeaks(ecg, sRate = 500)
 #' print(peaks)
+#'
 #' ecg.df <- data.frame(ECG = ecg,Seconds = c(1:length(ecg))/500)
 #' library(ggplot2)
 #' ggplot(ecg.df,aes(x = Seconds,y = ECG)) +
@@ -39,7 +40,10 @@ detect_rpeaks <- function(
   bandpass <- signal::butter(n = filter_order,
                              W = c((lowcut / (0.5 * sRate)), high),
                              type = "pass")
-  signal_filt <- signal::filtfilt(bandpass, c(rep(signal[1],sRate),signal,rep(signal[length(signal)],sRate)))
+  signal_filt <- signal::filtfilt(
+    bandpass,
+    c(rep(signal[1],sRate),
+      signal,rep(signal[length(signal)],sRate)))
   signal_filt <- signal_filt[(sRate+1):(length(signal_filt)-sRate)]
 
   # Apply diff
@@ -49,15 +53,17 @@ detect_rpeaks <- function(
   signal_squared <- signal_diff^2
   signal_squared <- c(signal_squared[1], signal_squared)
 
-  # Apply convolution on chunks of signal (100000 values) to avoid an unidentified bug.
+  # Apply convolution on chunks of signal (100000 values)
+  # to avoid an unidentified bug.
   split_ecg <- split(signal_squared, ceiling(seq_along(signal_squared)/100000))
-  split_ecg2 <- lapply(split_ecg,
-                       function(x){
-                         xc <- stats::convolve(x,rep(1,integration_window),type="open")
-                         difflen <- length(xc) - length(x)
-                         xc <- xc[(difflen/2+1):(length(xc)-(difflen/2))]
-                         xc
-                       })
+  split_ecg2 <- lapply(
+    split_ecg,
+    function(x){
+      xc <- stats::convolve(x,rep(1,integration_window),type="open")
+      difflen <- length(xc) - length(x)
+      xc <- xc[(difflen/2+1):(length(xc)-(difflen/2))]
+      xc
+      })
   signal_conv <- unlist(split_ecg2,use.names = FALSE)
 
   # Detect peak on preprocessed signal.

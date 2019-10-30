@@ -23,7 +23,7 @@ detect_rpeaks(signal, sRate, lowcut = 0, highcut = 15,
 \item{refractory}{Minimal space between peaks in milliseconds.}
 }
 \value{
-A vector of each detected R peaks in seconds from the start.
+A numeric vector of detected R peaks, expressed in seconds from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
 }
 \description{
 `detect_rpeaks` implements the first part of the Pan & Tompkins algorithms to detect R peaks from a raw ECG signal.
@@ -34,6 +34,7 @@ download.file("https://physionet.org/files/ecgiddb/1.0.0/Person_01/rec_1.dat?dow
 ecg <- readBin(path,integer(),500*30)
 peaks <- detect_rpeaks(ecg, sRate = 500)
 print(peaks)
+
 ecg.df <- data.frame(ECG = ecg,Seconds = c(1:length(ecg))/500)
 library(ggplot2)
 ggplot(ecg.df,aes(x = Seconds,y = ECG)) +
