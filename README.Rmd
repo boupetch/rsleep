@@ -26,16 +26,16 @@ rsleep is a R package providing tools for sleep data management, visualization a
 
 ## Installation
 
+Development version (Recommended) can be directly installed from [Github](https://github.com/) using the `devtools` package :
+
+```{r install_github, results="hide", message=FALSE}
+devtools::install_github("boupetch/rsleep")
+```
+
 Stable version can be downloaded and installed from [CRAN](https://cran.r-project.org/) @hornik2012comprehensive :
 
 ```{r install_cran, results="hide"}
 install.packages("rsleep", repos = "https://cloud.r-project.org")
-```
-
-Development version can be directly installed from [Github](https://github.com/) using the `devtools` package :
-
-```{r install_github, results="hide", message=FALSE}
-devtools::install_github("boupetch/rsleep")
 ```
 
 ## Usage
