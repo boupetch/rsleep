@@ -56,23 +56,24 @@ spectrogram <- function(signal,
   }
 }
 
-#' Compute spectral power of bands listed in the bands argument.
+#' Compute power spectral density of bands listed in the bands argument.
 #'
-#' @description `bands_psd` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
-#' @param bands A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``
+#' @description `bands_psd` calculates power spectral densities estimates on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
 #' @param signal Numerical vector of the signal.
 #' @param sRate Signal sample rate in Hertz.
-#' @param normalize A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.
-#' @param method pwelch or psm
+#' @param bands A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``
+#' @param normalize A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results. Defaults to FALSE.
+#' @param method Character. Method to use to compute power spectral density. "pwelch" or "psm". Defaults to "pwelch".
 #' @return A list of bands powers.
 #' @examples
-#' bands_psd(bands = list(c(0,4),c(4,8)), signal = sin(c(1:10000)), sRate = 200)
+#' signal <- sin(seq(0,100,0.01))
+#' bands_psd(bands = list(c(0,4),c(4,8)), signal = signal, sRate = 200)
 #' @export
 bands_psd <- function(
-  bands,
   signal,
   sRate,
-  normalize = c(0.5,40),
+  bands,
+  normalize = FALSE,
   method= "pwelch"){
 
   if(method == "pwelch"){
@@ -206,7 +207,7 @@ psm <- function(x, sRate, length=0, show = TRUE){
   }
 
   if (show == TRUE)
-    graphics::plot(hz, psd, type = "l", ylab = "PSD",
+    graphics::plot(df$hz, df$psd, type = "l", ylab = "PSD",
                    xlab = "Hz",
                    xaxs = "i")
   invisible(df)
