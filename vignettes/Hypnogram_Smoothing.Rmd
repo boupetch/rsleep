@@ -1,6 +1,5 @@
 ---
 title: "Hypnogram Smoothing"
-output: rmarkdown::html_vignette
 output: 
   rmarkdown::html_vignette:
      toc: true
