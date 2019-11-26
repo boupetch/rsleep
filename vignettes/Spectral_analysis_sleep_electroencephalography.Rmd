@@ -189,7 +189,7 @@ bands_df$stage <- hypnogram$event
 
 Now that the epochs bands PSD and their corresponding stages are stored in a dataframe, they can easily be plotted using boxplots from `ggplot2`.
 
-```{r bands_plot, fig.width=7, fig.height=10, message=FALSE, error=FALSE}
+```{r bands_plot, fig.width=7, fig.height=7, message=FALSE, error=FALSE}
 bands_df_long <- reshape2::melt(bands_df, "stage")
 
 palette <-c("#F98400", "#F2AD00", "#00A08A", "#FF0000", "#5BBCD6")
@@ -205,6 +205,21 @@ ggplot(bands_df_long,
 ```
 
 Each stage show a different bands PSD profile. Bands greatly simplify the EEG spectrum. However, a lot of data get lost in this aggregation process. 
+
+### Ratios
+
+Band powers ratios are often used. Here is the Beta/Delta ratio visualized over a night:
+
+```{r}
+
+hypnogram$bd <- bands_df$Beta/bands_df$Delta
+hypnogram$event <- as.character(hypnogram$event)
+gridExtra::grid.arrange(
+  rsleep::plot_hypnogram(hypnogram) + ggplot2::ggtitle("Visual scoring"),
+  ggplot(hypnogram, aes(as.POSIXct(begin),bd)) + geom_line() + ggplot2::ggtitle("EEG Beta/Delta ratio") + xlab("") + ylab(""),
+  nrow = 2)
+
+```
 
 ## Machine learning
 
