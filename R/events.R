@@ -228,7 +228,7 @@ plot_hypnodensity <- function(hypnodensity,
     ggplot2::scale_fill_manual(values = pal)
 }
 
-#' Smooth hypnograms epoch, simulating human scorers behaviour.
+#' Smooth hypnogram epoch, simulating human scorers behaviour.
 #'
 #' @description Smooth hypnograms epoch, simulating human scorers behaviour.
 #' @references Liang, Sheng-Fu, Chin-En Kuo, Yu-Han Hu, Yu-Hsiang Pan, and Yung-Hung Wang. "Automatic stage scoring of single-channel sleep EEG by using multiscale entropy and autoregressive models." IEEE Transactions on Instrumentation and Measurement 61, no. 6 (2012): 1649-1657.
@@ -256,5 +256,64 @@ smooth_hypnogram <- function(
       hypnogram$event[c(i):c(i+count-1)] <- neighbors
     }
   }
+  hypnogram
+}
+
+#' Smooth hypnogram according to the 11 rules described by Liang & Al.
+#'
+#' @description Smooth hypnogram according to the 11 rules described by Liang & Al.
+#' @references Liang, Sheng-Fu, Chin-En Kuo, Yu-Han Hu, and Yu-Shian Cheng. “A Rule-Based Automatic Sleep Staging Method.” Journal of Neuroscience Methods 205, no. 1 (March 2012): 169–76. https://doi.org/10.1016/j.jneumeth.2011.12.022.
+#' @param hypnogram A hypnogram dataframe.
+#' @return A smoothed hypnogram dataframe.
+#' @export
+smooth_liang2012 <- function(hypnogram){
+
+  # Rule 1: Any REM epochs before the very first appearance of S2 are replaced
+  # with S1 epochs.
+  hypnogram$event[hypnogram$event == "REM" &&
+                    hypnogram$begin < min(hypnogram$begin[hypnogram$event == "N2"])] <- "N1"
+
+  # Rule 2: Wake, REM, S2 -> Wake, S1, S2
+  for(i in c(1:(nrow(hypnogram)-2))){
+    if(all(hypnogram$event[i:(i+2)] == c("AWA","REM","N2"))){
+      hypnogram$event[i:(i+2)] <- c("AWA","N1","N2")
+    }
+  }
+
+  # Rule 3: S1, REM, S2 -> S1, S1, S2
+  for(i in c(1:(nrow(hypnogram)-2))){
+    if(all(hypnogram$event[i:(i+2)] == c("N1","REM","N2"))){
+      hypnogram$event[i:(i+2)] <- c("N1","N1","N2")
+    }
+  }
+
+  # Rule 4: S2, S1, S2 ->  S2, S2, S2
+  hypnogram <- smooth_hypnogram(hypnogram, "N1", "N2", 1)
+
+  # Rule 5: S2, SWS, S2 -> S2, S2, S2
+  hypnogram <- smooth_hypnogram(hypnogram, "N3", "N2", 1)
+
+  # Rule 6: S2, REM, S2 -> S2, S2, S2
+  hypnogram <- smooth_hypnogram(hypnogram, "REM", "N2", 1)
+
+  # Rule 7: SWS, S2, SWS -> SWS, SWS, SWS
+  hypnogram <- smooth_hypnogram(hypnogram, "N2", "N3", 1)
+
+  # Rule 8: REM, Wake, REM -> REM, REM, REM
+  hypnogram <- smooth_hypnogram(hypnogram, "AWA", "REM", 1)
+
+  # Rule 9: REM, S1, REM -> REM, REM, REM
+  hypnogram <- smooth_hypnogram(hypnogram, "N1", "REM", 1)
+
+  # Rule 10: REM, S2, REM -> REM, REM, REM
+  hypnogram <- smooth_hypnogram(hypnogram, "N2", "REM", 1)
+
+  # Rule 11: Mov, REM, S2 -> Mov, S1, S2
+  for(i in c(1:(nrow(hypnogram)-2))){
+    if(all(hypnogram$event[i:(i+2)] == c("MOV","REM","N2"))){
+      hypnogram$event[i:(i+2)] <- c("MOV","N1","N2")
+    }
+  }
+
   hypnogram
 }

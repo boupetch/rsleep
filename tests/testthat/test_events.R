@@ -56,5 +56,8 @@ test_that("Hypnogram smoothing",{
 
   expect_true(all(hypnogram$event == "REM"))
 
+  smooth_liang2012(
+    read_events_noxturnal("data/noxturnal_events_example_unicode.csv"))
+
 })
 

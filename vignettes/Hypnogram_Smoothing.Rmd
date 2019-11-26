@@ -1,6 +1,12 @@
 ---
 title: "Hypnogram Smoothing"
 output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 3
+csl: vignettes.csl
+bibliography: Hypnogram_Smoothing.bibtex
 vignette: >
   %\VignetteIndexEntry{Hypnogram_Smoothing}
   %\VignetteEncoding{UTF-8}
@@ -8,6 +14,8 @@ vignette: >
 editor_options: 
   chunk_output_type: console
 ---
+
+# Creating a hypnogram
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -41,6 +49,8 @@ download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
 hypnodensity <- rsleep::score_psg("15012016HD.edf")
 ```
 
+# Simple smoothing
+
 ```{r smoothing}
 smoothed_hypnogram <- hypnodensity
 
@@ -56,3 +66,18 @@ gridExtra::grid.arrange(
   nrow = 3)
 ```
 
+# Liang & Al. smoothing
+
+@liangRulebasedAutomaticSleep2012
+
+```{r}
+hypnogram_liang2012 <- smooth_liang2012(hypnodensity)
+
+gridExtra::grid.arrange(
+  rsleep::plot_hypnogram(rsleep::read_events_noxturnal("15012016HD.csv")) + ggplot2::ggtitle("Visual"),
+  rsleep::plot_hypnogram(hypnodensity) + ggplot2::ggtitle("Algorithm"),
+  rsleep::plot_hypnogram(hypnogram_liang2012) + ggplot2::ggtitle("Algorithm + Liang 2012 Smoothing"),
+  nrow = 3)
+```
+
+# References
