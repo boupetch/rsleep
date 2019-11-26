@@ -13,3 +13,4 @@
   * Added automatic sleep staging functions and vignette.
   * Added `read_stages_compumedics()` and `write_hypnogram_compumedics()` functions.
   * Removed `examples example_ecg_200hz` and `example_hypnogram_30s`.
+  * Added `smooth_hypnogram()` and `smooth_liang2012()`

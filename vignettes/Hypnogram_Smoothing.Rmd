@@ -71,7 +71,7 @@ gridExtra::grid.arrange(
 @liangRulebasedAutomaticSleep2012
 
 ```{r}
-hypnogram_liang2012 <- smooth_liang2012(hypnodensity)
+hypnogram_liang2012 <- rsleep::smooth_liang2012(hypnodensity)
 
 gridExtra::grid.arrange(
   rsleep::plot_hypnogram(rsleep::read_events_noxturnal("15012016HD.csv")) + ggplot2::ggtitle("Visual"),
