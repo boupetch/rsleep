@@ -371,25 +371,27 @@ score_mice <- function(
 
     epoch <- lapply(channels,function(x){
 
+      padding_samples <- s[[x]]$sRate*8
+      
       if(i <= padding){
 
         cs <- s[[x]]$signal[
           ((1+((i-1)*s[[x]]$sRate*4))):
-            ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4))+4000)]
-        cs <- c(rep(0,4000),cs)
+            ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4))+padding_samples)]
+        cs <- c(rep(0,padding_samples),cs)
 
       } else if (i >= (length(epochs) - padding)){
 
         cs <- s[[x]]$signal[
-          ((1+((i-1)*s[[x]]$sRate*4))-4000):
+          ((1+((i-1)*s[[x]]$sRate*4))-padding_samples):
             ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4)))]
-        cs <- c(cs,rep(0,4000))
+        cs <- c(cs,rep(0,padding_samples))
 
       } else {
 
         cs <- s[[x]]$signal[
-          ((1+((i-1)*s[[x]]$sRate*4))-4000):
-            ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4))+4000)]
+          ((1+((i-1)*s[[x]]$sRate*4))-padding_samples):
+            ((((i-1)*s[[x]]$sRate*4)+(s[[x]]$sRate*4))+padding_samples)]
 
       }
 
