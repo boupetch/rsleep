@@ -183,6 +183,10 @@ score_psg <- function(
                    resample = 70,
                    epoch = 30,
                    padding = 1)
+  
+  while(length(epochs[[length(epochs)]]) != length(epochs[[1]])){
+    epochs[[length(epochs)]] <- NULL
+  }
 
   if(verbose) message("Normalizing signals...")
 
