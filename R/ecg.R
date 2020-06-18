@@ -77,9 +77,9 @@ detect_rpeaks <- function(
   refractory <- sRate*(refractory/1000)
   x <- signal_conv
   for(i in c(2:(length(x)-1))){
-    if((x[i] > limit) &
-       (x[i] > x[i-1]) &
-       (x[i] > x[i+1]) &
+    if((x[i] > limit) &&
+       (x[i] > x[i-1]) &&
+       (x[i] > x[i+1]) &&
        ((i - peaks[length(peaks)]) > refractory)){
       peaks <- c(peaks,i)
     }
