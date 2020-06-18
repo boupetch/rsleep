@@ -4,8 +4,16 @@
 \alias{detect_rpeaks}
 \title{Detect R peaks in raw ECG signal.}
 \usage{
-detect_rpeaks(signal, sRate, lowcut = 0, highcut = 15,
-  filter_order = 1, integration_window = 15, refractory = 200)
+detect_rpeaks(
+  signal,
+  sRate,
+  lowcut = 0,
+  highcut = 15,
+  filter_order = 1,
+  integration_window = 15,
+  refractory = 200,
+  return_index = FALSE
+)
 }
 \arguments{
 \item{signal}{Numerical vector of ECG signal.}
@@ -21,9 +29,13 @@ detect_rpeaks(signal, sRate, lowcut = 0, highcut = 15,
 \item{integration_window}{Convolution window size.}
 
 \item{refractory}{Minimal space between peaks in milliseconds.}
+
+\item{return_index}{If `TRUE`, the index for each R peak is returned instead of the timing.}
 }
 \value{
-A numeric vector of detected R peaks, expressed in seconds from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
+A numeric vector of detected R peaks, expressed in seconds* from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
+
+*(or samples if `return_index` is `TRUE`)
 }
 \description{
 `detect_rpeaks` implements the first part of the Pan & Tompkins algorithms to detect R peaks from a raw ECG signal.
