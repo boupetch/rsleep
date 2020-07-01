@@ -9,7 +9,10 @@
 #' @param filter_order Butterworth bandpass filter order value.
 #' @param integration_window Convolution window size.
 #' @param refractory Minimal space between peaks in milliseconds.
-#' @return A numeric vector of detected R peaks, expressed in seconds from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
+#' @param return_index If TRUE, the index for each R peak is returned instead of the timing. 
+#' @return A numeric vector of detected R peaks, expressed in seconds* from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
+#' 
+#' *(or samples if return_index is TRUE)
 #' @export
 #' @examples
 #' path <- paste0(tempdir(),"rec_1.dat")
@@ -30,7 +33,8 @@ detect_rpeaks <- function(
   highcut = 15,
   filter_order = 1,
   integration_window = 15,
-  refractory = 200){
+  refractory = 200,
+  return_index = FALSE){
 
   nyquist_freq = 0.5 * sRate
   low = lowcut / nyquist_freq
@@ -73,15 +77,17 @@ detect_rpeaks <- function(
   refractory <- sRate*(refractory/1000)
   x <- signal_conv
   for(i in c(2:(length(x)-1))){
-    if((x[i] > limit) &
-       (x[i] > x[i-1]) &
-       (x[i] > x[i+1]) &
+    if((x[i] > limit) &&
+       (x[i] > x[i-1]) &&
+       (x[i] > x[i+1]) &&
        ((i - peaks[length(peaks)]) > refractory)){
       peaks <- c(peaks,i)
     }
   }
   peaks <- peaks[2:length(peaks)]
-
+  
+  if(return_index) return(peaks)
+  
   return(peaks/sRate)
 
 }
