@@ -9,6 +9,8 @@ addons:
       - python3
 
 before_install:
+  - apt-get update
+  - apt-get install -y python3
   - Rscript -e 'install.packages("devtools"); devtools::install_github("rstudio/keras"); library(keras); install_keras()'
 
 r_packages:
