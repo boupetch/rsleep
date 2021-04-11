@@ -30,12 +30,12 @@ detect_rpeaks(
 
 \item{refractory}{Minimal space between peaks in milliseconds.}
 
-\item{return_index}{If `TRUE`, the index for each R peak is returned instead of the timing.}
+\item{return_index}{If TRUE, the index for each R peak is returned instead of the timing.}
 }
 \value{
 A numeric vector of detected R peaks, expressed in seconds* from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
 
-*(or samples if `return_index` is `TRUE`)
+*(or samples if return_index is TRUE)
 }
 \description{
 `detect_rpeaks` implements the first part of the Pan & Tompkins algorithms to detect R peaks from a raw ECG signal.

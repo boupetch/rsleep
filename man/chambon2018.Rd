@@ -4,8 +4,7 @@
 \alias{chambon2018}
 \title{Deep Learning Architecture for Temporal Sleep Stage Classification model implementation in Keras.}
 \usage{
-chambon2018(channels = 6, samples = 6300, weights = FALSE,
-  verbose = TRUE)
+chambon2018(channels = 6, samples = 6300, weights = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{channels}{Integer. Number of channels in each input.}

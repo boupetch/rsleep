@@ -4,8 +4,7 @@
 \alias{write_channel}
 \title{Write a timeserie to disk using Morpheo Data Format (MDF) guidelines.}
 \usage{
-write_channel(channel, signals, headers, mdfPath,
-  endian = .Platform$endian)
+write_channel(channel, signals, headers, mdfPath, endian = .Platform$endian)
 }
 \arguments{
 \item{channel}{character. Channel name.}

@@ -1,8 +1,13 @@
 skip_if_no_keras <- function(version = NULL) {
   if (!keras::is_keras_available(version))
     # nocov start
-    skip("Required keras version not available for testing")
+    skip("Required keras version not available for testing.")
     # nocov end
+  if (.Platform$OS.type != "linux"){
+    # nocov start
+    skip("Linux required for deep-learning functionalities.")
+    # nocov end
+  }
 }
 
 test_that("Polysomnography scoring", {

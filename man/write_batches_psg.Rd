@@ -4,9 +4,16 @@
 \alias{write_batches_psg}
 \title{Generates files batches from PSG data.}
 \usage{
-write_batches_psg(records, events, batches_path = tempdir(),
+write_batches_psg(
+  records,
+  events,
+  batches_path = tempdir(),
   channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1", "1-2"),
-  resample = 70, padding = 1, batches_size = 1024, verbose = TRUE)
+  resample = 70,
+  padding = 1,
+  batches_size = 1024,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{records}{Character vector of EDF files paths to be included in the train batches.}

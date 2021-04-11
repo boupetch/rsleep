@@ -4,9 +4,16 @@
 \alias{write_batches_mice}
 \title{Write batches from mice records}
 \usage{
-write_batches_mice(records, events, batches_path = "./",
-  batch_size = 128, classes_nb = 3, padding = 2, resample = 400,
-  verbose = TRUE)
+write_batches_mice(
+  records,
+  events,
+  batches_path = "./",
+  batch_size = 128,
+  classes_nb = 3,
+  padding = 2,
+  resample = 400,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{records}{Character. Records paths}

@@ -4,8 +4,14 @@
 \alias{epochs}
 \title{Split signals into  epochs according to an events dataframe or an epoch duration.}
 \usage{
-epochs(signals, sRates, resample = max(sRates), epoch = 30,
-  startTime = 0, padding = 0)
+epochs(
+  signals,
+  sRates,
+  resample = max(sRates),
+  epoch = 30,
+  startTime = 0,
+  padding = 0
+)
 }
 \arguments{
 \item{signals}{A list of numeric vectors containing signals, or a single vector containing one signal.}

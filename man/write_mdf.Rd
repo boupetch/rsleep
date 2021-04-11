@@ -6,8 +6,13 @@
 Target directory is erased if it already exists. Signals are stored in binary file,
 events and metadata in JavaScript Object Notation (JSON) files.}
 \usage{
-write_mdf(edfPath, mdfPath, channels = c(NA), events = c(),
-  endian = .Platform$endian)
+write_mdf(
+  edfPath,
+  mdfPath,
+  channels = c(NA),
+  events = c(),
+  endian = .Platform$endian
+)
 }
 \arguments{
 \item{edfPath}{character. European Data Format (EDF) file path.}

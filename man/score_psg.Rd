@@ -4,9 +4,12 @@
 \alias{score_psg}
 \title{Score 30 seconds epochs from European Data Format (EDF) files.}
 \usage{
-score_psg(edf, channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1",
-  "1-2"), model = chambon2018(6, 3 * 30 * 70, TRUE, TRUE),
-  verbose = TRUE)
+score_psg(
+  edf,
+  channels = c("C3-M2", "C4-M1", "O1-M2", "E1-M2", "E2-M1", "1-2"),
+  model = chambon2018(6, 3 * 30 * 70, TRUE, TRUE),
+  verbose = TRUE
+)
 }
 \arguments{
 \item{edf}{Character. European Data Format (EDF) file path.}

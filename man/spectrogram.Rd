@@ -4,10 +4,18 @@
 \alias{spectrogram}
 \title{Plot the spectrogram of signal.}
 \usage{
-spectrogram(signal, sRate, maxFreq = 25, n = 1024, window = n,
-  overlap = 0, cols = c(rep("#3B9AB2", 9), "#78B7C5", "#EBCC2A",
-  "#E1AF00", rep("#F21A00", 6)), freq = 4, plot = TRUE,
-  startTime = as.POSIXct("1970/01/01 00:00:00"))
+spectrogram(
+  signal,
+  sRate,
+  maxFreq = 25,
+  n = 1024,
+  window = n,
+  overlap = 0,
+  cols = c(rep("#3B9AB2", 9), "#78B7C5", "#EBCC2A", "#E1AF00", rep("#F21A00", 6)),
+  freq = 4,
+  plot = TRUE,
+  startTime = as.POSIXct("1970/01/01 00:00:00")
+)
 }
 \arguments{
 \item{signal}{Numerical vector of the signal.}

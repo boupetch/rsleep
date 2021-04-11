@@ -2,28 +2,28 @@
 % Please edit documentation in R/eeg.R
 \name{bands_psd}
 \alias{bands_psd}
-\title{Compute spectral power of bands listed in the bands argument.}
+\title{Compute power spectral density of bands listed in the bands argument.}
 \usage{
-bands_psd(bands, signal, sRate, normalize = c(0.5, 40),
-  method = "pwelch")
+bands_psd(signal, sRate, bands, normalize = FALSE, method = "pwelch")
 }
 \arguments{
-\item{bands}{A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``}
-
 \item{signal}{Numerical vector of the signal.}
 
 \item{sRate}{Signal sample rate in Hertz.}
 
-\item{normalize}{A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results.}
+\item{bands}{A list of bands to compute with lower and upper limits in the form `list(c(0,4),c(4,8))``}
 
-\item{method}{pwelch or psm}
+\item{normalize}{A band to normalize (divide) by. Defaults to `c(0.5,40)`. Can be set up to FALSE for raw results. Defaults to FALSE.}
+
+\item{method}{Character. Method to use to compute power spectral density. "pwelch" or "psm". Defaults to "pwelch".}
 }
 \value{
 A list of bands powers.
 }
 \description{
-`bands_psd` calculates power spectral densities estimates using Welch's method on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
+`bands_psd` calculates power spectral densities estimates on bands. Bands are computed from spectrogram bands equal or greater than lower limit and inferior to the upper limit.
 }
 \examples{
-bands_psd(bands = list(c(0,4),c(4,8)), signal = sin(c(1:10000)), sRate = 200)
+signal <- sin(seq(0,100,0.01))
+bands_psd(bands = list(c(0,4),c(4,8)), signal = signal, sRate = 200)
 }

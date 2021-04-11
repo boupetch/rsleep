@@ -2,10 +2,9 @@
 % Please edit documentation in R/events.R
 \name{smooth_hypnogram}
 \alias{smooth_hypnogram}
-\title{Smooth hypnograms epoch, simulating human scorers behaviour.}
+\title{Smooth hypnogram epoch, simulating human scorers behaviour.}
 \usage{
-smooth_hypnogram(hypnogram, event = "N2", neighbors = "REM",
-  count = 2)
+smooth_hypnogram(hypnogram, event = "N2", neighbors = "REM", count = 2)
 }
 \arguments{
 \item{hypnogram}{A hypnogram dataframe.}

@@ -4,8 +4,7 @@
 \alias{plot_hypnodensity}
 \title{Plot a hypnodensity graph using `ggplot2`.}
 \usage{
-plot_hypnodensity(hypnodensity, stages = c("AWA", "REM", "N1", "N2",
-  "N3"))
+plot_hypnodensity(hypnodensity, stages = c("AWA", "REM", "N1", "N2", "N3"))
 }
 \arguments{
 \item{hypnodensity}{A hypnodensity dataframe as returned by the `score_stages_edf` function.}

@@ -4,8 +4,7 @@
 \alias{schwabedal2018}
 \title{Automated Classification of Sleep Stages in Mice with Deep Learning model implementation in Keras.}
 \usage{
-schwabedal2018(channels = 2, samples = 8000, weights = FALSE,
-  verbose = TRUE)
+schwabedal2018(channels = 2, samples = 8000, weights = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{channels}{Number of channels in each input.}

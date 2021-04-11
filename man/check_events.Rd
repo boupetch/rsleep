@@ -9,11 +9,6 @@ check_events(events)
 check_events(events)
 }
 \arguments{
-\item{events}{Events dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.}
-
-\item{events}{Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}
-Check events dataframe format.}
-
 \item{events}{Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.}
 }
 \value{
