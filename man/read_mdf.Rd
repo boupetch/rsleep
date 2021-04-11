@@ -19,23 +19,6 @@ A list.
 \description{
 Read a Morpheo Data Format (MDF) directory to a list.
 }
-\examples{
-\donttest{
-download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download",
-paste0(tempdir(),"/15012016HD.edf"))
-download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download",
-paste0(tempdir(),"15012016HD.csv"))
-mdfPath = paste0(tempdir(),"/15012016HD/")
-channels = c("C3-M2","ECG")
-events = read_events_noxturnal(paste0(tempdir(),"15012016HD.csv"))
-write_mdf(paste0(tempdir(),"/15012016HD.edf"),
-    mdfPath,
-    channels,
-    events
-)
-mdf <- read_mdf(paste0(tempdir(),"/15012016HD.edf"))
-}
-}
 \references{
 P. Bouchequet, D. Jin, G. Solelhac, M. Chennaoui, D. Leger, "Morpheo Data Format (MDF), un nouveau format de données simple, robuste et performant pour stocker et analyser les enregistrements de sommeil", Médecine du Sommeil, vol. 15, n 1, p. 48/49, march 2018.
 }

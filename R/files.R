@@ -283,22 +283,6 @@ read_stages_compumedics <- function(txt, startTime){
 #' @param channels character. Channels to read.
 #' @param metadata boolean. Read or not the metadata.
 #' @return A list.
-#' @examples
-#' \donttest{
-#' download.file("http://cloud.frenchkpi.com/s/65cm6DMq7SYKQ6J/download",
-#' paste0(tempdir(),"/15012016HD.edf"))
-#' download.file("http://cloud.frenchkpi.com/s/wreGqkitWNnWwnP/download",
-#' paste0(tempdir(),"15012016HD.csv"))
-#' mdfPath = paste0(tempdir(),"/15012016HD/")
-#' channels = c("C3-M2","ECG")
-#' events = read_events_noxturnal(paste0(tempdir(),"15012016HD.csv"))
-#' write_mdf(paste0(tempdir(),"/15012016HD.edf"),
-#'     mdfPath,
-#'     channels,
-#'     events
-#' )
-#' mdf <- read_mdf(paste0(tempdir(),"/15012016HD.edf"))
-#' }
 #' @export
 read_mdf <- function(mdfPath, channels = c(NA), metadata = TRUE) {
 
