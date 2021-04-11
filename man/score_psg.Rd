@@ -16,9 +16,9 @@ score_psg(
 
 \item{channels}{A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.}
 
-\item{verbose}{Boolean. Display or not status messages.}
+\item{model}{The Keras model.}
 
-\item{model_path}{The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.}
+\item{verbose}{Boolean. Display or not status messages.}
 }
 \value{
 A dataframe containing predicted hypnodensity values of the record.

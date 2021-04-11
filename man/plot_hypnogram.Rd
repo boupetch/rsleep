@@ -7,6 +7,8 @@
 plot_hypnogram(events, labels = c("N3", "N2", "N1", "REM", "AWA"))
 }
 \arguments{
+\item{events}{Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}}
+
 \item{labels}{Sleep stages labels. Defaults to \code{c("N3","N2","N1","REM","AWA")}.}
 }
 \value{
@@ -16,13 +18,17 @@ a ggplot object.
 Plot a hypnogram from an events dataframe.
 }
 \examples{
-hypnogram <- data.frame(begin = as.POSIXlt(c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
-hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), origin = "1970-01-01")
+hypnogram <- data.frame(begin = as.POSIXlt(
+c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
+hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), 
+origin = "1970-01-01")
 hypnogram$event = c("N3","N3","REM")
 plot_hypnogram(hypnogram)
 
 fpath <- paste0(tempdir(),"SC4001EC-Hypnogram.edf")
-download.file("https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4001EC-Hypnogram.edf?download",fpath)
+furl <- paste0("https://www.physionet.org/files/sleep-edfx/1.0.0/",
+"sleep-cassette/SC4001EC-Hypnogram.edf?download")
+download.file(furl,fpath)
 hypnogram <- read_events_sleepedfx(fpath)
 plot_hypnogram(hypnogram)
 }

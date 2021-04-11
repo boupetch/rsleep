@@ -117,16 +117,21 @@ check_events <- function(events){
 #' Plot a hypnogram from an events dataframe.
 #'
 #' @description Plot a hypnogram from an events dataframe.
+#' @param events Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}
 #' @param labels Sleep stages labels. Defaults to \code{c("N3","N2","N1","REM","AWA")}.
 #' @return a ggplot object.
 #' @examples
-#' hypnogram <- data.frame(begin = as.POSIXlt(c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
-#' hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), origin = "1970-01-01")
+#' hypnogram <- data.frame(begin = as.POSIXlt(
+#' c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
+#' hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), 
+#' origin = "1970-01-01")
 #' hypnogram$event = c("N3","N3","REM")
 #' plot_hypnogram(hypnogram)
 #'
 #' fpath <- paste0(tempdir(),"SC4001EC-Hypnogram.edf")
-#' download.file("https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4001EC-Hypnogram.edf?download",fpath)
+#' furl <- paste0("https://www.physionet.org/files/sleep-edfx/1.0.0/",
+#' "sleep-cassette/SC4001EC-Hypnogram.edf?download")
+#' download.file(furl,fpath)
 #' hypnogram <- read_events_sleepedfx(fpath)
 #' plot_hypnogram(hypnogram)
 #' @export
@@ -238,8 +243,10 @@ plot_hypnodensity <- function(hypnodensity,
 #' @param count Number of consecutive central stages.
 #' @return A hypnogram dataframe.
 #' @examples
-#' hypnogram <- data.frame(begin = as.POSIXlt(c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
-#' hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), origin = "1970-01-01")
+#' hypnogram <- data.frame(begin = as.POSIXlt(
+#' c(1536967800,1536967830,1536967860),origin = "1970-01-01"))
+#' hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890), 
+#' origin = "1970-01-01")
 #' hypnogram$event = c("REM","N2","REM")
 #' smooth_hypnogram(hypnogram, "N2","REM",1)
 #' @export

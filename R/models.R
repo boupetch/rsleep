@@ -88,6 +88,7 @@ chambon2018 <- function(
 #' @param channels Number of channels in each input.
 #' @param samples Number of samples in each channel.
 #' @param weights Boolean. Returns or not a weighted model. Weighted model is downloaded from a distant URL.
+#' @param verbose Boolean. Display or not status messages during weights download.
 #' @return A Keras sequential model.
 #' @examples
 #' model <- schwabedal2018()

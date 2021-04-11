@@ -12,6 +12,8 @@ schwabedal2018(channels = 2, samples = 8000, weights = FALSE, verbose = TRUE)
 \item{samples}{Number of samples in each channel.}
 
 \item{weights}{Boolean. Returns or not a weighted model. Weighted model is downloaded from a distant URL.}
+
+\item{verbose}{Boolean. Display or not status messages during weights download.}
 }
 \value{
 A Keras sequential model.

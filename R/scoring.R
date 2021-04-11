@@ -151,7 +151,7 @@ write_batches_psg <- function(
 #' @references Kemp, B., Värri, A., Rosa, A.C., Nielsen, K.D. and Gade, J., 1992. A simple format for exchange of digitized polygraphic recordings. Electroencephalography and clinical neurophysiology, 82(5), pp.391-393.
 #' @param edf Character. European Data Format (EDF) file path.
 #' @param channels A vector containing the channels names if names differ from `c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2")`.
-#' @param model_path The path of the model file. Model will be downloaded if a directory is passed or if the file passed is different from the latest available model.
+#' @param model The Keras model.
 #' @param verbose Boolean. Display or not status messages.
 #' @return A dataframe containing predicted hypnodensity values of the record.
 #' @export
