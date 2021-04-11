@@ -6,10 +6,9 @@ addons:
   apt:
     packages:
       - libxml2-dev
-      - python3
 
 before_install:
-  - Rscript -e 'install.packages("devtools"); install.packages("tensorflow"); library(tensorflow); install_tensorflow(); install.packages("keras");'
+  - Rscript -e 'install.packages("devtools");'
 
 r_packages:
   - covr
