@@ -13,7 +13,7 @@ chambon2018(channels = 6, samples = 6300, weights = FALSE, verbose = TRUE)
 
 \item{weights}{Boolean. Returns or not a weighted model. Weighted model is downloaded from a distant URL.}
 
-\item{vebose}{Boolean. Display or not status messages during weights download.}
+\item{verbose}{Boolean. Display or not status messages during weights download.}
 }
 \value{
 A Keras sequential model.

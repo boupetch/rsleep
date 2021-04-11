@@ -5,7 +5,7 @@
 #' @param channels Integer. Number of channels in each input.
 #' @param samples Integer. Number of samples in each channel.
 #' @param weights Boolean. Returns or not a weighted model. Weighted model is downloaded from a distant URL.
-#' @param vebose Boolean. Display or not status messages during weights download.
+#' @param verbose Boolean. Display or not status messages during weights download.
 #' @return A Keras sequential model.
 #' @examples
 #' model <- chambon2018()
