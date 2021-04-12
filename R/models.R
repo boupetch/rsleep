@@ -7,10 +7,6 @@
 #' @param weights Boolean. Returns or not a weighted model. Weighted model is downloaded from a distant URL.
 #' @param verbose Boolean. Display or not status messages during weights download.
 #' @return A Keras sequential model.
-#' @examples
-#' model <- chambon2018()
-#'
-#' summary(model)
 #' @export
 chambon2018 <- function(
   channels = 6,
@@ -90,10 +86,6 @@ chambon2018 <- function(
 #' @param weights Boolean. Returns or not a weighted model. Weighted model is downloaded from a distant URL.
 #' @param verbose Boolean. Display or not status messages during weights download.
 #' @return A Keras sequential model.
-#' @examples
-#' model <- schwabedal2018()
-#'
-#' summary(model)
 #' @export
 schwabedal2018 <- function(channels = 2,
                            samples = 8000,

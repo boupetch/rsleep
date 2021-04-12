@@ -21,11 +21,6 @@ A Keras sequential model.
 \description{
 Model inspired by the article "Automated Classification of Sleep Stages and EEG Artifacts in Mice with Deep Learning". Implemented using Keras. Adapted to use minimum 2 channels and to not score artifact epochs.
 }
-\examples{
-model <- schwabedal2018()
-
-summary(model)
-}
 \references{
 Schwabedal, Justus T. C., Daniel Sippel, Moritz D. Brandt, and Stephan Bialonski. “Automated Classification of Sleep Stages and EEG Artifacts in Mice with Deep Learning.” ArXiv:1809.08443 [Cs, q-Bio], September 22, 2018. http://arxiv.org/abs/1809.08443.
 }
