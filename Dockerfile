@@ -12,7 +12,7 @@ RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
   && apt-get install -y \
     r-base r-base-dev pandoc pandoc-citeproc texlive-full libssl-dev sshfs libcurl4-gnutls-dev libgit2-dev libssl-dev \
     libgsl-dev xorg libx11-dev libglu1-mesa-dev curl libxml2-dev libprotobuf-dev libudunits2-dev \
-    libftgl2 libfreetype6-dev libcgal-dev unzip libv8-dev libjq-dev libgdal-dev protobuf-compiler python-pip python3-virtualenv libmagick++-dev python3-dev  \
+    libftgl2 libfreetype6-dev libcgal-dev unzip libv8-dev libjq-dev libgdal-dev protobuf-compiler python3-pip python3-virtualenv libmagick++-dev python3-dev  \
   && curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg > /tmp/dkey; apt-key add /tmp/dkey \
   && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable" \
   && apt-get update \
