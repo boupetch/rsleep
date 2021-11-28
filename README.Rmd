@@ -19,22 +19,22 @@ knitr::opts_chunk$set(
 )
 ```
 
-[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep) [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep) [![Build Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis-ci.org/boupetch/rsleep)  [![Docker build](https://img.shields.io/docker/cloud/build/boupetch/rsleep)](https://cloud.docker.com/repository/docker/boupetch/rsleep/)
+[![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep) [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep) [![Build Status](https://travis-ci.org/boupetch/rsleep.svg?branch=master)](https://travis-ci.org/boupetch/rsleep)
 [![codecov](https://codecov.io/gh/boupetch/rsleep/branch/master/graph/badge.svg)](https://codecov.io/gh/boupetch/rsleep) [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) 
 
 rsleep is a R package providing tools for sleep data management, visualization and analysis. 
 
 ## Installation
 
-Development version (Recommended) can be directly installed from [Github](https://github.com/) using the `devtools` package :
+Development version (recommended) can be directly installed from [Github](https://github.com/) using the `devtools` package :
 
-```{r install_github, results="hide", message=FALSE}
+```{r install_github, eval=FALSE}
 devtools::install_github("boupetch/rsleep")
 ```
 
 Stable version can be downloaded and installed from [CRAN](https://cran.r-project.org/) @hornik2012comprehensive :
 
-```{r install_cran, results="hide"}
+```{r install_cran, eval=FALSE}
 install.packages("rsleep", repos = "https://cloud.r-project.org")
 ```
 
@@ -70,27 +70,30 @@ rsleep::plot_hypnogram(hypnogram)
 dev.off()
 
 # Hypnodensity
-hypnodensity <- score_psg("vignettes/15012016HD.edf")
-png(filename="man/figures/README-example_hypnodensity-1.png",width = 500, height = 200)
-rsleep::plot_hypnodensity(hypnodensity)
-dev.off()
+#hypnodensity <- rsleep::score_psg("vignettes/15012016HD.edf")
+#png(filename="man/figures/README-example_hypnodensity-1.png",width = 500, height = 200)
+#rsleep::plot_hypnodensity(hypnodensity)
+#dev.off()
 
 # Spectral profiles
 h <- edfReader::readEdfHeader("vignettes/15012016HD.edf")
 s <- edfReader::readEdfSignals(h, signals = "C3-M2")
-hypnogram <- head(hypnogram(hypnogram),-2)
+hypnogram <- head(rsleep::hypnogram(hypnogram),-2)
 startTime <- as.numeric(as.POSIXct(s$startTime))
 epochs <- rsleep::epochs(s$signal,s$sRate,
                          epoch = hypnogram,
                          startTime = startTime)
+
 periodograms <- mapply(x = epochs, y = hypnogram$event, FUN = function(x,y){
   p <- pwelch(x, sRate = s$sRate, show = FALSE)
   p <- as.data.frame(p[p$hz <= 30,])
   p$stage <- y
   p
 }, SIMPLIFY = F)
+
 periodograms_df <- do.call("rbind", periodograms)
 avg_periodograms <- aggregate(psd ~ hz+stage, periodograms_df, mean)
+
 library(ggplot2)
 palette <- c("#F98400","#F2AD00","#00A08A","#FF0000","#5BBCD6")
 png(filename="man/figures/README-example_spectral-profiles-1.png",width = 500, height = 300)
@@ -108,19 +111,5 @@ dev.off()
 [![Hypnodensity](man/figures/README-example_hypnodensity-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Automatic_Stage_Classification.html)
 
 [![EEG Spectral profiles](man/figures/README-example_spectral-profiles-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_sleep_electroencephalography.html)
-
-## Docker
-
-The rsleep package can be used through Docker, with the automatic build from [Dockerhub](https://cloud.docker.com/repository/docker/boupetch/rsleep/) or by building the image using the provided [Dockerfile](https://github.com/boupetch/rsleep/blob/master/Dockerfile).
-
-### Example
-
-Automatic sleep stages scoring using rsleep Docker image:
-
-```
-wget -O 15012016HD.edf https://osf.io/57j2u/download 
-
-docker run --rm  -v $(pwd):/shared boupetch/rsleep R -e "write.csv(rsleep::score_psg('/shared/15012016HD.edf'),'/shared/hypnodensity.csv')"
-```
   
 ## References

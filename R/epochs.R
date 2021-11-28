@@ -17,12 +17,12 @@ epochs <- function(signals,
                    epoch = 30,
                    startTime = 0,
                    padding = 0){
-
-
+  
+  
   if(!is.list(signals)){
     signals <- list(signals)
   }
-
+  
   resampled_signals <- mapply(function(x,y){
     if(y != resample){
       signal::resample(x,resample,y)
@@ -31,7 +31,7 @@ epochs <- function(signals,
     }
   }, x = signals,
   y = sRates)
-
+  
   # Min norm, when sRtes 1
   if(is.list(resampled_signals)){
     max_length <- max(unlist(lapply(resampled_signals,function(x){length(x)})))
@@ -46,20 +46,20 @@ epochs <- function(signals,
       ncol = length(resampled_signals),
       byrow = TRUE)
   }
-
+  
   if(is.numeric(epoch)){
-
+    
     epochs <- lapply(
       split(resampled_signals,
             ceiling(seq_along(resampled_signals[,1])/(resample*epoch))),
       matrix,
       ncol = dim(resampled_signals)[2])
-
+    
   } else if(is.data.frame(epoch)){
-
+    
     epoch$begin <- as.numeric(epoch$begin)
     epoch$end <- as.numeric(epoch$end)
-
+    
     epochs <- lapply(c(1:nrow(epoch)), function(x){
       sidx <- (epoch$begin[x] - startTime)*resample
       eidx <- (epoch$end[x] - startTime)*resample-1
@@ -69,43 +69,43 @@ epochs <- function(signals,
       }
     })
     epochs[sapply(epochs, is.null)] <- NULL
-
+    
   } else {
-
+    
     stop("`epoch` parameter must be a numeric or a dataframe of events.")
-
+    
   }
-
+  
   # Apply padding
   if(padding > 0){
-
+    
     epochs <- lapply(c(1:length(epochs)), function(i){
-
+      
       epoch <-  epochs[[i]]
-
+      
       for(j in c(1:padding)){
-
+        
         if((i-1) %in% c(1:length(epochs))){
           prev <- epochs[[i-1]]
         } else {
           prev <- epochs[[1]]
         }
-
+        
         if((i+1) %in%  c(1:length(epochs))){
           last <- epochs[[i+1]]
         } else {
           last <- epochs[[length(epochs)]]
         }
-
+        
         epoch <-  abind::abind(prev, epoch, last, along = 1)
-
+        
       }
-
+      
       epoch
-
+      
     })
   }
-
+  
   epochs
-
+  
 }
