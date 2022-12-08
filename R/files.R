@@ -8,22 +8,6 @@
 #' @param channels character. Vector of channels labels to write.
 #' @param events dataframe. Events dataframe to write. Events dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
 #' @param endian character. Endianess. \code{"big"} or \code{"little"}. Defaults to platform endian.
-#' @examples
-#' \donttest{
-#' download.file(
-#' "https://osf.io/57j2u/download",
-#' paste0(tempdir(),"/15012016HD.edf"))
-#' download.file("https://osf.io/h4ysj/download",
-#' paste0(tempdir(),"15012016HD.csv"))
-#' mdfPath = paste0(tempdir(),"/15012016HD/")
-#' channels = c("C3-M2","ECG")
-#' events = read_events_noxturnal(paste0(tempdir(),"15012016HD.csv"))
-#' write_mdf(paste0(tempdir(),"/15012016HD.edf"),
-#'     mdfPath,
-#'     channels,
-#'     events
-#' )
-#' }
 #' @export
 write_mdf <- function(edfPath, mdfPath, channels = c(NA), events = c(), endian=.Platform$endian) {
 
