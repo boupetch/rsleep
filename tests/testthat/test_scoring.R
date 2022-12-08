@@ -71,10 +71,6 @@ test_that("Mice sleep scoring", {
   model <- schwabedal2018()
 
   expect_equal(class(model)[1], "keras.engine.sequential.Sequential")
-
-  model <- schwabedal2018(weights = TRUE)
-
-  expect_equal(class(model)[1], "keras.engine.sequential.Sequential")
 })
 
 

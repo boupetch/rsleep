@@ -158,7 +158,7 @@ write_batches_psg <- function(
 score_psg <- function(
   edf,
   channels = c("C3-M2","C4-M1","O1-M2","E1-M2","E2-M1","1-2"),
-  model = chambon2018(6,3*30*70,TRUE,TRUE),
+  model = chambon2018(6,3*30*70),
   verbose = TRUE){
 
   if(!("keras" %in%  utils::installed.packages()[,1])){
@@ -343,7 +343,7 @@ write_batches_mice <- function(
 #' @export
 score_mice <- function(
   edf,
-  model = schwabedal2018(weights = TRUE),
+  model,
   verbose = TRUE){
 
   padding <- 2
