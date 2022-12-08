@@ -12,3 +12,4 @@ Meta
 inst/doc
 .DS_Store
 docs
+man/*

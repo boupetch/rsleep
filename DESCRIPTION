@@ -25,5 +25,5 @@ Suggests:
   reshape2,
   rmarkdown,
   testthat
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.2
 VignetteBuilder: knitr
