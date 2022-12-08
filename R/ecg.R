@@ -19,6 +19,7 @@
 #' download.file("https://physionet.org/files/ecgiddb/1.0.0/Person_01/rec_1.dat?download",path)
 #' ecg <- readBin(path,integer(),500*30)
 #' peaks <- detect_rpeaks(ecg, sRate = 500)
+#' unlink(path)
 #' print(peaks)
 #'
 #' ecg.df <- data.frame(ECG = ecg,Seconds = c(1:length(ecg))/500)

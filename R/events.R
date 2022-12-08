@@ -133,6 +133,7 @@ check_events <- function(events){
 #' "sleep-cassette/SC4001EC-Hypnogram.edf?download")
 #' download.file(furl,fpath)
 #' hypnogram <- read_events_sleepedfx(fpath)
+#' unlink(fpath)
 #' plot_hypnogram(hypnogram)
 #' @export
 plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
