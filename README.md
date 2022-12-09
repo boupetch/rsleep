@@ -1,66 +1,64 @@
 rsleep: A R package for sleep data analysis
 ================
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 [![CRAN](http://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep)
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 rsleep is a R package providing tools for sleep data management,
-visualization and analysis.
+visualization and analysis. rsleep provides tools for state of the art
+automatic sleep stages scoring.
 
 ## Installation
 
-Development version (recommended) can be directly installed from
+Development version can be directly installed from
 [Github](https://github.com/) using the `devtools` package :
 
 ``` r
+
 devtools::install_github("boupetch/rsleep")
+
 ```
 
 Stable version can be downloaded and installed from
-[CRAN](https://cran.r-project.org/) \[1\] :
+[CRAN](https://cran.r-project.org/):
 
 ``` r
+
 install.packages("rsleep", repos = "https://cloud.r-project.org")
+
 ```
 
 ## Usage
 
 ``` r
+
 library(rsleep)
+
 ```
 
 ## Vignettes
 
--   [Managing Sleep Records
-    Files](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
--   [Spectral analysis of sleep electroencephalography
-    signals](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_sleep_electroencephalography.html)
--   [Automatic Stages
-    Classification](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Automatic_Stage_Classification.html)
+- [Managing Sleep Records
+  Files](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
+- [Spectral analysis of sleep electroencephalography
+  signals](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_sleep_electroencephalography.html)
+- [Automatic Stages
+  Classification](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Automatic_Stage_Classification.html)
 
-## Examples
+## rsleep in publications
 
-[![Hypnogram](man/figures/README-example_hypnogram-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Managing_Sleep_Records_Files.html)
+- Bouchequet P, Solelhac G, Leger D. [rsleep, un package R open-source
+  pour l’analyse des polysomnographies. Médecine du
+  Sommeil.](https://www.sciencedirect.com/science/article/abs/pii/S1769449319304388)
+  2020;17:67.
 
-[![Hypnodensity](man/figures/README-example_hypnodensity-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Automatic_Stage_Classification.html)
+- Andrillon T, Solelhac G, Bouchequet P, et al. [Revisiting the value of
+  polysomnographic data in insomnia: more than meets the eye. Sleep
+  Medicine.](https://www.sciencedirect.com/science/article/abs/pii/S1389945719316442)
+  2020;66:184-200.
 
-[![EEG Spectral
-profiles](man/figures/README-example_spectral-profiles-1.png)](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_sleep_electroencephalography.html)
-
-## References
-
-<div id="refs" class="references csl-bib-body">
-
-<div id="ref-hornik2012comprehensive" class="csl-entry">
-
-<span class="csl-left-margin">\[1\] </span><span
-class="csl-right-inline">K. Hornik, The comprehensive r archive network,
-Wiley Interdisciplinary Reviews: Computational Statistics. 4 (2012)
-394–398. <https://cran.r-project.org/>.</span>
-
-</div>
-
-</div>
+- Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve
+  stimulation in a hungry state decreases heart rate
+  variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213)
+  Physiology & Behavior. 2023;258:114016.
