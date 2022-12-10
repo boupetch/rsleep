@@ -1,13 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-README.Rmd
-README.bibtex
-README_files/*
-README.csl
-15012016HD.csv
-15012016HD.edf
-15012016HD/*
-.travis.yml
 ^doc$
 ^Meta$
 Dockerfile
