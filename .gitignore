@@ -6,7 +6,7 @@ rsleep.Rproj
 rsleep.Rcheck
 ..Rcheck
 15012016HD.csv
-15012016HD.edf
+*.edf
 15012016HD
 Meta
 inst/doc

@@ -32,23 +32,26 @@ In records stored using European Data Format (EDF) @Kemp1992, EEG channels can b
 
 ## Sleep data
 
-An example EDF file and its scoring can be donwloaded using the following code:
+An example EDF file and its scoring can be downloaded using the following code:
 
 ```{r download, eval=FALSE}
-download.file("https://osf.io/57j2u/download", "15012016HD.edf")
-download.file("https://osf.io/h4ysj/download", "15012016HD.csv")
+download.file(
+  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012E0-PSG.edf?download",
+  destfile = "SC4012E0-PSG.edf")
+download.file(
+  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012EC-Hypnogram.edf?download", 
+  destfile = "SC4012EC-Hypnogram.edf")
 ```
 
-The `.edf` file contains signals and metadata. The `.csv` file contains the scoring, exported from Noxturnal, a visual analysis software for sleep data published by Resmed.
 
-This night has been recorded on healthy subject at the Sleep and Vigilance center of the Hôtel-Dieu, Paris, France. The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
+The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
 
 ```{r edf}
 library(edfReader)
 
-h <- readEdfHeader("15012016HD.edf")
+h <- readEdfHeader("SC4012E0-PSG.edf")
 
-s <- readEdfSignals(h, signals = "C3-M2")
+s <- readEdfSignals(h, signals = "EEG Fpz-Cz")
 ```
 
 Visual scoring of this record can be read and plotted using the `rsleep` package:
@@ -56,9 +59,9 @@ Visual scoring of this record can be read and plotted using the `rsleep` package
 ```{r hypnogram, fig.width = 7}
 library(rsleep)
 
-events <- read_events_noxturnal("15012016HD.csv")
+hypnogram <- read_events_sleepedfx("SC4012EC-Hypnogram.edf")
 
-plot_hypnogram(events)
+plot_hypnogram(hypnogram)
 ```
 
 The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A sleep expert scored this record visually following the guidelines from the American Association of Sleep Medicine (AASM) @AASMScoringManual. Five stages can be observed:
@@ -78,7 +81,7 @@ Epoching is the first step of sleep analysis. Physiological signal, such as EEG,
 As the example record already has a hynogram, the EEG signal can be splitted using these epochs. The `epochs` function from the `rsleep` package split the signal according to these parameters. It returns a list of signal vectors. In the example, the last scored epoch of the hypnogram finishes after the end of the signal. The hynogram dataframe must be truncated accordingly.
 
 ```{r epoching}
-hypnogram <- head(hypnogram(events),-2)
+hypnogram <- head(hypnogram(hypnogram),-2)
 
 startTime <- as.numeric(as.POSIXct(s$startTime))
 
