@@ -1,6 +1,12 @@
-# rsleep 1.0.2
+# rsleep 1.0.6
 
-## Minor changes
+  * Following efforts towards merge between Github and CRAN versions.
+
+# rsleep 1.0.5
+
+  * This release adds a few functions already available in the devel version on Github.
+
+# rsleep 1.0.2
 
   * `epochs` function can take a single vector containing a single signal. 
   `resample` default to the max of the sample rates.
