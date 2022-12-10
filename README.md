@@ -25,7 +25,7 @@ Stable version can be downloaded and installed from
 
 ``` r
 
-install.packages("rsleep", repos = "https://cloud.r-project.org")
+install.packages("rsleep")
 
 ```
 
@@ -49,13 +49,13 @@ library(rsleep)
 ## rsleep in publications
 
 - Bouchequet P, Solelhac G, Leger D. [rsleep, un package R open-source
-  pour l’analyse des polysomnographies. Médecine du
-  Sommeil.](https://www.sciencedirect.com/science/article/abs/pii/S1769449319304388)
+  pour l’analyse des polysomnographies.](https://www.sciencedirect.com/science/article/abs/pii/S1769449319304388) Médecine du
+  Sommeil.
   2020;17:67.
 
 - Andrillon T, Solelhac G, Bouchequet P, et al. [Revisiting the value of
-  polysomnographic data in insomnia: more than meets the eye. Sleep
-  Medicine.](https://www.sciencedirect.com/science/article/abs/pii/S1389945719316442)
+  polysomnographic data in insomnia: more than meets the eye.](https://www.sciencedirect.com/science/article/abs/pii/S1389945719316442) Sleep
+  Medicine.
   2020;66:184-200.
 
 - Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve
