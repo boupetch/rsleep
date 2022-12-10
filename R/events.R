@@ -78,42 +78,6 @@ normalize_cycles <- function(events){
   return(cycles)
 }
 
-#' Draw a sleep hypnogram with ggplot2.
-#'
-#' @description A hypnogram represents the stages of sleep as a function of time. \code{plot_hypnogram()} plot a hypnogram using the \code{ggplot2} library from stages sleep in an event dataframe. \code{REM} stage is higlighted in red.
-#' @references Silber MH, Ancoli-Israel S, Bonnet MH, Chokroverty S, Grigg-Damberger MM, et al. (2007). "The visual scoring of sleep in adults". Journal of Clinical Sleep Medicine. 3 (2): 121–31. PMID 17557422
-#' @param events Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}
-#' Check events dataframe format.
-#'
-#' @param events Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
-check_events <- function(events){
-
-  if(!("begin" %in% colnames(events))){
-
-    stop("Events dataframe must contain a 'begin' column.")
-
-  } else if(!("end" %in% colnames(events))){
-
-    stop("Events dataframe must contain a 'end' column.")
-
-  } else  if(!("event" %in% colnames(events))){
-
-    stop("Events dataframe must contain a 'event' column.")
-
-  } else if(!("POSIXt" %in% class(events$begin))){
-
-    stop("'begin' column must be a datetime.")
-
-  } else if(!("POSIXt" %in% class(events$end))){
-
-    stop("'end' column must be a datetime.")
-
-  } else if(!("character" %in% class(events$event))){
-
-    stop("'events' column must be character type.")
-  }
-}
-
 #' Plot a hypnogram from an events dataframe.
 #'
 #' @description Plot a hypnogram from an events dataframe.
