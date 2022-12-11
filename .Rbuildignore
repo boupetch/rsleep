@@ -4,6 +4,6 @@
 ^Meta$
 Dockerfile
 vignettes/legacy/*
-*.csv
-*.edf
-docs/
+^csv$
+^edf$
+docs/*
