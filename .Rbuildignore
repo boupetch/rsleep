@@ -4,3 +4,5 @@
 ^Meta$
 Dockerfile
 vignettes/legacy/*
+*.csv
+*.edf
