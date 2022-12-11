@@ -15,26 +15,20 @@ Development version can be directly installed from
 [Github](https://github.com/) using the `devtools` package :
 
 ``` r
-
 devtools::install_github("boupetch/rsleep")
-
 ```
 
 Stable version can be downloaded and installed from
 [CRAN](https://cran.r-project.org/):
 
 ``` r
-
 install.packages("rsleep")
-
 ```
 
 ## Usage
 
 ``` r
-
 library(rsleep)
-
 ```
 
 ## Vignettes
