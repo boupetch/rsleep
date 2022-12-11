@@ -6,3 +6,4 @@ Dockerfile
 vignettes/legacy/*
 *.csv
 *.edf
+docs/
