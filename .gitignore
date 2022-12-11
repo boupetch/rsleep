@@ -5,9 +5,7 @@
 rsleep.Rproj
 rsleep.Rcheck
 ..Rcheck
-15012016HD.csv
 *.edf
-15012016HD
 Meta
 inst/doc
 .DS_Store

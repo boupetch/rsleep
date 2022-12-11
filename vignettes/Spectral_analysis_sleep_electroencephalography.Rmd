@@ -19,9 +19,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-# Do not run chunks if files are not present.
-#knitr::opts_chunk$set(
-#  eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
 This vignette provides a basic introduction to spectral analysis of a single Electroencephalography (EEG) signal from a sleep record file.
