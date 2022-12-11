@@ -265,9 +265,7 @@ gc()
 
 
 ```{r fit}
-control <- caret::trainControl(method="cv", 3)
-
-fit <- train(stage ~ ., training, method= 'rf', trControl = control)
+fit <- train(stage ~ ., training, method= 'rf')
 ```
 
 Once model has been trained, stages can be predicted from the testing set using the `predict` function.
