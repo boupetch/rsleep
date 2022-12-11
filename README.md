@@ -40,7 +40,7 @@ library(rsleep)
 ## Vignettes
 
 - [Spectral analysis of sleep electroencephalography
-  signals](http://htmlpreview.github.io/?https://raw.githubusercontent.com/boupetch/rsleep/master/doc/Spectral_analysis_sleep_electroencephalography.html)
+  signals](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
 
 ## rsleep in publications
 
