@@ -24,15 +24,31 @@ knitr::opts_chunk$set(
 #  eval = all(file.exists("15012016HD.edf","15012016HD.csv")))
 ```
 
-Electroencephalography (EEG) refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial activity over time. Electrodes are typically arranged using the standardized International 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, allowing reproductibility of the results between recordings. 
+This vignette provides a basic introduction to spectral analysis of a single Electroencephalography (EEG) signal from a sleep record file.
 
-EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography (PSG), the gold standard exam in sleep medicine, includes EEG along many other physiological recordings  @ibanezSurveySleepAssessment2018. 
+EEG refers to all the methods of recording, analysis and interpretation of the electrical activity of the brain. In clinical EEG, multiple electrodes are usually placed on the scalp, measuring its superficial activity over time. Electrodes are typically arranged using the standardized International 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, allowing analysis reproducibility. 
+
+EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are partly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography (PSG), the gold standard exam in sleep medicine, includes EEG along many other physiological signals @ibanezSurveySleepAssessment2018. 
 
 ## Sleep data
 
-The Sleep-EDF Database Expanded is a publicly available database containing 197 whole-night polysomnographic sleep recordings, containing EEG, EOG, chin EMG, and event markers. In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of a single EEG signal from sleep records files.  The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
+The Sleep-EDF Database Expanded is a publicly available database containing 197 whole-night polysomnographic sleep recordings, with EEG, [Electrooculogram](https://en.wikipedia.org/wiki/Electrooculography) (EOG), chin [Electromyogram](https://en.wikipedia.org/wiki/Electromyography), and event markers @kemp_sleep-edf_2018. In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names.   The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `Fpz-Cz` central derivation.
 
-```{r edf}
+```{r edf_read, echo=FALSE}
+library(edfReader)
+
+if(!file.exists("SC4012E0-PSG.edf")){
+  download.file(
+  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012E0-PSG.edf?download",
+  destfile = "SC4012E0-PSG.edf")
+}
+
+h <- readEdfHeader("SC4012E0-PSG.edf")
+
+s <- readEdfSignals(h, signals = "EEG Fpz-Cz")
+```
+
+```r
 library(edfReader)
 
 download.file(
@@ -46,7 +62,21 @@ s <- readEdfSignals(h, signals = "EEG Fpz-Cz")
 
 Visual scoring of this record can be found in a separate EDF file. Using the `rsleep` package, hypnogram can be plotted:
 
-```{r hypnogram, fig.width = 7}
+```{r hypnogram, echo=FALSE, fig.width = 7}
+library(rsleep)
+
+if(!file.exists("SC4012EC-Hypnogram.edf")){
+  download.file(
+  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012EC-Hypnogram.edf?download", 
+  destfile = "SC4012EC-Hypnogram.edf")
+}
+
+hypnogram <- read_events_sleepedfx("SC4012EC-Hypnogram.edf")
+
+plot_hypnogram(hypnogram)
+```
+
+```r
 library(rsleep)
 
 download.file(
@@ -58,7 +88,7 @@ hypnogram <- read_events_sleepedfx("SC4012EC-Hypnogram.edf")
 plot_hypnogram(hypnogram)
 ```
 
-The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A sleep expert scored this record visually following the guidelines from the American Association of Sleep Medicine (AASM) @AASMScoringManual. Five stages can be observed:
+The hypnogram show sleep stages over time using consecutive 30 seconds epochs. In the Sleep EDF Expanded database, hypnograms were manually scored by well-trained technicians according to the Rechtschaffen and Kales manual @kales_manual_1968. Five sleep stages can be observed:
 
   * **AWA**: Awakeness.
   * **REM**: Rapid-Eye-Movement (REM) sleep, or paradoxical sleep, highlighted in red.
@@ -66,11 +96,11 @@ The hypnogram show sleep stages over time using consecutive 30 seconds epochs. A
   * **N2**: Light sleep.
   * **N3**: Slow-wave sleep.
   
-Visual scoring is an emprical science and requires a considerable amount of clinical knowledge. Alternative methods like spectral estimations techniques such as the Fourier transform must be used to quantify information carried in the physiological signals @tongQuantitativeEEGAnalysis2009.
+Visual scoring is an empirical science and requires a considerable amount of training. Alternative methods like spectral estimations techniques such as the Fourier transform must be used to quantify information carried in the physiological signals @tongQuantitativeEEGAnalysis2009.
 
 ## Epoching
 
-Epoching is the first step of sleep analysis. Physiological signal, such as EEG, are splitted into consecutive epochs of a discrete duration. Epochs usually start at lights turnoff, when the  patient or subject starts the night.
+Epoching is the first step of sleep analysis. Physiological signal, such as EEG, is splitted into consecutive epochs of a discrete duration. Epochs usually start at lights turnoff, when the  patient or subject starts the night.
 
 As the example record already has a hynogram, the EEG signal can be splitted using these epochs. The `epochs` function from the `rsleep` package split the signal according to these parameters. It returns a list of signal vectors. In the example, the last scored epoch of the hypnogram finishes after the end of the signal. The hynogram dataframe must be truncated accordingly.
 
@@ -79,18 +109,20 @@ hypnogram <- head(hypnogram(hypnogram),-2)
 
 startTime <- as.numeric(as.POSIXct(s$startTime))
 
-epochs <- rsleep::epochs(s$signal,s$sRate,
-                         epoch = hypnogram,
-                         startTime = startTime)
+epochs <- rsleep::epochs(
+  signals = s$signal,
+  sRates = s$sRate,
+  epoch = hypnogram,
+  startTime = startTime)
 ```
 
 ## Periodogram
 
-The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/). However, EEG signals carry a lot of noise. This noise is easily interprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segment to average PSD from the FT.
+The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/). However, EEG signals also carry a lot of noise. This noise is easily intereprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segments to average power spectral densities from the Fourier transform.
 
 ### Single epoch
 
-The `pwelch` function `rsleep` computes a periodogram using Welch's method. The following computes and plot the periodogram of the 200th epoch, scored N3 by a sleep expert.
+The `pwelch` function `rsleep` computes a periodogram using Welch's method. The following example computes and plot the periodogram of the 200th epoch, scored N3 by a sleep expert.
 
 ```{r pwelch, fig.width=7, message=FALSE, error=FALSE}
 p <- pwelch(epochs[[200]], sRate = s$sRate)
@@ -98,7 +130,7 @@ p <- pwelch(epochs[[200]], sRate = s$sRate)
 summary(p)
 ```
 
-This epoch periodogram shows high PSD in lower frequencies of the spectrum. The peak at 50 Hertz is an artifact caused by the power line of the PSG recorder @motamedi-fakhrSignalProcessingTechniques2014a. As values are normalized using `log`, PSD are negative.
+This epoch periodogram shows high PSD in lower frequencies of the spectrum. The peak at 50 Hertz is a classical artifact caused by the power line of the PSG recorder @motamedi-fakhrSignalProcessingTechniques2014a. As values are normalized using `log`, PSD are negative.
 
 ### Stages profiles
 
@@ -161,12 +193,13 @@ Bands can be computed using the `bands_psd` of the `rsleep` package. Those bands
 
 ```{r bands_compute}
 bands <- lapply(epochs,function(x){
-    bands_psd(bands = list(c(0.5,3.5), # Delta
-                             c(3.5,7.5), # Theta
-                             c(7.5,13), # Alpha
-                             c(13,30)), # Beta
-                signal = x, sRate = s$sRate,
-                normalize = c(0.5,30))
+    bands_psd(
+      bands = list(c(0.5,3.5), # Delta
+                   c(3.5,7.5), # Theta
+                   c(7.5,13), # Alpha
+                   c(13,30)), # Beta
+      signal = x, sRate = s$sRate,
+      normalize = c(0.5,30))
 })
 ```
 
@@ -205,17 +238,17 @@ Each stage show a different bands PSD profile. Bands greatly simplify the EEG sp
 
 ### Ratios
 
-Band powers ratios are often used. Here is the Beta/Delta ratio visualized over a night:
+Band powers ratios are often used to reduce the number of variables to analyse. Here is the Theta/Beta ratio visualized over a night:
 
 ```{r}
-
-hypnogram$bd <- bands_df$Beta/bands_df$Delta
+hypnogram$bd <- bands_df$Theta/bands_df$Beta
 hypnogram$event <- as.character(hypnogram$event)
 gridExtra::grid.arrange(
   rsleep::plot_hypnogram(hypnogram) + ggplot2::ggtitle("Visual scoring"),
-  ggplot(hypnogram, aes(as.POSIXct(begin),bd)) + geom_line() + ggplot2::ggtitle("EEG Beta/Delta ratio") + xlab("") + ylab(""),
-  nrow = 2)
-
+  ggplot(
+    hypnogram, 
+    aes(as.POSIXct(begin),bd)) + geom_line() + ggplot2::ggtitle(
+      "EEG Theta/Beta ratio") + xlab("") + ylab(""), nrow = 2)
 ```
 
 ## References

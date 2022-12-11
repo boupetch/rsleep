@@ -8,7 +8,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-  desc,
   abind,
   edfReader,
   ggplot2,
@@ -17,6 +16,7 @@ Imports:
   signal
 Suggests:
   caret,
+  gridExtra,
   keras,
   knitr,
   reshape2,
