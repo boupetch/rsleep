@@ -28,36 +28,30 @@ Electroencephalography (EEG) refers to all the methods of recording, analysis an
 
 EEG is a major component in sleep analysis. Sleep stages, such as slow wave sleep or paradoxical sleep are mainly defined over visual EEG characteristics @AASMScoringManual. Many sleep related disorders can be identified in EEG data. Polysomnography (PSG), the gold standard exam in sleep medicine, includes EEG along many other physiological recordings  @ibanezSurveySleepAssessment2018. 
 
-In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of a single EEG signal from sleep records files.
-
 ## Sleep data
 
-An example EDF file and its scoring can be downloaded using the following code:
-
-```{r download}
-download.file(
-  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012E0-PSG.edf?download",
-  destfile = "SC4012E0-PSG.edf")
-download.file(
-  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012EC-Hypnogram.edf?download", 
-  destfile = "SC4012EC-Hypnogram.edf")
-```
-
-
-The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
+The Sleep-EDF Database Expanded is a publicly available database containing 197 whole-night polysomnographic sleep recordings, containing EEG, EOG, chin EMG, and event markers. In records stored using European Data Format (EDF) @Kemp1992, EEG channels can be found labelled under their placement names. This vignette provides a basic introduction to spectral analysis of a single EEG signal from sleep records files.  The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
 
 ```{r edf}
 library(edfReader)
+
+download.file(
+  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012E0-PSG.edf?download",
+  destfile = "SC4012E0-PSG.edf")
 
 h <- readEdfHeader("SC4012E0-PSG.edf")
 
 s <- readEdfSignals(h, signals = "EEG Fpz-Cz")
 ```
 
-Visual scoring of this record can be read and plotted using the `rsleep` package:
+Visual scoring of this record can be found in a separate EDF file. Using the `rsleep` package, hypnogram can be plotted:
 
 ```{r hypnogram, fig.width = 7}
 library(rsleep)
+
+download.file(
+  url = "https://www.physionet.org/files/sleep-edfx/1.0.0/sleep-cassette/SC4012EC-Hypnogram.edf?download", 
+  destfile = "SC4012EC-Hypnogram.edf")
 
 hypnogram <- read_events_sleepedfx("SC4012EC-Hypnogram.edf")
 
@@ -263,8 +257,15 @@ validation <- features[-inTrain,]
 
 Using 3 folds cross-validation, `train` function from the `caret` package fits the random forest over the training set.
 
+```{r free_memory, include=FALSE}
+rm(epochs)
+rm(s)
+gc()
+```
+
+
 ```{r fit}
-control <- caret::trainControl(method="cv", 3, allowParallel = TRUE)
+control <- caret::trainControl(method="cv", 3)
 
 fit <- train(stage ~ ., training, method= 'rf', trControl = control)
 ```
