@@ -1,6 +1,7 @@
 # rsleep 1.0.6
 
   * Following efforts towards merge between Github and CRAN versions.
+  * Renamed `read_stages_compumedics` function to `read_events_compumedics`.
 
 # rsleep 1.0.5
 

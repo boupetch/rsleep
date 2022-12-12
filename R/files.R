@@ -242,13 +242,13 @@ read_events_sleepedfx <- function(dir, update = TRUE){
   return(stats::na.omit(events_final))
 }
 
-#' Read a stages exports from Compumedics software
+#' Read a stages export from Compumedics software in .txt format.
 #'
-#' @param txt txt file path
+#' @param txt txt file path.
 #' @param startTime Character string or date object of the hypnogram start.
 #' @return A dataframe of stages.
 #' @export
-read_stages_compumedics <- function(txt, startTime){
+read_events_compumedics <- function(txt, startTime){
   hypno <- utils::read.table(txt, stringsAsFactors = FALSE, col.names = "event")
   hypno$begin <- as.POSIXlt(startTime) + ((c(1:nrow(hypno))-1)*4)
   hypno$end <- hypno$begin+4

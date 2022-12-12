@@ -266,7 +266,7 @@ write_batches_mice <- function(
 
     s <- edfReader::readEdfSignals(h, signals = unlist(labels))
 
-    events <- rsleep::read_stages_compumedics(
+    events <- rsleep::read_events_compumedics(
       txt = events[1], startTime = h$startTime)
 
     events <- events[(1+padding):(nrow(events)-padding-1),]
