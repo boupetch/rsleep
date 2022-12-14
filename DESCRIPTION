@@ -13,7 +13,8 @@ Imports:
   ggplot2,
   jsonlite,
   psd,
-  signal
+  signal,
+  xml2
 Suggests:
   caret,
   gridExtra,

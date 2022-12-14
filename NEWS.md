@@ -2,7 +2,9 @@
 
   * Following efforts towards merge between Github and CRAN versions.
   * Renamed `read_stages_compumedics` function to `read_events_compumedics`.
-
+  * Added `read_events_profusion` function to read annotations from NSRR.
+  * Added ``xml2` package to dependencies.
+  
 # rsleep 1.0.5
 
   * This release adds a few functions already available in the devel version on Github.

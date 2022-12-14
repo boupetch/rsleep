@@ -312,4 +312,38 @@ read_mdf <- function(mdfPath, channels = c(NA), metadata = TRUE) {
   return(mdf)
 }
 
-
+#' Read a annotation file from Compumedics Profusion software in XML format.
+#'
+#' @param xml XML file path.
+#' @param startTime Character string or date object of the hypnogram start.
+#' @return A dataframe of stages and events.
+#' @export
+read_events_profusion <- function(
+    xml, 
+    startTime = as.POSIXlt("1970-01-01 00:00:00")){
+  
+  profusion <- xml2::read_xml(xml)
+  profusion <- xml2::as_list(profusion)
+  events <- do.call(rbind.data.frame, profusion[["CMPStudyConfig"]][["SleepStages"]])
+  colnames(events) <- "event"
+  events$event[events$event == 0] <- "AWA"
+  events$event[events$event == 1] <- "N1"
+  events$event[events$event == 2] <- "N2"
+  events$event[events$event == 3] <- "N3"
+  events$event[events$event == 4] <- "REM"
+  events$event[events$event == 5] <- "REM"
+  row.names(events) <- NULL
+  epoch_duration <- as.numeric(profusion[["CMPStudyConfig"]][["EpochLength"]][[1]])
+  events$begin <- as.POSIXlt(startTime) + (epoch_duration * (c(1:nrow(events))-1))
+  events$end <- events$begin + epoch_duration
+  
+  for(scored_event in profusion[["CMPStudyConfig"]][["ScoredEvents"]]){
+    event <- as.character(scored_event["Name"][[1]])
+    begin <- startTime + as.numeric(scored_event["Start"][[1]])
+    end <- begin + as.numeric(scored_event["Duration"][[1]])
+    row <- list(event, end, begin)
+    events <- rbind(events,row)
+  }
+  
+  return(events)
+}
