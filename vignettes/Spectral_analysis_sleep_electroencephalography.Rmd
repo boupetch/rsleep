@@ -63,7 +63,9 @@ The `rsleep` function `spectrogram()` plots the spectrogram of the signal. But f
 ```{r fig.width = 7}
 devtools::install_github("boupetch/rsleep")
 
-rsleep::spectrogram(
+library(rsleep)
+
+spectrogram(
   signal = s$EEG$signal,
   sRate = s$EEG$sRate,
   startTime = s$ECG$startTime)
@@ -77,10 +79,10 @@ if(!file.exists("learn-nsrr01-profusion.xml")){
   url = "https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/annotations-events-profusion/learn-nsrr01-profusion.xml",
   destfile = "learn-nsrr01-profusion.xml")}
 
-events <- rsleep::read_events_profusion(
+events <- read_events_profusion(
   "learn-nsrr01-profusion.xml", h$startTime)
 
-rsleep::plot_hypnogram(events)
+plot_hypnogram(events)
 ```
 
 ```r
@@ -112,7 +114,7 @@ Epoching is the first step of sleep analysis. Physiological signal, such as EEG,
 As the example record already has a hynogram, the EEG signal can be splitted using these scored epochs. The `epochs` function from the `rsleep` package split the signal according to these parameters. It returns a list of signal vectors.
 
 ```{r epoching}
-epochs <- rsleep::epochs(
+epochs <- epochs(
   signals = s$EEG$signal,
   sRates = s$EEG$sRate,
   epoch = rsleep::hypnogram(events),
@@ -121,7 +123,7 @@ epochs <- rsleep::epochs(
 
 ## Periodogram
 
-The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [http://www.jezzamon.com/fourier/](http://www.jezzamon.com/fourier/). However, EEG signals also carry a lot of noise. This noise is easily intereprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segments to average power spectral densities from the Fourier transform.
+The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [https://www.jezzamon.com/fourier/](https://www.jezzamon.com/fourier/). However, EEG signals also carry a lot of noise. This noise is easily intereprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segments to average power spectral densities from the Fourier transform.
 
 ### Single epoch
 
@@ -129,6 +131,7 @@ The `pwelch` function `rsleep` computes a periodogram using Welch's method. The 
 
 ```{r pwelch, fig.width=7, message=FALSE, error=FALSE}
 p <- pwelch(epochs[[100]], sRate = s$EEG$sRate)
+
 summary(p)
 ```
 
