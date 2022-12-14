@@ -60,7 +60,18 @@ s <- readEdfSignals(h)
 
 The `rsleep` function `spectrogram()` plots the spectrogram of the signal. But first, install `rsleep` latest version from Github.
 
-```{r spectrogram, fig.width=7, message=FALSE, warning=FALSE}
+```r
+devtools::install_github("boupetch/rsleep")
+
+library(rsleep)
+
+spectrogram(
+  signal = s$EEG$signal,
+  sRate = s$EEG$sRate,
+  startTime = s$ECG$startTime)
+```
+
+```{r spectrogram, echo=FALSE, fig.width=7}
 devtools::install_github("boupetch/rsleep")
 
 library(rsleep)
