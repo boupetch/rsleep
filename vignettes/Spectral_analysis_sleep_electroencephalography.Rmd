@@ -60,7 +60,7 @@ s <- readEdfSignals(h)
 
 The `rsleep` function `spectrogram()` plots the spectrogram of the signal. But first, install `rsleep` latest version from Github.
 
-```{r fig.width = 7}
+```{r spectrogram, fig.width=7, message=FALSE, warning=FALSE}
 devtools::install_github("boupetch/rsleep")
 
 library(rsleep)
@@ -73,18 +73,6 @@ spectrogram(
 
 `rsleep` reads this particular format with the `read_events_profusion` function. The `plot_hypnogram` function then plots the hypnogram.
 
-```{r hypnogram, echo=FALSE, fig.width = 7}
-if(!file.exists("learn-nsrr01-profusion.xml")){
-  download.file(
-  url = "https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/annotations-events-profusion/learn-nsrr01-profusion.xml",
-  destfile = "learn-nsrr01-profusion.xml")}
-
-events <- read_events_profusion(
-  "learn-nsrr01-profusion.xml", h$startTime)
-
-plot_hypnogram(events)
-```
-
 ```r
 if(!file.exists("learn-nsrr01-profusion.xml")){
   download.file(
@@ -95,6 +83,18 @@ events <- rsleep::read_events_profusion(
   "learn-nsrr01-profusion.xml", h$startTime)
 
 rsleep::plot_hypnogram(events)
+```
+
+```{r hypnogram, echo=FALSE, fig.width = 7}
+if(!file.exists("learn-nsrr01-profusion.xml")){
+  download.file(
+  url = "https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/annotations-events-profusion/learn-nsrr01-profusion.xml",
+  destfile = "learn-nsrr01-profusion.xml")}
+
+events <- read_events_profusion(
+  "learn-nsrr01-profusion.xml", h$startTime)
+
+plot_hypnogram(events)
 ```
 
 The hypnogram show sleep stages over time using consecutive 30 seconds epochs. Data from the NSRR were manually scored by well-trained technicians according to the American Academy of Sleep Medicine manual @AASMScoringManual. Five sleep stages can be observed:
