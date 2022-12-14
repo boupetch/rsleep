@@ -72,10 +72,6 @@ spectrogram(
 ```
 
 ```{r spectrogram, echo=FALSE, fig.width=7}
-devtools::install_github("boupetch/rsleep")
-
-library(rsleep)
-
 spectrogram(
   signal = s$EEG$signal,
   sRate = s$EEG$sRate,
