@@ -72,6 +72,8 @@ spectrogram(
 ```
 
 ```{r spectrogram, echo=FALSE, fig.width=7}
+library(rsleep)
+
 spectrogram(
   signal = s$EEG$signal,
   sRate = s$EEG$sRate,
