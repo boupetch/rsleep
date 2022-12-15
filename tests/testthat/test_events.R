@@ -61,3 +61,20 @@ test_that("Hypnogram smoothing",{
 
 })
 
+test_that("Sleep periods",{
+  hypnogram <- data.frame(
+    begin = as.POSIXlt(c(1536967800,1536967830,1536967860),
+                       origin = "1970-01-01"))
+  hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890),
+                              origin = "1970-01-01")
+  hypnogram$event = c("REM","N2","REM")
+  periods <- get_sleep_periods(hypnogram = hypnogram,mode = "continuous")
+  expect_true(nrow(periods) == 1)
+  periods <- get_sleep_periods(hypnogram = hypnogram,mode = "stages")
+  expect_true(nrow(periods) == 3)
+  expect_true(ncol(periods) == 4)
+})
+
+
+
+
