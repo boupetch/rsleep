@@ -65,6 +65,7 @@ stages_stats <- function(e){
 }
 
 #' Compute TST90, the percentage of time during sleep with an oxygen saturation below 90%.
+#' 
 #' @description Compute TST90, the percentage of time during sleep with an oxygen saturation below 90%.
 #' @param spo2_signal The SpO2 signal vector.
 #' @param sRate The SpO2 signal vector sRate.
