@@ -63,3 +63,28 @@ stages_stats <- function(e){
 
   r
 }
+
+#' Compute TST90, the percentage of time during sleep with an oxygen saturation below 90%.
+#'
+#' @param spo2_signal The SpO2 signal vector.
+#' @param sRate The SpO2 signal vector sRate.
+#' @param startTime The SpO2 signal start time.
+#' @param hypnogram Events dataframe containing hypnogram.
+#' 
+#' @return TST90 value.
+#' @export
+tst90 <- function(
+    spo2_signal, 
+    sRate,
+    startTime,
+    hypnogram){
+  periods <- rsleep::get_sleep_periods(hypnogram)
+  u90 <- 0
+  for(i in c(1:nrow(periods))){
+    x <- as.numeric(difftime(periods[i,]$begin, startTime, units="secs"))
+    y <- as.numeric(difftime(periods[i,]$end, startTime, units="secs"))
+    signal <- spo2_signal[(x*sRate):(y*sRate)]
+    u90 <- u90 + (length(signal[signal<90])/sRate)
+  }
+  return(u90/sum(periods$duration))
+}
