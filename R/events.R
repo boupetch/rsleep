@@ -313,7 +313,7 @@ smooth_liang2012 <- function(hypnogram){
 #' 
 #' periods_stages <- get_sleep_periods(hypnogram, mode = "stages")
 #' 
-#' ggplot(periods_stages, aes(x=stage,y=duration,color=stage)) + geom_boxplot()
+#' ggplot(periods_stages, aes(x=event,y=duration,color=event)) + geom_boxplot()
 get_sleep_periods <- function(
     hypnogram,
     mode = "continuous",
