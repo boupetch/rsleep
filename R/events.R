@@ -344,6 +344,6 @@ get_sleep_periods <- function(
   }
   if(mode == "continuous"){
     periods$event <- NULL}
-  periods$duration = as.numeric(periods$end-periods$begin)
+  periods$duration = as.numeric(difftime(periods$end, periods$begin, units="secs"))
   return(periods)
 }
