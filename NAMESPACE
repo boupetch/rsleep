@@ -2,8 +2,10 @@
 
 export(bands_psd)
 export(chambon2018)
+export(check_events)
 export(detect_rpeaks)
 export(epochs)
+export(get_sleep_periods)
 export(hypnogram)
 export(normalize_cycles)
 export(plot_hypnodensity)

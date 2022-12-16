@@ -6,7 +6,8 @@
 #' events <- data.frame(begin = as.POSIXct(c(1536967800,1536967830,1536967860), origin = "1970-01-01"))
 #' events$end <- as.POSIXct(c(1536967830,1536967860,1536967890), origin = "1970-01-01")
 #' events$event = c("N3","N3","REM")
-#' check_events(events)
+#' rsleep::check_events(events)
+#' @export
 check_events <- function(events){
 
   if(!("begin" %in% colnames(events))){
@@ -296,10 +297,14 @@ smooth_liang2012 <- function(hypnogram){
 #' @param mode Period mode. \code{"continuous"} computes periods of N1, N2, N3 or REM sleep, regardless of stage. \code{"stages"} computes periods of sleep by stage.
 #' @param stages Stages to include in periods. Defaults to `c("N1", "N2", "N3", "N4", "REM")`.
 #' @return A dataframe of periods with their begin and stop times, duration and stages for stage mode.
+#' @export
 #' @examples
 #' library(ggplot2)
 #' 
-#' download.file("https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/annotations-events-profusion/learn-nsrr01-profusion.xml","learn-nsrr01-profusion.xml")
+#' download.file(paste0("https://sleepdata.org/datasets/",
+#'     "learn/files/m/browser/polysomnography/",
+#'     "annotations-events-profusion/learn-nsrr01-profusion.xml",
+#'     "learn-nsrr01-profusion.xml"))
 #' 
 #' hypnogram <- rsleep::read_events_profusion(xml = "learn-nsrr01-profusion.xml")
 #' 
