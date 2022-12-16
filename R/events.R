@@ -294,118 +294,56 @@ smooth_liang2012 <- function(hypnogram){
 #'
 #' @param hypnogram A hypnogram dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
 #' @param mode Period mode. \code{"continuous"} computes periods of N1, N2, N3 or REM sleep, regardless of stage. \code{"stages"} computes periods of sleep by stage.
+#' @param stages Stages to include in periods. Defaults to `c("N1", "N2", "N3", "N4", "REM")`.
 #' @return A dataframe of periods with their begin and stop times, duration and stages for stage mode.
 #' @examples
 #' library(ggplot2)
+#' 
 #' download.file("https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/annotations-events-profusion/learn-nsrr01-profusion.xml","learn-nsrr01-profusion.xml")
+#' 
 #' hypnogram <- rsleep::read_events_profusion(xml = "learn-nsrr01-profusion.xml")
+#' 
 #' unlink("learn-nsrr01-profusion.xml")
-#' plot_hypnogram(hypnogram) 
+#' 
+#' plot_hypnogram(hypnogram)
+#' 
 #' periods_continuous <- get_sleep_periods(hypnogram,mode = "continuous")
+#' 
 #' ggplot(periods_continuous, aes(x=duration)) + geom_histogram(bins = 30)
+#' 
 #' periods_stages <- get_sleep_periods(hypnogram, mode = "stages")
+#' 
 #' ggplot(periods_stages, aes(x=stage,y=duration,color=stage)) + geom_boxplot()
-get_sleep_periods <- function(hypnogram, mode="continuous"){
+get_sleep_periods <- function(
+    hypnogram,
+    mode = "continuous",
+    stages = c("N1", "N2", "N3", "N4", "REM")){
   
+  # Check mode parameter
   modes <- c("continuous", "stages")
   if(!(mode %in% modes)){
     stop("Mode must be continuous or stages")}
   
-  periods <- list()
+  # Clean and order hypnogram
   hypnogram$event <- as.character(hypnogram$event)
   hypnogram <- rsleep::hypnogram(hypnogram)
-  period_begin <- NULL
-  period_end <- NULL
+  hypnogram <- hypnogram[hypnogram$event %in% stages,]
+  if(mode == "continuous"){
+    hypnogram$event = "SLEEP"}
   
-  for(i in c(1:nrow(hypnogram))){
-    
-    if(as.character(
-      hypnogram$event[i]) %in% c(
-        "N1", "N2", "N3", "N4", "REM")){
-      
-      if(!(is.null(period_begin)) & (mode == "stages")){
-        
-        if(hypnogram$event[i] != hypnogram$event[i-1]){
-          
-          periods[[length(periods)+1]] <- list(
-            "begin"=period_begin, 
-            "end"=period_end, 
-            "duration"=as.numeric(period_end-period_begin),
-            "stage"=as.character(hypnogram$event[i-1]))
-          period_begin <- NULL
-          period_end <- NULL
-          
-        }
-      }
-      
-      if(is.null(period_begin)){
-        period_begin <- hypnogram$begin[i]
-      }
-      
-      period_end <- hypnogram$end[i]
-      
+  # Init data.frame
+  periods <- hypnogram[1,]
+  
+  # Iterate through hypnogram
+  for(i in c(2:nrow(hypnogram))){
+    if((hypnogram$event[i] == hypnogram$event[i-1]) & (hypnogram$end[i-1] == hypnogram$begin[i])){
+      periods$end[length(periods$end)] <- hypnogram$end[i]
     } else {
-      
-      
-      if(!is.null(period_begin)){
-        if(mode == "continuous"){
-          periods[[length(periods)+1]] <- list(
-            "begin"=period_begin, 
-            "end"=period_end, 
-            "duration"=as.numeric(period_end-period_begin))
-        } else {
-          periods[[length(periods)+1]] <- list(
-            "begin"=period_begin, 
-            "end"=period_end, 
-            "duration"=as.numeric(period_end-period_begin),
-            "stage"=as.character(hypnogram$event[i-1]))
-        }
-        
-        period_begin <- NULL
-        period_end <- NULL
-      }
+      periods <- rbind(periods, hypnogram[i,])
     }
   }
-  
-  if(!is.null(period_begin)){
-    if(mode == "continuous"){
-      periods[[length(periods)+1]] <- list(
-        "begin"=period_begin, 
-        "end"=period_end, 
-        "duration"=as.numeric(period_end-period_begin))
-    } else {
-      periods[[length(periods)+1]] <- list(
-        "begin"=period_begin, 
-        "end"=period_end, 
-        "duration"=as.numeric(period_end-period_begin),
-        "stage"=as.character(hypnogram$event[i-1]))
-    }
-    period_begin <- NULL
-    period_end <- NULL
-  }
-  
-  if(length(periods) == 0){
-    return(data.frame())
-  } else {
-    
-    periodsdf <- data.frame(
-      "begin"= unlist(
-        lapply(periods,function(x){as.numeric(x["begin"][[1]])})))
-      
-    periodsdf$end <- unlist(lapply(periods,function(x)as.numeric(x["end"][[1]])))
-    periodsdf$duration <- unlist(lapply(periods,function(x)x["duration"][[1]]))
-    
-  }
-  if(mode=="stages"){
-    periodsdf$stage <- unlist(lapply(periodsdf,function(x)x["stage"][[1]]))
-  }
-  
-  periodsdf$begin <- as.POSIXct(periodsdf$begin, origin = "1970-01-01 00:00:00")
-  periodsdf$end <- as.POSIXct(periodsdf$end, origin = "1970-01-01 00:00:00")
-  
-  return(periodsdf)
-  
+  if(mode == "continuous"){
+    periods$event <- NULL}
+  periods$duration = as.numeric(periods$end-periods$begin)
+  return(periods)
 }
-
-
-
