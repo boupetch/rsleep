@@ -13,3 +13,4 @@ docs
 man/*
 test/*
 *.xml
+*.csv

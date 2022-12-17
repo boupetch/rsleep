@@ -160,11 +160,19 @@ hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 
 #' Plot a hypnodensity graph using `ggplot2`.
 #'
-#' @description Plot a hypnodensity graph using `ggplot2` from the values returned from `score_stages_edf` function.
+#' @description Plot a hypnodensity graph using `ggplot2`. Hypnodensity can be read from file or returned by the `score_stages_edf` function.
 #' @references Stephansen, J.B., Olesen, A.N., Olsen, M., Ambati, A., Leary, E.B., Moore, H.E., Carrillo, O., Lin, L., Han, F., Yan, H. and Sun, Y.L., 2018. Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy. Nature communications, 9(1), p.5229.
 #' @param hypnodensity A hypnodensity dataframe as returned by the `score_stages_edf` function.
 #' @param stages Vector of stages labels to plot.
 #' @return A `ggplot2` hypnodensity graph.
+#' @examples
+#' download.file("https://rsleep.org/data/hypnodensity.csv", "hypnodensity.csv")
+#' 
+#' hypnodensity <- read.csv2("hypnodensity.csv")
+#' 
+#' unlink("hypnodensity.csv")
+#' 
+#' plot_hypnodensity(hypnodensity)
 #' @export
 plot_hypnodensity <- function(hypnodensity,
                               stages = c("AWA","REM","N1","N2","N3")){
