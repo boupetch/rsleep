@@ -303,8 +303,8 @@ smooth_liang2012 <- function(hypnogram){
 #' 
 #' download.file(paste0("https://sleepdata.org/datasets/",
 #'     "learn/files/m/browser/polysomnography/",
-#'     "annotations-events-profusion/learn-nsrr01-profusion.xml",
-#'     "learn-nsrr01-profusion.xml"))
+#'     "annotations-events-profusion/learn-nsrr01-profusion.xml"),
+#'     "learn-nsrr01-profusion.xml")
 #' 
 #' hypnogram <- rsleep::read_events_profusion(xml = "learn-nsrr01-profusion.xml")
 #' 
@@ -352,3 +352,6 @@ get_sleep_periods <- function(
   periods$duration = as.numeric(difftime(periods$end, periods$begin, units="secs"))
   return(periods)
 }
+
+
+
