@@ -148,16 +148,18 @@ plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 #' @param plot Plot the hypnogram or in not using \code{ggplot2}.
 #' @return Hypnogram dataframe or plot.
 #' @examples
-#' download.file(
-#'  "https://rsleep.org/data/hypnodensity.csv",
-#'  "hypnodensity.csv")
-#'
-#' hypnodensity <- read.csv2("hypnodensity.csv")
+#' fpath <- paste0(tempdir(),"SC4001EC-Hypnogram.edf")
 #' 
-#' unlink("hypnodensity.csv")
-#'
-#' hypnogram(hypnodensity, plot = TRUE)
-#'
+#' furl <- paste0("https://www.physionet.org/files/sleep-edfx/1.0.0/",
+#'  "sleep-cassette/SC4001EC-Hypnogram.edf?download")
+#'  
+#' download.file(furl,fpath)
+#' 
+#' events <- read_events_sleepedfx(fpath)
+#' 
+#' unlink(fpath)
+#' 
+#' hypnogram(events, plot = TRUE)
 #' @export
 hypnogram <- function(
     events,
@@ -205,9 +207,13 @@ hypnogram <- function(
     
     if (nrow(rem) > 0) {
       for (i in c(1:nrow(rem))) {
-        df <- stats::reshape(rem[i, ], idvar = "event", 
-                             varying = c("begin", "end"), v.names = "value", 
-                             direction = "long")
+        print(i)
+        df <- stats::reshape(
+          rem[i, ],
+          idvar = "event",
+          varying = c("begin", "end"), v.names = "value",
+          direction = "long")
+        print(df)
         hypnogram <- hypnogram + 
           ggplot2::geom_line(data = df, mapping = ggplot2::aes_string(x = "value", y = "event", 
                                                                       group = 1), colour = "red")}}
