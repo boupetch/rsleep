@@ -39,7 +39,7 @@ library(rsleep)
 
 ### Detecting R peaks in ECG signal
 
-[![image](https://rsleep.org/reference/detect_rpeaks-1.png)](https://rsleep.org/reference/detect_rpeaks.html)
+[![image](https://rsleep.org/reference/detect_rpeaks-1.png =200x)](https://rsleep.org/reference/detect_rpeaks.html)
 
 ## rsleep in publications
 
