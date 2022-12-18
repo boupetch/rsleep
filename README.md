@@ -39,7 +39,19 @@ library(rsleep)
 
 ### Detecting R peaks in ECG signal
 
-[![image](https://rsleep.org/reference/detect_rpeaks-1.png =200x)](https://rsleep.org/reference/detect_rpeaks.html)
+[<img src="https://rsleep.org/reference/detect_rpeaks-1.png" width="400">](https://rsleep.org/reference/detect_rpeaks.html)
+
+### Processing a hypnogram
+
+[<img src="https://rsleep.org/reference/hypnogram-1.png" width="600">](https://rsleep.org/reference/hypnogram.html)
+
+### Plotting a hypnodensity
+
+[<img src="https://rsleep.org/reference/plot_hypnodensity-1.png" width="600">](https://rsleep.org/reference/plot_hypnodensity.html)
+
+### Computing a transition matrix
+
+[<img src="https://rsleep.org/reference/transitions-1.png" width="400">](https://rsleep.org/reference/transitions.html)
 
 ## rsleep in publications
 
