@@ -433,7 +433,7 @@ get_sleep_periods <- function(
 #' 
 #' events <- hypnogram(hypnodensity)
 #' 
-#' transitions(hypnogram, plot = "heatmap")
+#' transitions(events, plot = "heatmap")
 transitions <- function(
     hypnogram,
     stages = c("AWA", "REM", "N1", "N2", "N3"),
