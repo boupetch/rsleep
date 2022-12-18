@@ -216,7 +216,7 @@ hypnogram <- function(
   }
 }
 
-#' Plot a hypnodensity graph using `ggplot2`.
+#' Plot a hypnodensity graph.
 #'
 #' @description Plot a hypnodensity graph using `ggplot2`. Hypnodensity can be read from file or returned by the `score_stages_edf` function.
 #' @references Stephansen, J.B., Olesen, A.N., Olsen, M., Ambati, A., Leary, E.B., Moore, H.E., Carrillo, O., Lin, L., Han, F., Yan, H. and Sun, Y.L., 2018. Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy. Nature communications, 9(1), p.5229.
@@ -420,8 +420,8 @@ get_sleep_periods <- function(
 #' Compute a matrix of stages transitions counts.
 #'
 #' @param hypnogram A hypnogram dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
-#' @param stages Stages to include in transitions Defaults to `c("N1", "N2", "N3", "N4", "REM")`.
-#' @param plot Plot the transition matrix or not. Takes `"heatmap"` to plot a heatmap of transitions or `FALSE` to return the matrix as a dataframe without plotting it.
+#' @param stages Stages to include in transitions Defaults to \code{c("N1", "N2", "N3", "N4", "REM")}.
+#' @param plot Plot the transition matrix or not. Takes \code{"heatmap"} to plot a heatmap of transitions or \code{FALSE} to return the matrix as a dataframe without plotting it.
 #' @return A matrix with count of stages transitions, or a plot.
 #' @export
 #' @examples

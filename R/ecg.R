@@ -1,4 +1,4 @@
-#' Detect R peaks in raw ECG signal using the algorithm described by Pan & Tompkins in "A real-time QRS detection algorithm.", IEEE Trans. Biomed. Eng 32, no. 3 (1985).
+#' Detect R peaks in a raw ECG signal.
 #'
 #' @description `detect_rpeaks` implements the first part of the Pan & Tompkins algorithms to detect R peaks from a raw ECG signal.
 #' @references Pan, Jiapu, and Willis J. Tompkins. "A real-time QRS detection algorithm." IEEE Trans. Biomed. Eng 32, no. 3 (1985): 230-236.
