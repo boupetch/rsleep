@@ -439,7 +439,7 @@ transitions <- function(
     stages = c("AWA", "REM", "N1", "N2", "N3"),
     plot = FALSE){
   
-  hypnogram$events <- as.character(hypnogram$events)
+  hypnogram$event <- as.character(hypnogram$event)
   
   hypnogram_clean <- hypnogram(hypnogram)
   
