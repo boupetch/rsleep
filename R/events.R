@@ -471,10 +471,10 @@ transitions <- function(
     transitions$to <- factor(transitions$to,levels = rev(stages))
     transitions$from <- factor(transitions$from,levels = stages)
     
-    ggplot2::ggplot(transitions, ggplot2::aes(from, to)) +
-      ggplot2::geom_tile(ggplot2::aes(fill = count), show.legend = FALSE) + 
+    ggplot2::ggplot(transitions, ggplot2::aes_string("from", "to")) +
+      ggplot2::geom_tile(ggplot2::aes_string(fill = "count"), show.legend = FALSE) + 
       ggplot2::xlab("") + ggplot2::ylab("") +
-      ggplot2::geom_text(ggplot2::aes(label = round(count, 1))) +
+      ggplot2::geom_text(ggplot2::aes_string(label = "count")) +
       ggplot2::scale_fill_gradient(low = "white", high = "red") +
       ggplot2::scale_x_discrete(position = "top") +
       ggplot2::theme(panel.background = ggplot2::element_blank())
