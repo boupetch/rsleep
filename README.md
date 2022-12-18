@@ -34,6 +34,12 @@ library(rsleep)
 
 - [Spectral analysis of sleep electroencephalography
   signals](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
+  
+## Examples
+
+### Detecting R peaks in ECG signal
+
+[![image](https://rsleep.org/reference/detect_rpeaks-1.png)](https://rsleep.org/reference/detect_rpeaks.html)
 
 ## rsleep in publications
 

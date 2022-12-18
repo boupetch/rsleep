@@ -5,6 +5,8 @@
   * Added `read_events_profusion` function to read annotations from NSRR.
   * Added `xml2` package to dependencies.
   * Added `tst90` function.
+  * `hypnogram` function can now take hypnodensity to convert to hypnogram and plot it if asked with the `plot` parameter.
+  * Added `transitions` function to compute matrices of stages transitions.
   
 # rsleep 1.0.5
 

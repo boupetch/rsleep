@@ -102,7 +102,7 @@ normalize_cycles <- function(events){
 #' plot_hypnogram(hypnogram)
 #' @export
 plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
-
+  
   stages <- hypnogram(events, labels)
 
   stages$begin <- as.POSIXct(stages$begin)
@@ -138,24 +138,82 @@ plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
   return(hypnogram)
 }
 
-#' Filter and reorder an events dataframe to keep only sleep stages related-events.
+#' Filter and reorder an events dataframe or a hypnodensity to keep only sleep stages related-events.
 #'
 #' @description Remove non-sleep stages events and reorder dataframe rows using the \code{begin} column.
 #' @param events Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event}
 #' @param labels Sleep stages labels. Defaults to \code{c("N3","N2","N1","REM","AWA")}.
-#' @return hypnogram dataframe.
+#' @param startTime Hypnogram start time. Used when a hypnodensity dataframe is passed as events. Defaults to 946681200.
+#' @param epoch_duration Epoch duration in seconds. Used when a hypnodensity dataframe is passed as events. Defaults to 30.
+#' @param plot Plot the hypnogram or in not using \code{ggplot2}.
+#' @return Hypnogram dataframe or plot.
 #' @examples
-#' e <- data.frame(begin = as.POSIXlt(c(1536967800,1536967860,1536967830),origin = "1970-01-01"))
-#' e$end <- as.POSIXlt(c(1536967830,1536967890,1536967860), origin = "1970-01-01")
-#' e$event = c("back-position","N3","REM")
-#' hypnogram(e)
+#' download.file(
+#'  "https://rsleep.org/data/hypnodensity.csv",
+#'  "hypnodensity.csv")
+#'
+#' hypnodensity <- read.csv2("hypnodensity.csv")
+#' 
+#' unlink("hypnodensity.csv")
+#'
+#' hypnogram(hypnodensity, plot = TRUE)
+#'
 #' @export
-hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
+hypnogram <- function(
+    events,
+    labels = c("N3", "N2", "N1", "REM", "AWA"),
+    startTime = 946681200,
+    epoch_duration = 30,
+    plot = FALSE){
+  
+  if(all(colnames(events) %in% labels)){
+    startTime <- as.POSIXct(946681200, origin = "1970-01-01")
+    stages <- apply(events, 1, function(x) names(which.max(x)))
+    events <- data.frame(
+      "event" = stages,
+      "begin" = startTime + (c(1:length(stages))*epoch_duration-epoch_duration))
+    events$end <- events$begin+epoch_duration
+  }
+  
   check_events(events)
+  
   stages <- events[events$event %in% labels,]
   stages$event <- factor(stages$event, levels = labels)
   stages <- stages[order(stages$begin),]
-  return(stages)
+  
+  if(plot == FALSE){
+    
+    return(stages)
+    
+  } else {
+    
+    stages$begin <- as.POSIXct(stages$begin)
+    stages$end <- as.POSIXct(stages$end)
+    
+    hypnogram <- ggplot2::ggplot(
+      stages,
+      ggplot2::aes_string(
+        x = "begin", 
+        y = "event",
+        group = 1)) + 
+      ggplot2::geom_line() + 
+      ggplot2::theme_bw() + 
+      ggplot2::xlab("") + 
+      ggplot2::ylab("")
+    
+    rem = stages[stages$event == "REM", ]
+    
+    if (nrow(rem) > 0) {
+      for (i in c(1:nrow(rem))) {
+        df <- stats::reshape(rem[i, ], idvar = "event", 
+                             varying = c("begin", "end"), v.names = "value", 
+                             direction = "long")
+        hypnogram <- hypnogram + 
+          ggplot2::geom_line(data = df, mapping = ggplot2::aes_string(x = "value", y = "event", 
+                                                                      group = 1), colour = "red")}}
+    
+    return(hypnogram)
+  }
 }
 
 #' Plot a hypnodensity graph using `ggplot2`.
@@ -309,23 +367,22 @@ smooth_liang2012 <- function(hypnogram){
 #' @examples
 #' library(ggplot2)
 #' 
-#' download.file(paste0("https://sleepdata.org/datasets/",
-#'     "learn/files/m/browser/polysomnography/",
-#'     "annotations-events-profusion/learn-nsrr01-profusion.xml"),
-#'     "learn-nsrr01-profusion.xml")
+#' download.file(
+#'  "https://rsleep.org/data/hypnodensity.csv",
+#'  "hypnodensity.csv")
+#'
+#' hypnodensity <- read.csv2("hypnodensity.csv")
 #' 
-#' hypnogram <- rsleep::read_events_profusion(xml = "learn-nsrr01-profusion.xml")
+#' unlink("hypnodensity.csv")
 #' 
-#' unlink("learn-nsrr01-profusion.xml")
+#' events <- hypnogram(hypnodensity)
 #' 
-#' plot_hypnogram(hypnogram)
-#' 
-#' periods_continuous <- get_sleep_periods(hypnogram,mode = "continuous")
+#' periods_continuous <- get_sleep_periods(events, mode = "continuous")
 #' 
 #' ggplot(periods_continuous, aes(x=duration)) + geom_histogram(bins = 30)
 #' 
-#' periods_stages <- get_sleep_periods(hypnogram, mode = "stages")
-#' 
+#' periods_stages <- get_sleep_periods(events, mode = "stages")
+#'  
 #' ggplot(periods_stages, aes(x=event,y=duration,color=event)) + geom_boxplot()
 get_sleep_periods <- function(
     hypnogram,
@@ -339,7 +396,6 @@ get_sleep_periods <- function(
   
   # Clean and order hypnogram
   hypnogram$event <- as.character(hypnogram$event)
-  hypnogram <- rsleep::hypnogram(hypnogram)
   hypnogram <- hypnogram[hypnogram$event %in% stages,]
   if(mode == "continuous"){
     hypnogram$event = "SLEEP"}
@@ -361,5 +417,71 @@ get_sleep_periods <- function(
   return(periods)
 }
 
+#' Compute a matrix of stages transitions counts.
+#'
+#' @param hypnogram A hypnogram dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
+#' @param stages Stages to include in transitions Defaults to `c("N1", "N2", "N3", "N4", "REM")`.
+#' @param plot Plot the transition matrix or not. Takes `"heatmap"` to plot a heatmap of transitions or `FALSE` to return the matrix as a dataframe without plotting it.
+#' @return A matrix with count of stages transitions, or a plot.
+#' @export
+#' @examples
+#' download.file("https://rsleep.org/data/hypnodensity.csv", "hypnodensity.csv")
+#' 
+#' hypnodensity <- read.csv2("hypnodensity.csv")
+#' 
+#' unlink("hypnodensity.csv")
+#' 
+#' events <- hypnogram(hypnodensity)
+#' 
+#' transitions(hypnogram, plot = "heatmap")
+transitions <- function(
+    hypnogram,
+    stages = c("AWA", "REM", "N1", "N2", "N3"),
+    plot = FALSE){
+  
+  hypnogram_clean <- hypnogram(hypnogram)
+  
+  hypnogram_stages <- stages[stages %in% unique(hypnogram$event)] 
+  
+  transitions <- data.frame(
+    row.names = hypnogram_stages)
+  
+  for(hypnogram_stage in hypnogram_stages){
+    transitions[[hypnogram_stage]] = rep(0, length(hypnogram_stages))}
+  
+  for(i in c(2:nrow(hypnogram))){
+    if(hypnogram$end[i-1] == hypnogram$begin[i]){
+      y <- which(colnames(transitions) == hypnogram$event[i])
+      x <- which(rownames(transitions) == hypnogram$event[i-1])
+      transitions[x,y] <- transitions[x,y]+1
+    }
+  }
+  
+  if(plot == FALSE){
+    
+    return(transitions)
+    
+  } else if(plot=="heatmap"){
+    
+    transitions$from <- row.names(transitions)
+    transitions <- reshape2::melt(transitions, value.name = "from", id="from")
+    colnames(transitions) <- c("to","from","count")
+    transitions$to <- factor(transitions$to,levels = rev(stages))
+    transitions$from <- factor(transitions$from,levels = stages)
+    
+    ggplot2::ggplot(transitions, ggplot2::aes(from, to)) +
+      ggplot2::geom_tile(ggplot2::aes(fill = count), show.legend = FALSE) + 
+      ggplot2::xlab("") + ggplot2::ylab("") +
+      ggplot2::geom_text(ggplot2::aes(label = round(count, 1))) +
+      ggplot2::scale_fill_gradient(low = "white", high = "red") +
+      ggplot2::scale_x_discrete(position = "top") +
+      ggplot2::theme(panel.background = ggplot2::element_blank())
+    
+  } else {
+    
+    stop("'plot' parameter must be FALSE, or 'heatmap'.")
+    
+  }
+}
 
 
