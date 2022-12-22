@@ -4,7 +4,7 @@ rsleep: A R package for sleep data analysis
 [![CRAN](https://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep)
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7416364.svg)](https://doi.org/10.5281/zenodo.7416364)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7416363.svg)](https://doi.org/10.5281/zenodo.7416363)
 
 rsleep is a multiplatform open-source R package providing a toolbox for sleep data processing,
 visualization and analysis. rsleep provides tools for state of the art automatic sleep stages scoring.
@@ -53,6 +53,22 @@ library(rsleep)
 ### Computing a transition matrix
 
 [<img src="https://rsleep.org/reference/transitions-1.png" width="400">](https://rsleep.org/reference/transitions.html)
+
+# Citation
+
+```
+@software{paul_bouchequet_2022_7474289,
+  author       = {Paul Bouchequet and
+                  Damien Léger},
+  title        = {rsleep},
+  month        = dec,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {1.0.6},
+  doi          = {10.5281/zenodo.7416363},
+  url          = {https://doi.org/10.5281/zenodo.7416363}
+}
+```
 
 ## rsleep usage in scientific litterature
 
