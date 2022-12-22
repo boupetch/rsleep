@@ -9,3 +9,4 @@ vignettes/legacy/*
 docs/*
 vignettes/learn-nsrr01.edf
 learn-nsrr01.edf
+^CRAN-SUBMISSION$
