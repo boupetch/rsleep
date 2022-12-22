@@ -54,16 +54,16 @@ library(rsleep)
 
 [<img src="https://rsleep.org/reference/transitions-1.png" width="400">](https://rsleep.org/reference/transitions.html)
 
-## rsleep in publications
+## rsleep usage in scientific litterature
 
-- Bouchequet P, Solelhac G, Leger D. [rsleep, un package R open-source
-  pour l’analyse des polysomnographies.](https://www.sciencedirect.com/science/article/abs/pii/S1769449319304388) Médecine du Sommeil. 2020;17:67.
+- Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve stimulation in a hungry state decreases heart rate variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213) Physiology & Behavior. 2023;258:114016.
 
-- Andrillon T, Solelhac G, Bouchequet P, et al. [Revisiting the value of
-  polysomnographic data in insomnia: more than meets the eye.](https://www.sciencedirect.com/science/article/abs/pii/S1389945719316442) Sleep
-  Medicine. 2020;66:184-200.
+- Kragness HE, Eitel MJ, Anantharajan F, Gaudette-Leblanc A, Berezowska B, Cirelli L. [An itsy bitsy audience: Live performance facilitates infants’ attention and heart rate synchronization. psyarxiv.com/9s43u](https://psyarxiv.com/9s43u/) 10.31234/osf.io/9s43u 2022.
 
-- Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve
-  stimulation in a hungry state decreases heart rate
-  variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213)
-  Physiology & Behavior. 2023;258:114016.
+- Stucky B, Clark I, Azza Y, et al. [Validation of Fitbit Charge 2 Sleep and Heart Rate Estimates Against Polysomnographic Measures in Shift Workers: Naturalistic Study.](https://www.jmir.org/2021/10/e26476/) J Med Internet Res. 2021;23:e26476. 
+
+- Arts F. [Predicting Subjective Team Performance Using Multimodal, Single-Modality and Segmented Physiological Data](https://arno.uvt.nl/show.cgi?fid=156733) Thesis, 2020.
+
+- Andrillon T, Solelhac G, Bouchequet P, et al. [Revisiting the value of polysomnographic data in insomnia: more than meets the eye.](https://www.sciencedirect.com/science/article/abs/pii/S1389945719316442) Sleep Medicine. 2020;66:184-200.
+
+
