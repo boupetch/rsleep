@@ -1,3 +1,7 @@
+# rsleep development version
+
+  * `plot_hypnogram` can take colors to use as a parameter.
+
 # rsleep 1.0.6
 
   * Following efforts towards merge between Github and CRAN versions.

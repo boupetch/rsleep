@@ -228,6 +228,7 @@ hypnogram <- function(
 #' @references Stephansen, J.B., Olesen, A.N., Olsen, M., Ambati, A., Leary, E.B., Moore, H.E., Carrillo, O., Lin, L., Han, F., Yan, H. and Sun, Y.L., 2018. Neural network analysis of sleep stages enables efficient diagnosis of narcolepsy. Nature communications, 9(1), p.5229.
 #' @param hypnodensity A hypnodensity dataframe as returned by the `score_stages_edf` function.
 #' @param stages Vector of stages labels to plot.
+#' @param colors Vector of colors to use.
 #' @return A `ggplot2` hypnodensity graph.
 #' @examples
 #' download.file("https://rsleep.org/data/hypnodensity.csv", "hypnodensity.csv")
@@ -239,9 +240,10 @@ hypnogram <- function(
 #' plot_hypnodensity(hypnodensity)
 #' @export
 plot_hypnodensity <- function(hypnodensity,
-                              stages = c("AWA","REM","N1","N2","N3")){
+                              stages = c("AWA","REM","N1","N2","N3"),
+                              colors = c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00", "#F98400")){
 
-  pal <- c("#5BBCD6", "#FF0000", "#00A08A", "#F2AD00", "#F98400")
+  pal <- colors
 
   if(length(stages) == 3){
     pal <- c("#5BBCD6","#F2AD00","#FF0000")
