@@ -1,6 +1,7 @@
 # rsleep development version
 
-  * `plot_hypnogram` can take colors to use as a parameter.
+  * `plot_hypnogram()` can take colors to use as a parameter.
+  * Added `read_events_ndb()` fucntion to read `.ndb` files from Resmed Noxturnal software. 
 
 # rsleep 1.0.6
 

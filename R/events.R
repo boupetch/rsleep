@@ -207,13 +207,11 @@ hypnogram <- function(
     
     if (nrow(rem) > 0) {
       for (i in c(1:nrow(rem))) {
-        print(i)
         df <- stats::reshape(
           rem[i, ],
           idvar = "event",
           varying = c("begin", "end"), v.names = "value",
           direction = "long")
-        print(df)
         hypnogram <- hypnogram + 
           ggplot2::geom_line(data = df, mapping = ggplot2::aes_string(x = "value", y = "event", 
                                                                       group = 1), colour = "red")}}
@@ -494,4 +492,83 @@ transitions <- function(
   }
 }
 
+#' Read events from a Resmed Noxturnal .ndb file.
+#'
+#' @param data_file .ndb file path.
+#' @return An events dataframe.
+#' @export
+read_events_ndb <- function(data_file){
+  
+  data_ndb <- paste0(data_file)
+  
+  nox_db <- DBI::dbConnect(RSQLite::SQLite(), data_ndb)
+  
+  tables <- RSQLite::dbListTables(nox_db)
+  
+  res <- list()
+  
+  res$tables <- list()
+  
+  for(table in tables){
+    print(table)
+    res$tables[[table]] <- RSQLite::dbGetQuery(
+      conn = nox_db,
+      paste0('SELECT * FROM ', table))
+  }
+  
+  # Start time
+  timestamp <- as.numeric(
+    res$tables$internal_property$value[
+      res$tables$internal_property$key == "RecordingStart"])
+  epoch0.Csharp <- 621355968000000000
+  timestamp.conv <- (timestamp - epoch0.Csharp) / 1e7
+  startTime <- as.POSIXct(timestamp.conv, origin="1970-01-01")
+  
+  events <- data.frame(
+    "begin" = startTime,
+    "end" = startTime,
+    "event" = "RecordingStart",
+    stringsAsFactors = FALSE)
+  
+  # Stop time
+  timestamp <- as.numeric(
+    res$tables$internal_property$value[
+      res$tables$internal_property$key == "RecordingStop"])
+  timestamp.conv <- (timestamp - epoch0.Csharp) / 1e7
+  stopTime <- as.POSIXct(timestamp.conv, origin="1970-01-01")
+  
+  events <- rbind(events, data.frame(
+    "begin" = stopTime,
+    "end" = stopTime,
+    "event" = "RecordingStop",
+    stringsAsFactors = FALSE))
+  
+  events$location <- NA
+  
+  # Stages
+  # stages <- res$tables$scoring_marker
+  # stages <- stages[,c("starts_at", "ends_at", "type")]
+  # colnames(stages) <- c("begin", "end", "event")
+  # stages$begin <- as.POSIXct(((stages$begin - epoch0.Csharp) / 1e7), origin="1970-01-01")
+  # stages$end <- as.POSIXct(((stages$end - epoch0.Csharp) / 1e7), origin="1970-01-01")
+  # stages$location <- NA
+  
+  scored_events <- res$tables$temporary_scoring_marker
+  scored_events <- scored_events[,c("starts_at","ends_at", "type", "location")]
+  colnames(scored_events) <- c("begin", "end", "event", "location")
+  scored_events$begin <- as.POSIXct(((scored_events$begin - epoch0.Csharp) / 1e7), origin="1970-01-01")
+  scored_events$end <- as.POSIXct(((scored_events$end - epoch0.Csharp) / 1e7), origin="1970-01-01")
+  scored_events$location[scored_events$location == ""] <- NA
+  
+  scored_events$event[scored_events$event == "sleep-wake"] <- "AWA"
+  scored_events$event[scored_events$event == "sleep-n1"] <- "N1"
+  scored_events$event[scored_events$event == "sleep-n2"] <- "N2"
+  scored_events$event[scored_events$event == "sleep-n3"] <- "N3"
+  scored_events$event[scored_events$event == "sleep-rem"] <- "REM"
+  scored_events$event[scored_events$event == "arousal"] <- "Arousal"
+  
+  events <- rbind(events, scored_events)
+  
+  return(scored_events)
+}
 
