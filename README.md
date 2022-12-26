@@ -5,7 +5,7 @@ rsleep: A R package for sleep data analysis
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep)
 [![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7416363.svg)](https://doi.org/10.5281/zenodo.7416363)
-![GitHub Sponsor](https://img.shields.io/github/sponsors/boupetch?label=Sponsor&logo=GitHub)
+[![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/boupetch)
 
 rsleep is a multiplatform open-source R package providing a toolbox for sleep data processing,
 visualization and analysis. rsleep provides tools for state of the art automatic sleep stages scoring.
