@@ -499,6 +499,8 @@ transitions <- function(
 #' @export
 read_events_ndb <- function(data_file){
   
+  # TODO clean this function
+  
   data_ndb <- paste0(data_file)
   
   nox_db <- DBI::dbConnect(RSQLite::SQLite(), data_ndb)
