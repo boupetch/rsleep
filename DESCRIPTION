@@ -7,7 +7,8 @@ Description: A toolbox for sleep data processing, visualization and analysis. rs
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://rsleep.org/
+URL: https://rsleep.org/, https://github.com/boupetch/rsleep
+BugReports: https://github.com/boupetch/rsleep/issues
 Imports:
   abind,
   edfReader,
