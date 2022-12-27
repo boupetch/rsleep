@@ -15,6 +15,8 @@ editor_options:
 ---
 
 ```{r env, include = FALSE}
+options(scipen=999)
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -29,33 +31,33 @@ EEG is a major component in sleep analysis. Sleep stages, such as slow wave slee
 
 ## Sleep data
 
-The [National Sleep Research Resource](https://sleepdata.org) (NSRR) is a repository of sleep databases containing  polysomnographic sleep recordings from various studies. The `Learn` dataset provides 3 records and their scoring for training purposes.
-
-Sleep records are usually stored using European Data Format (EDF) @Kemp1992. The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `Fpz-Cz` central derivation.
+Sleep records are usually stored using European Data Format (EDF) @Kemp1992. The R package [`edfReader`](https://CRAN.R-project.org/package=edfReader) reads `.edf` files. Reading an `.edf` file takes two steps: First reading the headers of the file, then reading the selected signals. The following spectral analysis will be performed on a single channel of the EEG, the `C3-M2` central derivation.
 
 ```{r edf_read, echo=FALSE}
 library(edfReader)
 
-if(!file.exists("learn-nsrr01.edf")){
+fname <- "15012016HD.edf"
+if(!file.exists(fname)){
   download.file(
-  url = "https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/edfs/learn-nsrr01.edf",
-  destfile = "learn-nsrr01.edf")}
+  url = "https://rsleep.org/data/15012016HD.edf",
+  destfile = fname,
+  method = "curl")}
 
-h <- readEdfHeader("learn-nsrr01.edf")
+h <- readEdfHeader(fname)
 
-s <- readEdfSignals(h)
+s <- readEdfSignals(h, signals = "C3-M2")
 ```
 
 ```r
 library(edfReader)
 
 download.file(
-  url = "https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/edfs/learn-nsrr01.edf",
-  destfile = "learn-nsrr01.edf")
+  url = "https://rsleep.org/data/15012016HD.edf",
+  destfile = "15012016HD.edf")
 
-h <- readEdfHeader("learn-nsrr01.edf")
+h <- readEdfHeader("15012016HD.edf")
 
-s <- readEdfSignals(h)
+s <- readEdfSignals(h, signals = "C3-M2")
 ```
 
 The `rsleep` function `spectrogram()` plots the spectrogram of the signal. But first, install `rsleep` latest version from Github.
@@ -66,43 +68,49 @@ devtools::install_github("boupetch/rsleep")
 library(rsleep)
 
 spectrogram(
-  signal = s$EEG$signal,
-  sRate = s$EEG$sRate,
-  startTime = s$ECG$startTime)
+  signal = s$`C3-M2`$signal,
+  sRate = s$`C3-M2`$sRate,
+  startTime = s$`C3-M2`$startTime)
 ```
 
 ```{r spectrogram, echo=FALSE, fig.width=7}
 library(rsleep)
 
 spectrogram(
-  signal = s$EEG$signal,
-  sRate = s$EEG$sRate,
-  startTime = s$ECG$startTime)
+  signal = s$signal,
+  sRate = s$sRate)
 ```
 
-`rsleep` reads this particular format with the `read_events_profusion` function. The `plot_hypnogram` function then plots the hypnogram.
+`rsleep` reads this particular format with the `read_events_noxturnal` function. The `plot_hypnogram` function then plots the hypnogram.
 
 ```r
-if(!file.exists("learn-nsrr01-profusion.xml")){
+if(!file.exists("15012016HD.csv")){
   download.file(
-  url = "https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/annotations-events-profusion/learn-nsrr01-profusion.xml",
-  destfile = "learn-nsrr01-profusion.xml")}
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv")}
 
-events <- rsleep::read_events_profusion(
-  "learn-nsrr01-profusion.xml", h$startTime)
+events <- rsleep::read_events_noxturnal(
+  "15012016HD.csv", h$startTime)
 
 rsleep::plot_hypnogram(events)
 ```
 
 ```{r hypnogram, echo=FALSE, fig.width = 7}
-if(!file.exists("learn-nsrr01-profusion.xml")){
+if(!file.exists("15012016HD.csv")){
   download.file(
-  url = "https://sleepdata.org/datasets/learn/files/m/browser/polysomnography/annotations-events-profusion/learn-nsrr01-profusion.xml",
-  destfile = "learn-nsrr01-profusion.xml")}
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv")}
 
-events <- read_events_profusion(
-  "learn-nsrr01-profusion.xml", h$startTime)
+events <- read_events_noxturnal(
+  "15012016HD.csv")
 
+# Remove last epoch as signal stops before.
+events <- head(events, -1)
+
+events$event <- as.character(events$event)
+events <- hypnogram(events)
+
+events$event <- as.character(events$event)
 plot_hypnogram(events)
 ```
 
@@ -124,9 +132,9 @@ As the example record already has a hynogram, the EEG signal can be splitted usi
 
 ```{r epoching}
 epochs <- epochs(
-  signals = s$EEG$signal,
-  sRates = s$EEG$sRate,
-  epoch = rsleep::hypnogram(events),
+  signals = s$signal,
+  sRates = s$sRate,
+  epoch = events,
   startTime = as.numeric(as.POSIXct(h$startTime)))
 ```
 
@@ -136,10 +144,10 @@ The Fourier transform (FT) may be the most important function in signal analysis
 
 ### Single epoch
 
-The `pwelch` function `rsleep` computes a periodogram using Welch's method. The following example computes and plot the periodogram of the 100th epoch. This epoch has been scored N2, or light sleep, by the expert.
+The `pwelch` function `rsleep` computes a periodogram using Welch's method. The following example computes and plot the periodogram of the 120th epoch. This epoch has been scored N2, or light sleep, by the expert.
 
 ```{r pwelch, fig.width=7, message=FALSE, error=FALSE}
-p <- pwelch(epochs[[100]], sRate = s$EEG$sRate)
+p <- pwelch(epochs[[120]], sRate = s$sRate)
 
 summary(p)
 ```
@@ -151,11 +159,14 @@ This epoch periodogram shows high PSD in lower frequencies of the spectrum. As v
 To compute average periodograms by stage, hypnogram and epochs can be iterated simultaneously using the `mapply` function. Periodograms can be filtered at this step to discard values over 30 Hertz.
 
 ```{r avg_pdg_compute}
-periodograms <- mapply(x = epochs, y = rsleep::hypnogram(events)$event, FUN = function(x,y){
-  p <- pwelch(x, sRate = s$EEG$sRate, show = FALSE)
-  p <- as.data.frame(p[p$hz <= 30,])
-  p$stage <- y
-  p
+periodograms <- mapply(
+  x = epochs, 
+  y = events$event,
+  FUN = function(x,y){
+    p <- pwelch(x, sRate = s$sRate, show = FALSE)
+    p <- as.data.frame(p[p$hz <= 30,])
+    p$stage <- y
+    p
 }, SIMPLIFY = F)
 ```
 
@@ -212,7 +223,7 @@ bands <- lapply(epochs,function(x){
                    c(3.5,7.5), # Theta
                    c(7.5,13), # Alpha
                    c(13,30)), # Beta
-      signal = x, sRate = s$EEG$sRate,
+      signal = x, sRate = s$sRate,
       normalize = c(0.5,30))
 })
 ```
