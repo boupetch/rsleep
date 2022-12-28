@@ -591,8 +591,8 @@ plot_event <- function(
     event_start,
     event_end,
     window = 10){
-  idx_signal_start <- floor(as.numeric(difftime(event_start,sig_start, units = "sec"))*sRate-window)
-  idx_signal_end <- floor(as.numeric(difftime(event_end,sig_start, units = "sec"))*sRate+window)
+  idx_signal_start <- floor(as.numeric(difftime(event_start,sig_start, units = "sec"))*sRate-window*sRate)
+  idx_signal_end <- floor(as.numeric(difftime(event_end,sig_start, units = "sec"))*sRate+window*sRate)
   df <- data.frame(
     "y" = signal[idx_signal_start:idx_signal_end],
     "x" = seq(event_start-window,event_end+window, length.out =length(signal[idx_signal_start:idx_signal_end])))
