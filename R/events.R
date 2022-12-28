@@ -574,3 +574,33 @@ read_events_ndb <- function(data_file){
   return(scored_events)
 }
 
+#' Highlight a scored event over a signal.
+#'
+#' @param signal The signal vector.
+#' @param sRate Sample rate of the signal.
+#' @param sig_start Date-Time value of the signal start.
+#' @param event_start Date-Time value of the event start.
+#' @param event_end Date-Time value of the event end.
+#' @param window Number of seconds of signal to plot before, and after.
+#' @return A plot of the highlighted event over the signal.
+#' @export
+plot_event <- function(
+    signal,
+    sRate,
+    sig_start,
+    event_start,
+    event_end,
+    window = 10){
+  idx_signal_start <- floor(as.numeric(difftime(event_start,sig_start, units = "sec"))*sRate-window)
+  idx_signal_end <- floor(as.numeric(difftime(event_end,sig_start, units = "sec"))*sRate+window)
+  df <- data.frame(
+    "y" = signal[idx_signal_start:idx_signal_end],
+    "x" = seq(event_start-window,event_end+window, length.out =length(signal[idx_signal_start:idx_signal_end])))
+  ggplot2::ggplot(
+    data = df)+ggplot2::aes_string(x="x",y="y")+ ggplot2::geom_line() +
+    ggplot2::geom_rect(ggplot2::aes(xmin=event_start,
+                                    xmax = event_end,
+                                    ymin = -Inf,
+                                    ymax = Inf), fill = 'pink', alpha = 0.02) +
+    ggplot2::xlab("Time")+ ggplot2::ylab("Signal values")}
+

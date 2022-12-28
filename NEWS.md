@@ -1,7 +1,8 @@
 # rsleep development version
 
   * `plot_hypnogram()` can take colors to use as a parameter.
-  * Added `read_events_ndb()` fucntion to read `.ndb` files from Resmed Noxturnal software. 
+  * Added `read_events_ndb()` function to read `.ndb` files from Resmed Noxturnal software. 
+  * Added `plot_event()` function to plot a scored event over a signal.
 
 # rsleep 1.0.6
 
