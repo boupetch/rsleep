@@ -39,13 +39,18 @@ library(rsleep)
   
 ## Examples
 
+### Plotting a spectrogram
+
+[<img src="https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography_files/figure-html/spectrogram-1.png" width="600">](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
+
+
 ### Detecting R peaks in ECG signal
 
 [<img src="https://rsleep.org/reference/detect_rpeaks-1.png" width="400">](https://rsleep.org/reference/detect_rpeaks.html)
 
 ### Processing a hypnogram
 
-[<img src="https://rsleep.org/reference/hypnogram-1.png" width="600">](https://rsleep.org/reference/hypnogram.html)
+[<img src="https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography_files/figure-html/hypnogram-1.png" width="600">](https://rsleep.org/reference/hypnogram.html)
 
 ### Plotting a hypnodensity
 
@@ -73,6 +78,8 @@ library(rsleep)
 ## rsleep usage in scientific litterature
 
 - Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve stimulation in a hungry state decreases heart rate variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213) Physiology & Behavior. 2023;258:114016.
+
+- Andrillon T, Solelhac G, Bouchequet P, et al. [Leveraging machine learning to identify the neural correlates of insomnia with and without sleep state misperception.](https://www.sciencedirect.com/science/article/pii/S1389945722005378) Sleep Medicine. 2022;100:S129. 
 
 - Chang K-M, Liu P-T, Wei T-S. [Electromyography Parameter Variations with Electrocardiography Noise.](https://www.mdpi.com/1424-8220/22/16/5948) Sensors. 2022;22:5948. 
 
