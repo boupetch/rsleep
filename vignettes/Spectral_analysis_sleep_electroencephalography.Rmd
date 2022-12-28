@@ -19,8 +19,7 @@ options(scipen=999)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
-)
+  comment = "#>")
 ```
 
 This vignette provides a basic introduction to spectral analysis of Electroencephalography (EEG) signal from a sleep record file.
@@ -53,7 +52,8 @@ library(edfReader)
 
 download.file(
   url = "https://rsleep.org/data/15012016HD.edf",
-  destfile = "15012016HD.edf")
+  destfile = "15012016HD.edf",
+  method = 'curl')
 
 h <- readEdfHeader("15012016HD.edf")
 
@@ -68,9 +68,9 @@ devtools::install_github("boupetch/rsleep")
 library(rsleep)
 
 spectrogram(
-  signal = s$`C3-M2`$signal,
-  sRate = s$`C3-M2`$sRate,
-  startTime = s$`C3-M2`$startTime)
+  signal = s$signal,
+  sRate = s$sRate,
+  startTime = s$startTime)
 ```
 
 ```{r spectrogram, echo=FALSE, fig.width=7}
@@ -78,7 +78,8 @@ library(rsleep)
 
 spectrogram(
   signal = s$signal,
-  sRate = s$sRate)
+  sRate = s$sRate,
+  startTime = s$startTime)
 ```
 
 `rsleep` reads this particular format with the `read_events_noxturnal` function. The `plot_hypnogram` function then plots the hypnogram.
@@ -99,18 +100,17 @@ rsleep::plot_hypnogram(events)
 if(!file.exists("15012016HD.csv")){
   download.file(
   url = "https://rsleep.org/data/15012016HD.csv",
-  destfile = "15012016HD.csv")}
+  destfile = "15012016HD.csv",
+  method="curl")}
 
-events <- read_events_noxturnal(
-  "15012016HD.csv")
+events <- read_events_noxturnal("15012016HD.csv")
 
 # Remove last epoch as signal stops before.
 events <- head(events, -1)
 
-events$event <- as.character(events$event)
-events <- hypnogram(events)
+# Remove other events
+events <- events[events$event %in% c("AWA", "REM", "N1", "N2", "N3"),]
 
-events$event <- as.character(events$event)
 plot_hypnogram(events)
 ```
 
@@ -187,7 +187,7 @@ Aggregated periodograms can then be plotted using `ggplot2`.
 ```{r periodogram_plot, fig.width=7, message=FALSE, error=FALSE}
 library(ggplot2)
 
-palette <- c("#F98400","#F2AD00","#00A08A","#FF0000","#5BBCD6")
+palette <- c("#5BBCD6","#00A08A","#F2AD00","#F98400","#FF0000")
 
 ggplot(avg_periodograms, aes(x=hz,y=psd,color=stage)) +
   geom_line() + theme_bw() +
@@ -259,6 +259,6 @@ ggplot(bands_df_long,
   theme(legend.position = "none")
 ```
 
-Each stage show a different bands PSD profile. Bands greatly simplify the EEG spectrum.
+Each stage show a different bands PSD profile.
 
 ## References
