@@ -114,7 +114,7 @@ events <- events[events$event %in% c("AWA", "REM", "N1", "N2", "N3"),]
 plot_hypnogram(events)
 ```
 
-The hypnogram show sleep stages over time using consecutive 30 seconds epochs. Data from the NSRR were manually scored by well-trained technicians according to the American Academy of Sleep Medicine manual @AASMScoringManual. Five sleep stages can be observed:
+The hypnogram show sleep stages over time using consecutive 30 seconds epochs. This record was manually scored by well-trained technicians according to the American Academy of Sleep Medicine manual @AASMScoringManual. Five sleep stages can be observed:
 
   * **AWA**: Awakeness.
   * **REM**: Rapid-Eye-Movement (REM) sleep, or paradoxical sleep, highlighted in red.
@@ -223,8 +223,7 @@ bands <- lapply(epochs,function(x){
                    c(3.5,7.5), # Theta
                    c(7.5,13), # Alpha
                    c(13,30)), # Beta
-      signal = x, sRate = s$sRate,
-      normalize = c(0.5,30))
+      signal = x, sRate = s$sRate)
 })
 ```
 
@@ -258,7 +257,5 @@ ggplot(bands_df_long,
   theme_bw() + xlab("") + ylab("PSD") + 
   theme(legend.position = "none")
 ```
-
-Each stage show a different bands PSD profile.
 
 ## References
