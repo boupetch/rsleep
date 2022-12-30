@@ -1,6 +1,6 @@
-#' Get stages events related stats in a named vector.
+#' Get stages related statistics in a named vector.
 #'
-#' \code{stages_stats} computes stages related stats.
+#' \code{stages_stats} computes stages related statistics.
 #'
 #' @param e Events dataframe. Dataframe must have \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
 #' @return stages vector
@@ -25,7 +25,7 @@ stages_stats <- function(e){
   # Time To Sleep (TTS)
   r = c(r, "tts" = sum(as.numeric(difftime(e$end[e$event %in% c("N1", "N2", "N3", "REM")],e$begin[e$event  %in% c("N1", "N2", "N3", "REM")],units="min"))))
 
-  # Time To Sleep (TTS)
+  # Time To Sleep (TTS) by stage
   r = c(r, "rem_tts" = ifelse(r[["tts"]] == 0, 0, r[["rem_duration"]]/r[["tts"]]))
   r = c(r, "n1_tts" = ifelse(r[["tts"]] == 0, 0, r[["n1_duration"]]/r[["tts"]]))
   r = c(r, "n2_tts" = ifelse(r[["tts"]] == 0, 0, r[["n2_duration"]]/r[["tts"]]))
