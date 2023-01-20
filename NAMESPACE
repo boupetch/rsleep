@@ -3,6 +3,7 @@
 export(bands_psd)
 export(chambon2018)
 export(check_events)
+export(choi2018)
 export(detect_rpeaks)
 export(epochs)
 export(get_sleep_periods)

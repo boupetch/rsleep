@@ -135,3 +135,57 @@ schwabedal2018 <- function(channels = 2,
   model
   
 }
+
+#' Convolutional neural network for real-time apnea-hypopnea event detection during sleep
+#'
+#' @description Keras implementation of the deep learning architecture described by Choi & Al in "Real-time apnea-hypopnea event detection during sleep by convolutional neural network".
+#' @references Choi SH, Yoon H, Kim HS, et al. Real-time apnea-hypopnea event detection during sleep by convolutional neural networks. Computers in Biology and Medicine. 2018;100:123-131. 
+#' @param segment_size Integer. The size of the segment to predict.
+#' @return A Keras sequential model.
+#' @example 
+#' choi2018()
+#' @export
+choi2018 <- function(segment_size = 160){
+  model <- keras::keras_model_sequential()
+  
+  model <- keras::layer_conv_1d(
+    model, filters = 15, kernel_size = 4, strides = 2,
+    activation = 'relu', input_shape = c(segment_size, 1))
+  
+  model <- keras::layer_max_pooling_1d(
+    model, strides = 1, pool_size = 2)
+  
+  model <- keras::layer_dropout(model, rate = 0.2)
+  
+  model <- keras::layer_conv_1d(
+    model, filters = 30, kernel_size = 4, strides = 2,
+    activation = 'relu')
+  
+  model <- keras::layer_conv_1d(
+    model, filters = 30, kernel_size = 4, strides = 2,
+    activation = 'relu')
+  
+  model <- keras::layer_max_pooling_1d(
+    model, strides = 1, pool_size = 2)
+  
+  model <- keras::layer_dropout(model, rate = 0.2)
+  
+  model <- keras::layer_flatten(model)
+  
+  model <- keras::layer_batch_normalization(model)
+  
+  model <- keras::layer_dense(model, units = 50, activation = 'relu')
+  
+  model <- keras::layer_dropout(model, rate = 0.2)
+  
+  model <- keras::layer_dense(model, units = 2, activation = 'sigmoid')
+  
+  model <- keras::compile(
+    model,
+    loss = "categorical_crossentropy",
+    optimizer = keras::optimizer_adam(
+      learning_rate = 0.001),
+    metrics = "accuracy")
+  
+  model
+}

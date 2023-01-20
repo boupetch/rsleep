@@ -1,5 +1,7 @@
 # rsleep development version
 
+  * Added `choi2018()` function, a Keras implementation of the deep learning architecture described by Choi & Al in "Real-time apnea-hypopnea event detection during sleep by convolutional neural network".
+  * `read_events_profusion()` bug in scored events reading fixed.
   * `plot_hypnogram()` can take colors to use as a parameter.
   * Added `read_events_ndb()` function to read `.ndb` files from Resmed Noxturnal software. 
   * Added `plot_event()` function to plot a scored event over a signal.
