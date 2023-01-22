@@ -87,6 +87,7 @@ tst90 <- function(
 }
 
 #' Computes Cohen's Kappa for agreement in the case of 2 raters.
+#' @description Cohen’s kappa coefficient value is a robust statistical measure of inter-rater agreement published in 1960 by Jacob Cohen. It has been reused by numerous studies in sleep medicine to measure the accuracy of predictions, especially for automatic sleep staging. 
 #' @param observed The vector of observed values (truth).
 #' @param predicted The vector of predicted values.
 #' @references Cohen J. A Coefficient of Agreement for Nominal Scales. Educational and Psychological Measurement. 1960;20:37-46. 
