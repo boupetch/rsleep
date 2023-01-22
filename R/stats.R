@@ -90,6 +90,10 @@ tst90 <- function(
 #' @param observed The vector of observed values (truth).
 #' @param predicted The vector of predicted values.
 #' @references Cohen J. A Coefficient of Agreement for Nominal Scales. Educational and Psychological Measurement. 1960;20:37-46. 
+#' @examples 
+#' observed = c("AWA", "N1", "N2", "N3", "REM")
+#' predicted = c("AWA", "AWA", "N2", "N3", "REM")
+#' ckappa(observed, predicted)
 #' @export
 ckappa <- function(observed, predicted){
 
@@ -100,12 +104,15 @@ ckappa <- function(observed, predicted){
   agreements <- sum(observed == predicted)
   
   # calculate the expected number of agreements
-  p_o <- sum(observed)/n
-  p_p <- sum(predicted)/n
-  p_e <- p_o * p_p + (1-p_o) * (1-p_p)
+  tab <- table(observed, predicted)
+  p_o <- prop.table(tab,1)
+  p_p <- prop.table(tab,2)
+  p_e <- p_o %*% t(p_p)
+  p_e <- p_e*n
   
   # calculate Cohen's Kappa
-  kappa <- (agreements/n - p_e) / (1 - p_e)
+  #kappa <- (agreements - sum(p_e)) / (n - sum(p_e))
+  kappa <- sum(agreements - p_e) / sum(n - p_e)
   
   kappa
 }
