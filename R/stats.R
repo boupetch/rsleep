@@ -85,3 +85,27 @@ tst90 <- function(
   }
   return(u90/sum(periods$duration))
 }
+
+#' Computes Cohen's Kappa for agreement in the case of 2 raters.
+#' @param observed The vector of observed values (truth).
+#' @param predicted The vector of predicted values.
+#' @references Cohen J. A Coefficient of Agreement for Nominal Scales. Educational and Psychological Measurement. 1960;20:37-46. 
+#' @export
+ckappa <- function(observed, predicted){
+
+  # calculate the number of observations
+  n <- length(observed)
+  
+  # calculate the number of agreements
+  agreements <- sum(observed == predicted)
+  
+  # calculate the expected number of agreements
+  p_o <- sum(observed)/n
+  p_p <- sum(predicted)/n
+  p_e <- p_o * p_p + (1-p_o) * (1-p_p)
+  
+  # calculate Cohen's Kappa
+  kappa <- (agreements/n - p_e) / (1 - p_e)
+  
+  kappa
+}
