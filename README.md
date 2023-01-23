@@ -79,6 +79,8 @@ library(rsleep)
 
 - Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve stimulation in a hungry state decreases heart rate variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213) Physiology & Behavior. 2023;258:114016.
 
+- Rajalakshmi J, Ranjani SS, Sugitha G, Prabanand SC. [Electroencephalogram Data Analysed Through the Lens of Machine Learning to Detect Signs of Epilepsy.](https://ieeexplore.ieee.org/document/9985641) 2022 4th International Conference on Inventive Research in Computing Applications (ICIRCA). September 2022. 
+
 - Andrillon T, Solelhac G, Bouchequet P, et al. [Leveraging machine learning to identify the neural correlates of insomnia with and without sleep state misperception.](https://www.sciencedirect.com/science/article/pii/S1389945722005378) Sleep Medicine. 2022;100:S129. 
 
 - Chang K-M, Liu P-T, Wei T-S. [Electromyography Parameter Variations with Electrocardiography Noise.](https://www.mdpi.com/1424-8220/22/16/5948) Sensors. 2022;22:5948. 
