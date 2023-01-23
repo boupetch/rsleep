@@ -1,4 +1,4 @@
-#' Split signals into  epochs according to an events dataframe or an epoch duration.
+#' Split signals into consecutive, non-overlaping epochs according to an events dataframe or an epoch duration.
 #'
 #' @description Split long signals into a list of consecutive epochs according to an events dataframe or an epoch duration.
 #' @param signals A list of numeric vectors containing signals, or a single vector containing one signal.
@@ -108,4 +108,55 @@ epochs <- function(signals,
   
   epochs
   
+}
+
+#' Split signals into consecutive, overlapping segments.
+#' 
+#' @param signals A list of numeric vectors containing signals, or a single vector containing one signal.
+#' @param sRates A vector or list of integer values of the signals sample rates.
+#' @param resample The sample rate to resample all signals. Defaults to to the max of the provided sample rates.
+#' @param segments_size The size of segments, in seconds.
+#' @param step The step between segments, in seconds.
+#' @references Choi SH, Yoon H, Kim HS, et al. Real-time apnea-hypopnea event detection during sleep by convolutional neural networks. Computers in Biology and Medicine. 2018;100:123-131. 
+#' @return A matrix of segments.
+#' @examples
+#' computed_segments = segments(
+#'   signals = list(c(sin(1:1000)),c(cos(1:1000))),
+#'   sRates = c(1, 1),
+#'   segments_size = 5,
+#'   resample = 1)
+#' dim(computed_segments)
+#' plot(computed_segments[1,,1], type = "l")
+#' plot(computed_segments[2,,1], type = "l")
+#' @export
+segments <- function(
+    signals,
+    sRates,
+    segments_size = 10,
+    step = 1,
+    resample = max(sRates)){
+  
+  resampled_signals <- mapply(function(x, y) {
+    if (y != resample) {
+      signal::resample(x, resample, y)
+    }
+    else {
+      x
+    }}, x = signals, y = sRates)
+  
+  segments_idx_start = seq(
+    from = 1, 
+    to = dim(resampled_signals)[1]-(resample*segments_size), 
+    by = resample*step)
+  
+  segments = lapply(
+    segments_idx_start,
+    FUN = function(x){
+      resampled_signals[x:(x+(resample*segments_size)-1),]
+    }
+  )
+  
+  segments = abind::abind(segments,along = 0)
+  
+  segments
 }
