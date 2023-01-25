@@ -117,6 +117,7 @@ epochs <- function(signals,
 #' @param resample The sample rate to resample all signals. Defaults to to the max of the provided sample rates.
 #' @param segments_size The size of segments, in seconds.
 #' @param step The step between segments, in seconds.
+#' @param padding umber of previous and next epochs to pad the current epoch with. Defaults to 0.
 #' @references Choi SH, Yoon H, Kim HS, et al. Real-time apnea-hypopnea event detection during sleep by convolutional neural networks. Computers in Biology and Medicine. 2018;100:123-131. 
 #' @return A matrix of segments.
 #' @examples
@@ -129,34 +130,39 @@ epochs <- function(signals,
 #' plot(computed_segments[1,,1], type = "l")
 #' plot(computed_segments[2,,1], type = "l")
 #' @export
-segments <- function(
-    signals,
-    sRates,
-    segments_size = 10,
-    step = 1,
-    resample = max(sRates)){
-  
-  resampled_signals <- mapply(function(x, y) {
+segments <- function(signals,
+                     sRates,
+                     segments_size = 10,
+                     step = 1,
+                     padding = 0,
+                     resample = max(sRates)) {
+  resampled_signals = mapply(function(x, y) {
     if (y != resample) {
-      signal::resample(x, resample, y)
+      x = signal::resample(x, resample, y)
     }
-    else {
-      x
-    }}, x = signals, y = sRates)
+    c(
+      rep(0, padding * resample * segments_size),
+      x,
+      rep(0, padding * resample * segments_size)
+    )
+  }, x = signals, y = sRates)
   
   segments_idx_start = seq(
-    from = 1, 
-    to = dim(resampled_signals)[1]-(resample*segments_size), 
-    by = resample*step)
+    from = 1 + (padding * resample * segments_size),
+    to = dim(resampled_signals)[1] - (padding * resample * segments_size) -
+      (resample * segments_size),
+    by = resample * step
+  )
   
   segments = lapply(
     segments_idx_start,
-    FUN = function(x){
-      resampled_signals[x:(x+(resample*segments_size)-1),]
+    FUN = function(x) {
+      resampled_signals[(x - (padding * resample * segments_size)):(x + (resample *
+                                                                           segments_size) - 1 + (padding * resample * segments_size)), ]
     }
   )
   
-  segments = abind::abind(segments,along = 0)
+  segments = abind::abind(segments, along = 0)
   
   segments
 }
