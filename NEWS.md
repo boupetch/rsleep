@@ -1,6 +1,6 @@
 # rsleep development version
 
-  * 
+  * Added `segments()` function to split signals into consecutive overlapping chunks.
   * Added `ckappa()` to compute Cohen's Kappa, a coefficient of agreement for nominal scales.
   * Added `choi2018()` function, a Keras implementation of the deep learning architecture described by Choi & Al in "Real-time apnea-hypopnea event detection during sleep by convolutional neural network".
   * `read_events_profusion()` bug in scored events reading fixed.
