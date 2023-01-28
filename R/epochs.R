@@ -118,6 +118,7 @@ epochs <- function(signals,
 #' @param segments_size The size of segments, in seconds.
 #' @param step The step between segments, in seconds.
 #' @param padding umber of previous and next epochs to pad the current epoch with. Defaults to 0.
+#' @param return_index If TRUE, the index of segments is returned instead of the segments. 
 #' @references Choi SH, Yoon H, Kim HS, et al. Real-time apnea-hypopnea event detection during sleep by convolutional neural networks. Computers in Biology and Medicine. 2018;100:123-131. 
 #' @return A matrix of segments.
 #' @examples
@@ -135,7 +136,18 @@ segments <- function(signals,
                      segments_size = 10,
                      step = 1,
                      padding = 0,
-                     resample = max(sRates)) {
+                     resample = max(sRates),
+                     return_index = FALSE) {
+  
+  if(return_index){
+    return(seq(
+      from = 1,
+      to = dim(resampled_signals)[1] -
+        (resample * segments_size),
+      by = resample * step
+    ))
+  }
+  
   resampled_signals = mapply(function(x, y) {
     if (y != resample) {
       x = signal::resample(x, resample, y)
