@@ -554,7 +554,12 @@ read_events_ndb <- function(data_file){
   # stages$end <- as.POSIXct(((stages$end - epoch0.Csharp) / 1e7), origin="1970-01-01")
   # stages$location <- NA
   
-  scored_events <- res$tables$temporary_scoring_marker
+  if("temporary_scoring_marker" %in% tables){
+    scored_events <- res$tables$temporary_scoring_marker
+  } else {
+    scored_events <- res$tables$scoring_marker
+  }
+  
   scored_events <- scored_events[,c("starts_at","ends_at", "type", "location")]
   colnames(scored_events) <- c("begin", "end", "event", "location")
   scored_events$begin <- as.POSIXct(((scored_events$begin - epoch0.Csharp) / 1e7), origin="1970-01-01")
