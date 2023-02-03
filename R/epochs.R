@@ -139,15 +139,6 @@ segments <- function(signals,
                      resample = max(sRates),
                      return_index = FALSE) {
   
-  if(return_index){
-    return(seq(
-      from = 1,
-      to = dim(resampled_signals)[1] -
-        (resample * segments_size),
-      by = resample * step
-    ))
-  }
-  
   resampled_signals = mapply(function(x, y) {
     if (y != resample) {
       x = signal::resample(x, resample, y)
@@ -158,6 +149,15 @@ segments <- function(signals,
       rep(0, padding * resample * segments_size)
     )
   }, x = signals, y = sRates)
+  
+  if(return_index){
+    return(seq(
+      from = 1,
+      to = dim(resampled_signals)[1] -
+        (resample * segments_size),
+      by = resample * step
+    ))
+  }
   
   segments_idx_start = seq(
     from = 1 + (padding * resample * segments_size),
