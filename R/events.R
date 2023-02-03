@@ -512,7 +512,6 @@ read_events_ndb <- function(data_file){
   res$tables <- list()
   
   for(table in tables){
-    print(table)
     res$tables[[table]] <- RSQLite::dbGetQuery(
       conn = nox_db,
       paste0('SELECT * FROM ', table))
