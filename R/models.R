@@ -142,8 +142,6 @@ schwabedal2018 <- function(channels = 2,
 #' @references Choi SH, Yoon H, Kim HS, et al. Real-time apnea-hypopnea event detection during sleep by convolutional neural networks. Computers in Biology and Medicine. 2018;100:123-131. 
 #' @param segment_size Integer. The size of the segment to predict.
 #' @return A Keras sequential model.
-#' @example 
-#' choi2018()
 #' @export
 choi2018 <- function(segment_size = 160){
   model <- keras::keras_model_sequential()

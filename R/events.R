@@ -425,10 +425,11 @@ get_sleep_periods <- function(
 
 #' Compute a matrix of stages transitions counts.
 #'
+#' @references {Swihart BJ, Punjabi NM, Crainiceanu CM. Modeling sleep fragmentation in sleep hypnograms: An instance of fast, scalable discrete-state, discrete-time analyses. Comput Stat Data Anal. 2015 Sep;89:1-11. doi: 10.1016/j.csda.2015.03.001. PMID: 27182097; PMCID: PMC4865264.}
 #' @param hypnogram A hypnogram dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
 #' @param stages Stages to include in transitions Defaults to \code{c("N1", "N2", "N3", "N4", "REM")}.
-#' @param plot Plot the transition matrix or not. Takes \code{"heatmap"} to plot a heatmap of transitions or \code{FALSE} to return the matrix as a dataframe without plotting it.
-#' @return A matrix with count of stages transitions, or a plot.
+#' @param format Set the return format. 'vector', 'dataframe' or 'heatmap'.
+#' @return Count of stages transitions.
 #' @export
 #' @examples
 #' download.file("https://rsleep.org/data/hypnodensity.csv", "hypnodensity.csv")
@@ -439,11 +440,29 @@ get_sleep_periods <- function(
 #' 
 #' events <- hypnogram(hypnodensity)
 #' 
-#' transitions(events, plot = "heatmap")
+#' transitions(events)
+#' 
+#' transitions(events, format = "dataframe")
+#' 
+#' transitions(events, format = "heatmap")
+#' 
+#' events <- data.frame(event = c(
+#'   "AWA","N1","N2","N2", "N3","N3",
+#'   "REM","N2","REM","REM", "N2","REM","AWA"))
+#' 
+#' events$begin <- as.POSIXlt(seq(from = 0, to = 30*(nrow(events)-1), by = 30),origin = "1970-01-01")
+#' 
+#' events$end <- as.POSIXlt(seq(from = 30, to = 30*nrow(events), by = 30), origin = "1970-01-01")
+#' 
+#' transitions(events)
+#' 
+#' transitions(events, format = "dataframe")
+#' 
+#' transitions(events, format = "heatmap")
 transitions <- function(
     hypnogram,
     stages = c("AWA", "REM", "N1", "N2", "N3"),
-    plot = FALSE){
+    format = "vector"){
   
   hypnogram$event <- as.character(hypnogram$event)
   
@@ -465,11 +484,15 @@ transitions <- function(
     }
   }
   
-  if(plot == FALSE){
+  if(format == "vector"){
+    
+    return(named_matrix2named_vector(transitions))
+    
+  } else if(format == "dataframe"){
     
     return(transitions)
     
-  } else if(plot=="heatmap"){
+  } else if(format == "heatmap"){
     
     transitions$from <- row.names(transitions)
     transitions <- reshape2::melt(transitions, value.name = "from", id="from")
@@ -487,7 +510,7 @@ transitions <- function(
     
   } else {
     
-    stop("'plot' parameter must be FALSE, or 'heatmap'.")
+    stop("'format' parameter must be 'vector', 'matrix' or 'heatmap'.")
     
   }
 }
@@ -608,3 +631,13 @@ plot_event <- function(
                                     ymax = Inf), fill = 'pink', alpha = 0.02) +
     ggplot2::xlab("Time")+ ggplot2::ylab("Signal values")}
 
+
+named_matrix2named_vector <- function(m){
+  r = c()
+  for(i in c(1:length(names(m)))){
+    for(j in c(1:length(row.names(m)))){
+      r[paste0(names(m)[i],"_",row.names(m)[j])] = m[i,j]
+    }
+  }
+  return(r)
+}

@@ -75,6 +75,26 @@ test_that("Sleep periods",{
   expect_true(ncol(periods) == 4)
 })
 
+test_that("Transitions",{
+  events <- data.frame(event = c(
+    "AWA","N1","N2","N2", "N3","N3",
+    "REM","N2","REM","REM", "N2","REM","AWA"))
+  
+  events$begin <- as.POSIXlt(seq(from = 0, to = 30*(nrow(events)-1), by = 30),origin = "1970-01-01")
+  events$end <- as.POSIXlt(seq(from = 30, to = 30*nrow(events), by = 30), origin = "1970-01-01")
+  expect_true(ncol(transitions(events, format = "dataframe")) == 5)
+  expect_true(length(transitions(events)) == 25)
+  
+  events <- data.frame(event = c(
+    "N1","N2","N2", "N3","N3",
+    "REM","N2","REM","REM", "N2","REM"))
+  
+  events$begin <- as.POSIXlt(seq(from = 0, to = 30*(nrow(events)-1), by = 30),origin = "1970-01-01")
+  events$end <- as.POSIXlt(seq(from = 30, to = 30*nrow(events), by = 30), origin = "1970-01-01")
+  expect_true(ncol(transitions(events, format = "dataframe")) == 4)
+  expect_true(length(transitions(events)) == 16)
+  
+})
 
 
 
