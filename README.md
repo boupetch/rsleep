@@ -77,6 +77,8 @@ library(rsleep)
 
 ## rsleep usage in scientific litterature
 
+- P. Bouchequet, T. Andrillon, G. Solelhac, A. Rouen, F. Sauvet, and D. Léger, [0424 Visualizing insomnia phenotypes using dimensionality reduction techniques,](https://academic.oup.com/sleep/article/46/Supplement_1/A188/7181658) SLEEP, vol. 46, no. Supplement_1. Oxford University Press (OUP), pp. A188–A189, May 01, 2023. doi: 10.1093/sleep/zsad077.0424.
+
 - Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve stimulation in a hungry state decreases heart rate variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213) Physiology & Behavior. 2023;258:114016.
 
 - Rajalakshmi J, Ranjani SS, Sugitha G, Prabanand SC. [Electroencephalogram Data Analysed Through the Lens of Machine Learning to Detect Signs of Epilepsy.](https://ieeexplore.ieee.org/document/9985641) 2022 4th International Conference on Inventive Research in Computing Applications (ICIRCA). September 2022. 

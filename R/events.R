@@ -383,14 +383,14 @@ smooth_liang2012 <- function(hypnogram){
 #' 
 #' events <- hypnogram(hypnodensity)
 #' 
-#' periods_continuous <- get_sleep_periods(events, mode = "continuous")
+#' periods_continuous <- periods(events, mode = "continuous")
 #' 
 #' ggplot(periods_continuous, aes(x=duration)) + geom_histogram(bins = 30)
 #' 
-#' periods_stages <- get_sleep_periods(events, mode = "stages")
+#' periods_stages <- periods(events, mode = "stages")
 #'  
 #' ggplot(periods_stages, aes(x=event,y=duration,color=event)) + geom_boxplot()
-get_sleep_periods <- function(
+periods <- function(
     hypnogram,
     mode = "continuous",
     stages = c("N1", "N2", "N3", "N4", "REM")){

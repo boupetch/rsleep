@@ -75,7 +75,7 @@ tst90 <- function(
     sRate,
     startTime,
     hypnogram){
-  periods <- rsleep::get_sleep_periods(hypnogram)
+  periods <- rsleep::periods(hypnogram)
   u90 <- 0
   for(i in c(1:nrow(periods))){
     x <- as.numeric(difftime(periods[i,]$begin, startTime, units="secs"))
