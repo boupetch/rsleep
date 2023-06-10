@@ -1,0 +1,128 @@
+---
+title: "Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles"
+output: 
+  rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 3
+bibliography: Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles.bibtex
+csl: vignettes.csl
+vignette: >
+  %\VignetteIndexEntry{Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r env, include = FALSE}
+options(scipen=999)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>")
+```
+
+The [SleepCycles](https://cran.r-project.org/web/packages/SleepCycles/index.html) package @BLUME2021101318 has been specifically developed to identify sleep cycles @Feinberg_Floyd_1979 and their corresponding NREM and REM components (known as (N)REM periods) from data that has been categorized based on AASM criteria for sleep staging @AASMScoringManual. [SleepCycles documentation](https://cran.r-project.org/web/packages/SleepCycles/vignettes/introduction.html) describes how to use the package.
+
+In the other hand, the [rsleep](https://rsleep.org/) package reads and analyze sleep data in various formats.
+
+This vignettte describes how to combine `SleepCycles` and `rsleep` packages to identify sleep cycles in sleep data and leverage this material in sleep data analysis pipelines.
+
+Sleep cycles can be identified from hypnograms. [`15012016HD.csv`](https://rsleep.org/data/15012016HD.csv) contains a hypnogram scored by a sleep expert using [Noxturnal software](https://www.resmed.co.uk/healthcare-professional/diagnostics/noxturnal/) published by [ResMed](https://www.resmed.com). The rsleep package provides the `read_events_noxturnal()` function to read hypnograms in this format.
+
+```r
+library(rsleep)
+
+if(!file.exists("15012016HD.csv")){
+  download.file(
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv")}
+
+events <- rsleep::read_events_noxturnal("15012016HD.csv")
+
+unlink("15012016HD.csv")
+
+events = hypnogram(events)
+
+rsleep::plot_hypnogram(events)
+```
+
+```{r hypnogram, echo=FALSE, fig.width = 7}
+library(rsleep)
+
+if(!file.exists("15012016HD.csv")){
+  download.file(
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv",
+  method="curl")}
+
+events <- read_events_noxturnal("15012016HD.csv")
+
+events = hypnogram(events)
+
+plot_hypnogram(events)
+```
+
+Tne `SleepCycles` package only reads directories and files in specific format. Hypnograms must then be converted in the appropriate arrangement before being written on disk in an explicit folder.
+
+```{r}
+
+events.vmrk = data.frame(Description = as.character(events$event))
+events.vmrk$Description[events.vmrk$Description == "AWA"] = 0
+events.vmrk$Description[events.vmrk$Description == "N1"] = 1
+events.vmrk$Description[events.vmrk$Description == "N2"] = 2
+events.vmrk$Description[events.vmrk$Description == "N3"] = 3
+events.vmrk$Description[events.vmrk$Description == "REM"] = 5
+events.vmrk$Description = as.integer(events.vmrk$Description)
+events.vmrk$Type = "SleepStage"
+events.vmrk = events.vmrk[,c(2,1)]
+
+newdir <- file.path(tempdir(),"SleepCycles")
+
+dir.create(newdir, showWarnings = FALSE)
+
+write.table(
+  events.vmrk, 
+  file = paste(newdir, "events.txt", sep = "/"),
+  row.names=FALSE,
+  col.names = TRUE, 
+  quote = FALSE, 
+  sep = ",")
+
+
+```
+
+The `SleepCycles()` function can now read the created directory to 
+
+```{r}
+
+devtools::install_github("boupetch/SleepCycles")
+
+cycles = SleepCycles::SleepCycles(newdir, filetype = "txt", plot = FALSE)
+
+```
+
+```{r}
+
+events_cycles = dplyr::bind_cols(events, cycles, .name_repair = "check_unique")
+
+library(dplyr)
+
+# Number of cycles
+max(events_cycles$SleepCycle, na.rm = TRUE)
+  
+# Duration of each cycle
+events_cycles %>% 
+  dplyr::count(SleepCycle) %>%
+  dplyr::mutate(n = n/2)
+
+events_cycles %>% 
+  dplyr::group_by(SleepCycle) %>%
+  dplyr::count(event) %>%
+  dplyr::mutate(n = n/2) %>%
+  tidyr::spread(key = SleepCycle, value = n) %>%
+  t() %>% as.data.frame()
+
+```
+
+

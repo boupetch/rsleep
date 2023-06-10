@@ -195,6 +195,8 @@ read_events_noxturnal <- function(dir){
   # Normalize Cycles
   events <- rbind(events,normalize_cycles(events))
 
+  events$event = as.character(events$event)
+  
   return(events)
 }
 

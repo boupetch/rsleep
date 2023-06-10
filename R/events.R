@@ -103,6 +103,8 @@ normalize_cycles <- function(events){
 #' @export
 plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
   
+  events$event = as.character(events$event)
+  
   stages <- hypnogram(events, labels)
 
   stages$begin <- as.POSIXct(stages$begin)
@@ -423,13 +425,13 @@ periods <- function(
   return(periods)
 }
 
-#' Compute a matrix of stages transitions counts.
+#' Count and format stages transitions.
 #'
 #' @references Swihart BJ, Punjabi NM, Crainiceanu CM. Modeling sleep fragmentation in sleep hypnograms: An instance of fast, scalable discrete-state, discrete-time analyses. Comput Stat Data Anal. 2015 Sep;89:1-11. doi: 10.1016/j.csda.2015.03.001. PMID: 27182097; PMCID: PMC4865264.
 #' @param hypnogram A hypnogram dataframe. Dataframe must contain \code{begin} (\code{POSIXt}), \code{end} (\code{POSIXt}) and \code{event} (\code{character}) columns.
 #' @param stages Stages to include in transitions Defaults to \code{c("N1", "N2", "N3", "N4", "REM")}.
 #' @param format Set the return format. 'vector', 'dataframe' or 'heatmap'.
-#' @return Count of stages transitions.
+#' @return Count of stages transitions in selected format.
 #' @export
 #' @examples
 #' download.file("https://rsleep.org/data/hypnodensity.csv", "hypnodensity.csv")

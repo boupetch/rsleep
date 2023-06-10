@@ -26,6 +26,10 @@ Suggests:
   rmarkdown,
   testthat,
   RSQLite,
-  DBI
-RoxygenNote: 7.2.2
+  DBI,
+  dplyr,
+  SleepCycles,
+  devtools,
+  tidyr
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
