@@ -140,7 +140,7 @@ epochs <- epochs(
 
 ## Periodogram
 
-The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). A visual explanation of FT can be found on [\@jezzamon](https://twitter.com/jezzamonn) website: [https://www.jezzamon.com/fourier/](https://www.jezzamon.com/fourier/). However, EEG signals also carry a lot of noise. This noise is easily intereprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segments to average power spectral densities from the Fourier transform.
+The Fourier transform (FT) may be the most important function in signal analysis. It decomposes the signal into its constituent frequencies and computes its power spectral densities (PSD). However, EEG signals also carry a lot of noise. This noise is easily intereprted by the FT and can jam the results. To solve this problem, Welch's method split the signal into overlapping segments to average power spectral densities from the Fourier transform.
 
 ### Single epoch
 

@@ -1,8 +1,8 @@
-# rsleep development version
+# rsleep 1.0.7
 
   * `periods()` function returns a dataframe of sleep periods from a hypnogram, continuous or splitted by stages.
   * `transitions()` function now use a `format` parameter to return a vector, a dataframe or a plot of counted transitions.
-  * Added `segments()` function to split signals into consecutive overlapping (or not) chunks.
+  * Added `segmentation()` function to split signals into consecutive overlapping (or not) chunks.
   * Added `ckappa()` to compute Cohen's Kappa, a coefficient of agreement for nominal scales.
   * Added `choi2018()` function, a Keras implementation of the deep learning architecture described by Choi & Al in "Real-time apnea-hypopnea event detection during sleep by convolutional neural network".
   * `read_events_profusion()` bug in scored events reading fixed.

@@ -3,7 +3,7 @@ Type: Package
 Title: Analysis of Sleep Data
 Version: 1.0.7
 Authors@R: c(person("Paul", "Bouchequet", ,"paul.bouchequet@frenchkpi.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-4033-2929")))
-Description: A toolbox for sleep data processing, visualization and analysis. rsleep provides tools for state of the art automatic sleep stages scoring.
+Description: A toolbox for sleep data processing, visualization and analysis. Tools for state of the art automatic sleep stages scoring.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -27,9 +27,7 @@ Suggests:
   testthat,
   RSQLite,
   DBI,
-  dplyr,
   SleepCycles,
-  devtools,
-  tidyr
+  devtools
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr

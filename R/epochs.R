@@ -122,7 +122,7 @@ epochs <- function(signals,
 #' @references Choi SH, Yoon H, Kim HS, et al. Real-time apnea-hypopnea event detection during sleep by convolutional neural networks. Computers in Biology and Medicine. 2018;100:123-131. 
 #' @return A matrix of segments.
 #' @examples
-#' computed_segments = segments(
+#' computed_segments = segmentation(
 #'   signals = list(c(sin(1:1000)),c(cos(1:1000))),
 #'   sRates = c(1, 1),
 #'   segments_size = 5,
@@ -131,7 +131,7 @@ epochs <- function(signals,
 #' plot(computed_segments[1,,1], type = "l")
 #' plot(computed_segments[2,,1], type = "l")
 #' @export
-segments <- function(signals,
+segmentation <- function(signals,
                      sRates,
                      segments_size = 10,
                      step = 1,

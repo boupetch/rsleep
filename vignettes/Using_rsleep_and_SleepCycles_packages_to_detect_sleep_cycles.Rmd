@@ -1,5 +1,5 @@
 ---
-title: "Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles"
+title: "Using Rsleep and SleepCycles Packages To Detect Sleep Cycles"
 output: 
   rmarkdown::html_vignette:
      toc: true
@@ -22,13 +22,15 @@ knitr::opts_chunk$set(
   comment = "#>")
 ```
 
-The [SleepCycles](https://cran.r-project.org/web/packages/SleepCycles/index.html) package @BLUME2021101318 has been specifically developed to identify sleep cycles @Feinberg_Floyd_1979 and their corresponding NREM and REM components (known as (N)REM periods) from data that has been categorized based on AASM criteria for sleep staging @AASMScoringManual. [SleepCycles documentation](https://cran.r-project.org/web/packages/SleepCycles/vignettes/introduction.html) describes how to use the package.
+The [SleepCycles](https://CRAN.R-project.org/package=SleepCycles) package @BLUME2021101318 has been specifically developed to identify sleep cycles @Feinberg_Floyd_1979 and their corresponding NREM and REM components (known as (N)REM periods) from data that has been categorized based on AASM criteria for sleep staging @AASMScoringManual.
 
 In the other hand, the [rsleep](https://rsleep.org/) package reads and analyze sleep data in various formats.
 
 This vignettte describes how to combine `SleepCycles` and `rsleep` packages to identify sleep cycles in sleep data and leverage this material in sleep data analysis pipelines.
 
-Sleep cycles can be identified from hypnograms. [`15012016HD.csv`](https://rsleep.org/data/15012016HD.csv) contains a hypnogram scored by a sleep expert using [Noxturnal software](https://www.resmed.co.uk/healthcare-professional/diagnostics/noxturnal/) published by [ResMed](https://www.resmed.com). The rsleep package provides the `read_events_noxturnal()` function to read hypnograms in this format.
+## Hypnogram
+
+Sleep cycles can be identified from hypnograms. [`15012016HD.csv`](https://rsleep.org/data/15012016HD.csv) contains a hypnogram scored by a sleep expert using [Noxturnal software](https://www.resmed.co.uk/healthcare-professional/diagnostics/noxturnal/) published by ResMed. The rsleep package provides the `read_events_noxturnal()` function to read hypnograms in this format.
 
 ```r
 library(rsleep)
@@ -47,7 +49,7 @@ events = hypnogram(events)
 rsleep::plot_hypnogram(events)
 ```
 
-```{r hypnogram, echo=FALSE, fig.width = 7}
+```{r hypnogram, echo=FALSE, message=FALSE, warning=FALSE}
 library(rsleep)
 
 if(!file.exists("15012016HD.csv")){
@@ -63,7 +65,9 @@ events = hypnogram(events)
 plot_hypnogram(events)
 ```
 
-Tne `SleepCycles` package only reads directories and files in specific format. Hypnograms must then be converted in the appropriate arrangement before being written on disk in an explicit folder.
+## Formatting
+
+Tne `SleepCycles` package only reads directories and files in specific format. Hypnograms must be converted in the appropriate arrangement before being written on disk in an explicit folder:
 
 ```{r}
 
@@ -92,37 +96,57 @@ write.table(
 
 ```
 
-The `SleepCycles()` function can now read the created directory to 
+## Detection
+
+The `SleepCycles()` function can now read the created directory and detect sleep cycles in the saved hypnograms. The original version of the function interactively asks the file format to the user and writes the result to a file in the same directory. The forked version `boupetch/SleepCycles` modifies this behaviour to take the format as parameters and return directly the results as a dataframe, making the pipeline easier to automate.
 
 ```{r}
 
 devtools::install_github("boupetch/SleepCycles")
 
-cycles = SleepCycles::SleepCycles(newdir, filetype = "txt", plot = FALSE)
+cycles = SleepCycles::SleepCycles(
+  p = newdir, 
+  filetype = "txt", 
+  plot = FALSE)
+
+unlink(newdir, recursive=TRUE)
+
+head(cycles)
 
 ```
+
+## Indicators
+
+Binding the resulting dataframe to the original hypnogram `events` and performing aggregations provides valuable sleep macrostructure indicators:
 
 ```{r}
 
-events_cycles = dplyr::bind_cols(events, cycles, .name_repair = "check_unique")
-
-library(dplyr)
+hypnogram.full = cbind(events, cycles)
 
 # Number of cycles
-max(events_cycles$SleepCycle, na.rm = TRUE)
+max(hypnogram.full$SleepCycle, na.rm = TRUE)
   
 # Duration of each cycle
-events_cycles %>% 
-  dplyr::count(SleepCycle) %>%
-  dplyr::mutate(n = n/2)
+hypnogram.agg = aggregate(
+  event ~ SleepCycle, 
+  data = hypnogram.full, 
+  FUN = length)
+hypnogram.agg$minutes = hypnogram.agg$event/2
+hypnogram.agg
 
-events_cycles %>% 
-  dplyr::group_by(SleepCycle) %>%
-  dplyr::count(event) %>%
-  dplyr::mutate(n = n/2) %>%
-  tidyr::spread(key = SleepCycle, value = n) %>%
-  t() %>% as.data.frame()
+# Composition of each cycle
+cycles.comp = aggregate(
+  SleepStages ~ SleepCycle + event, 
+  data = hypnogram.full, 
+  FUN = length)
+cycles.comp = reshape(
+  data = cycles.comp, 
+  direction = "wide", 
+  timevar  = "event",
+  idvar  = "SleepCycle")
+cycles.comp
 
 ```
 
+## References
 
