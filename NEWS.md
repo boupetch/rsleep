@@ -1,3 +1,7 @@
+# rsleep 1.0.8
+
+  * Added `NREM` to `transitions()` included stages.
+
 # rsleep 1.0.7
 
   * `periods()` function returns a dataframe of sleep periods from a hypnogram, continuous or splitted by stages.
