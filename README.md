@@ -34,15 +34,14 @@ library(rsleep)
 
 ## Vignettes
 
-- [Spectral analysis of sleep electroencephalography
-  signals](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
+- [Spectral analysis of sleep electroencephalography signals](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
+- [Using Rsleep and SleepCycles Packages to Detect Sleep Cycles](https://rsleep.org/articles/Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles.html)
   
 ## Examples
 
 ### Plotting a spectrogram
 
 [<img src="https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography_files/figure-html/spectrogram-1.png" width="600">](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
-
 
 ### Detecting R peaks in ECG signal
 
@@ -94,5 +93,3 @@ library(rsleep)
 - Arts F. [Predicting Subjective Team Performance Using Multimodal, Single-Modality and Segmented Physiological Data](https://arno.uvt.nl/show.cgi?fid=156733) Thesis, 2020.
 
 - Andrillon T, Solelhac G, Bouchequet P, et al. [Revisiting the value of polysomnographic data in insomnia: more than meets the eye.](https://www.sciencedirect.com/science/article/abs/pii/S1389945719316442) Sleep Medicine. 2020;66:184-200.
-
-

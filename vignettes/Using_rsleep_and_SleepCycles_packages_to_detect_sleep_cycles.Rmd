@@ -26,7 +26,7 @@ The [SleepCycles](https://CRAN.R-project.org/package=SleepCycles) package @BLUME
 
 In the other hand, the [rsleep](https://rsleep.org/) package reads and analyze sleep data in various formats.
 
-This vignettte describes how to combine `SleepCycles` and `rsleep` packages to identify sleep cycles in sleep data and leverage this material in sleep data analysis pipelines.
+This vignette describes how to combine `SleepCycles` and `rsleep` packages to identify sleep cycles in sleep data and then leverage this material in sleep data analysis pipelines.
 
 ## Hypnogram
 
