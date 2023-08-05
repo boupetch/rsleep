@@ -88,13 +88,17 @@ epochs <- function(signals,
         if((i-1) %in% c(1:length(epochs))){
           prev <- epochs[[i-1]]
         } else {
-          prev <- epochs[[1]]
+          m = matrix(nrow = nrow(epoch), ncol = ncol(epoch))
+          m[is.na(m)] <- 0
+          prev <- m
         }
         
         if((i+1) %in%  c(1:length(epochs))){
           last <- epochs[[i+1]]
         } else {
-          last <- epochs[[length(epochs)]]
+          m = matrix(nrow = nrow(epoch), ncol = ncol(epoch))
+          m[is.na(m)] <- 0
+          last <- m
         }
         
         epoch <-  abind::abind(prev, epoch, last, along = 1)
