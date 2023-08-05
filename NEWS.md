@@ -1,6 +1,7 @@
 # rsleep 1.0.8
 
   * Added `NREM` to `transitions()` included stages.
+  * Corrected `SleepCycles` directory lifecycle to stick to CRAN guidelines.
 
 # rsleep 1.0.7
 
