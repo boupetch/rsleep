@@ -70,8 +70,7 @@ plot_hypnogram(events)
 
 Tne `SleepCycles` package only reads directories and files in specific format. Hypnograms must be converted in the appropriate arrangement before being written on disk in an explicit folder:
 
-```{r}
-
+```r
 events.vmrk = data.frame(Description = as.character(events$event))
 events.vmrk$Description[events.vmrk$Description == "AWA"] = 0
 events.vmrk$Description[events.vmrk$Description == "N1"] = 1
@@ -82,19 +81,20 @@ events.vmrk$Description = as.integer(events.vmrk$Description)
 events.vmrk$Type = "SleepStage"
 events.vmrk = events.vmrk[,c(2,1)]
 
-newdir <- file.path(tempdir(),"SleepCycles")
+newdir <- file.path(
+  tempdir(),"SleepCycles")
 
 dir.create(newdir, showWarnings = FALSE)
 
 write.table(
   events.vmrk, 
-  file = paste(newdir, "events.txt", sep = "/"),
+  file = paste(
+    newdir,
+    "events.txt", sep = "/"),
   row.names=FALSE,
   col.names = TRUE, 
   quote = FALSE, 
   sep = ",")
-
-unlink(newdir, recursive=TRUE)
 
 ```
 
@@ -102,7 +102,7 @@ unlink(newdir, recursive=TRUE)
 
 The `SleepCycles()` function can now read the created directory and detect sleep cycles in the saved hypnograms. The original version of the function interactively asks the file format to the user and writes the result to a file in the same directory. The forked version `boupetch/SleepCycles` modifies this behaviour to take the format as parameters and return directly the results as a dataframe, making the pipeline easier to automate.
 
-```{r}
+```r
 
 devtools::install_github("boupetch/SleepCycles")
 
@@ -121,7 +121,7 @@ head(cycles)
 
 Binding the resulting dataframe to the original hypnogram `events` and performing aggregations provides valuable sleep macrostructure indicators:
 
-```{r}
+```r
 
 hypnogram.full = cbind(events, cycles)
 

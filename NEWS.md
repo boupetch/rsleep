@@ -2,6 +2,7 @@
 
   * Added `NREM` to `transitions()` included stages.
   * Corrected `SleepCycles` directory lifecycle to stick to CRAN guidelines.
+  * `epochs()` padding use empty matrixes when padding exceed signal boundaries.
 
 # rsleep 1.0.7
 

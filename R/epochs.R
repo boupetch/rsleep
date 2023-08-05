@@ -131,13 +131,14 @@ epochs <- function(signals,
 #' plot(computed_segments[1,,1], type = "l")
 #' plot(computed_segments[2,,1], type = "l")
 #' @export
-segmentation <- function(signals,
-                     sRates,
-                     segments_size = 10,
-                     step = 1,
-                     padding = 0,
-                     resample = max(sRates),
-                     return_index = FALSE) {
+segmentation <- function(
+    signals,
+    sRates,
+    segments_size = 10,
+    step = 1,
+    padding = 0,
+    resample = max(sRates),
+    return_index = FALSE) {
   
   resampled_signals = mapply(function(x, y) {
     if (y != resample) {
