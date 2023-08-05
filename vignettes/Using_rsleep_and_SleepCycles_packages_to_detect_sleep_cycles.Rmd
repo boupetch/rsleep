@@ -63,6 +63,7 @@ events <- read_events_noxturnal("15012016HD.csv")
 events = hypnogram(events)
 
 plot_hypnogram(events)
+
 ```
 
 ## Formatting
@@ -93,6 +94,7 @@ write.table(
   quote = FALSE, 
   sep = ",")
 
+unlink(newdir, recursive=TRUE)
 
 ```
 
@@ -149,4 +151,3 @@ cycles.comp
 ```
 
 ## References
-
