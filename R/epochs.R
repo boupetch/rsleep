@@ -85,18 +85,18 @@ epochs <- function(signals,
       
       for(j in c(1:padding)){
         
-        if((i-1) %in% c(1:length(epochs))){
-          prev <- epochs[[i-1]]
+        if((i-j) %in% c(1:length(epochs))){
+          prev <- epochs[[i-j]]
         } else {
-          m = matrix(nrow = nrow(epoch), ncol = ncol(epoch))
+          m = matrix(nrow = nrow(epochs[[i]]), ncol = ncol(epochs[[i]]))
           m[is.na(m)] <- 0
           prev <- m
         }
         
-        if((i+1) %in%  c(1:length(epochs))){
-          last <- epochs[[i+1]]
+        if((i+j) %in%  c(1:length(epochs))){
+          last <- epochs[[i+j]]
         } else {
-          m = matrix(nrow = nrow(epoch), ncol = ncol(epoch))
+          m = matrix(nrow = nrow(epochs[[i]]), ncol = ncol(epochs[[i]]))
           m[is.na(m)] <- 0
           last <- m
         }
