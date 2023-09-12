@@ -93,13 +93,6 @@ normalize_cycles <- function(events){
 #' hypnogram$event = c("N3","N3","REM")
 #' plot_hypnogram(hypnogram)
 #'
-#' fpath <- paste0(tempdir(),"SC4001EC-Hypnogram.edf")
-#' furl <- paste0("https://www.physionet.org/files/sleep-edfx/1.0.0/",
-#' "sleep-cassette/SC4001EC-Hypnogram.edf?download")
-#' download.file(furl,fpath)
-#' hypnogram <- read_events_sleepedfx(fpath)
-#' unlink(fpath)
-#' plot_hypnogram(hypnogram)
 #' @export
 plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
   
