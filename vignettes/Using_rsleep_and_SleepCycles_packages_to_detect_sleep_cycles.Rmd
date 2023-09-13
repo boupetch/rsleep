@@ -30,7 +30,7 @@ This vignette describes how to combine `SleepCycles` and `rsleep` packages to id
 
 ## Hypnogram
 
-Sleep cycles can be identified from hypnograms. [`15012016HD.csv`](https://rsleep.org/data/15012016HD.csv) contains a hypnogram scored by a sleep expert using [Noxturnal software](https://www.resmed.co.uk/healthcare-professional/diagnostics/noxturnal/) published by ResMed. The rsleep package provides the `read_events_noxturnal()` function to read hypnograms in this format.
+Sleep cycles can be identified from hypnograms. [`15012016HD.csv`](https://rsleep.org/data/15012016HD.csv) contains a hypnogram scored by a sleep expert using Noxturnal software published by ResMed. The rsleep package provides the `read_events_noxturnal()` function to read hypnograms in this format.
 
 ```r
 library(rsleep)
