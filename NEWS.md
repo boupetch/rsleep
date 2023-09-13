@@ -1,3 +1,8 @@
+# rsleep 1.0.9
+
+  * Removed 302 link to Resmed website.
+  * Updated rsleep.org certificates.
+
 # rsleep 1.0.8
 
   * Added `NREM` to `transitions()` included stages.
