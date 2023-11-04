@@ -2,14 +2,6 @@ context("Events related tests")
 
 context("Creating hypnograms")
 
-# test_that("Plotting a hypnogram", {
-#   events <- read_events_noxturnal("data/noxturnal_events_example_unicode.csv")
-#   hypnogram <- hypnogram(events)
-#   hypnogram <- plot_hypnogram(events)
-#   expect_equal(class(hypnogram)[1], "gg")
-#   expect_equal(class(hypnogram)[2], "ggplot")
-# })
-
 test_that("Events file check", {
 
   # begin column
@@ -44,27 +36,27 @@ test_that("Events file check", {
 
 })
 
-test_that("Hypnogram smoothing",{
+test_that("Hypnogram smoothing", {
 
   hypnogram <- data.frame(
     begin = as.POSIXlt(c(1536967800,1536967830,1536967860),
                        origin = "1970-01-01"))
+  
   hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890),
                               origin = "1970-01-01")
-  hypnogram$event = c("REM","N2","REM")
+  
+  hypnogram$event = c("REM","N2","REM")*
+    
   hypnogram <- smooth_hypnogram(hypnogram, "N2","REM", 1)
 
   expect_true(all(hypnogram$event == "REM"))
-
-  # smooth_liang2012(
-  #   read_events_noxturnal("data/noxturnal_events_example_unicode.csv"))
 
 })
 
 test_that("Sleep periods",{
   hypnogram <- data.frame(
-    begin = as.POSIXlt(c(1536967800,1536967830,1536967860),
-                       origin = "1970-01-01"))
+    begin = as.POSIXlt(
+      c(1536967800,1536967830,1536967860), origin = "1970-01-01"))
   hypnogram$end <- as.POSIXlt(c(1536967830,1536967860,1536967890),
                               origin = "1970-01-01")
   hypnogram$event = c("REM","N2","REM")

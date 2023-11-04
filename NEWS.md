@@ -1,3 +1,7 @@
+# rsleep 1.0.10
+
+  * Added balanced accuracy custom metric to deep learning model.
+
 # rsleep 1.0.9
 
   * Removed 302 link to Resmed website.

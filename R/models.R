@@ -40,14 +40,34 @@ chambon2018 <- function(
   model <- keras::layer_dropout(model,rate = 0.5)
   model <- keras::layer_dense(model, units = 5, activation = 'softmax')
   
-  keras::compile(model,
-                 loss = "categorical_crossentropy",
-                 optimizer = keras::optimizer_adam(
-                   lr = 0.0001, decay = 1e-6),
-                 metrics = "accuracy")
+  optimizer <- keras::optimizer_adam(
+    lr = 0.001,
+    beta_1 = 0.9,
+    beta_2 = 0.999,
+    epsilon = 1e-8
+  )
+  
+  balanced_accuracy <- function(y_true, y_pred) {
+    backend =  backend()
+    true_positives <- backend$sum(backend$round(backend$clip(y_true * y_pred, 0, 1)))
+    true_negatives <- backend$sum(backend$round(backend$clip((1 - y_true) * (1 - y_pred), 0, 1)))
+    total_positives <- backend$sum(y_true)
+    total_negatives <- backend$sum(1 - y_true)
+    
+    balanced_accuracy <- 0.5 * (true_positives / total_positives + true_negatives / total_negatives)
+    return(balanced_accuracy)
+  }
+  
+  keras::compile(
+    model,
+    loss = keras::loss_categorical_crossentropy,
+    optimizer = optimizer,
+    metrics = list(balanced_accuracy = balanced_accuracy))
   
   model
 }
+
+
 
 #' Automated Classification of Sleep Stages in Mice with Deep Learning model implementation in Keras.
 #'
