@@ -76,6 +76,8 @@ library(rsleep)
 
 ## rsleep usage in scientific litterature
 
+- Baur, D. M., Dornbierer, D. A., & Landolt, H.-P. [Concentration-effect relationships of plasma caffeine on EEG delta power and cardiac autonomic activity during human sleep. Cold Spring Harbor Laboratory.](https://www.medrxiv.org/content/10.1101/2023.10.14.23297036v1)
+
 - Wolf, M.C., Klein, P., Kulau, U., Richter, C. and Wolf, K.H., [DR. BEAT: First Insights into a Study to Collect Baseline BCG Data with a Sensor-Based Wearable Prototype in Heart-Healthy Adults.](https://arinex.com.au/EMBC/pdf/full-paper_271.pdf)
 
 - P. Bouchequet, T. Andrillon, G. Solelhac, A. Rouen, F. Sauvet, and D. Léger, [0424 Visualizing insomnia phenotypes using dimensionality reduction techniques,](https://academic.oup.com/sleep/article/46/Supplement_1/A188/7181658) SLEEP, vol. 46, no. Supplement_1. Oxford University Press (OUP), pp. A188–A189, May 01, 2023. doi: 10.1093/sleep/zsad077.0424.
@@ -88,7 +90,7 @@ library(rsleep)
 
 - Chang K-M, Liu P-T, Wei T-S. [Electromyography Parameter Variations with Electrocardiography Noise.](https://www.mdpi.com/1424-8220/22/16/5948) Sensors. 2022;22:5948. 
 
-- Kragness HE, Eitel MJ, Anantharajan F, Gaudette-Leblanc A, Berezowska B, Cirelli L. [An itsy bitsy audience: Live performance facilitates infants’ attention and heart rate synchronization.](https://psyarxiv.com/9s43u/) psyarxiv.com/9s43u 10.31234/osf.io/9s43u 2022.
+- Kragness HE, Eitel MJ, Anantharajan F, Gaudette-Leblanc A, Berezowska B, Cirelli L. [An itsy bitsy audience: Live performance facilitates infants’ attention and heart rate synchronization.](https://osf.io/preprints/psyarxiv/9s43u/) psyarxiv.com/9s43u 10.31234/osf.io/9s43u 2022.
 
 - Stucky B, Clark I, Azza Y, et al. [Validation of Fitbit Charge 2 Sleep and Heart Rate Estimates Against Polysomnographic Measures in Shift Workers: Naturalistic Study.](https://www.jmir.org/2021/10/e26476/) J Med Internet Res. 2021;23:e26476. 
 

@@ -1,6 +1,7 @@
 # rsleep 1.0.10
 
   * Added balanced accuracy custom metric to deep learning model.
+  * Corrected 302 link to PsyArxiv.
 
 # rsleep 1.0.9
 

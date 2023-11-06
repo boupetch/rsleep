@@ -6,18 +6,18 @@ test_that("Spectrogram", {
 
   sig <- chirp(seq(-2, 15, by = 0.001), 400, 10, 100, 'quadratic')
 
-  spectrogram(
-    signal = sig,
-    sRate = 200,
-    n=2048,
-    window = 2048,
-    plot=TRUE)
+  # spectrogram(
+  #   signal = sig,
+  #   sRate = 200,
+  #   n=2048,
+  #   window = 2048,
+  #   plot=TRUE)
   
-  if(file.exists("Rplots.pdf")){
-    if(file.access("Rplots.pdf") == 0){
-      file.remove("Rplots.pdf")
-    }
-  }
+  # if(file.exists("Rplots.pdf")){
+  #   if(file.access("Rplots.pdf") == 0){
+  #     file.remove("Rplots.pdf")
+  #   }
+  # }
 
   spec <- spectrogram(signal = sig,
                       sRate = 200,
