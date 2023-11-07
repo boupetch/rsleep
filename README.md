@@ -74,7 +74,7 @@ library(rsleep)
 }
 ```
 
-## rsleep usage in scientific litterature
+## Reverse bibliography
 
 - Baur, D. M., Dornbierer, D. A., & Landolt, H.-P. [Concentration-effect relationships of plasma caffeine on EEG delta power and cardiac autonomic activity during human sleep. Cold Spring Harbor Laboratory.](https://www.medrxiv.org/content/10.1101/2023.10.14.23297036v1)
 
