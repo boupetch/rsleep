@@ -1,5 +1,6 @@
 # rsleep 1.0.10
 
+  * Added `adaptive_normalization()` implemented from Choi & Al 2018.
   * Added balanced accuracy custom metric to deep learning model.
   * Corrected 302 link to PsyArxiv.
 
