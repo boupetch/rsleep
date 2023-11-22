@@ -308,6 +308,8 @@ smooth_hypnogram <- function(
 #' @export
 smooth_liang2012 <- function(hypnogram){
 
+  hypnogram$event = as.character(hypnogram$event)
+  
   # Rule 1: Any REM epochs before the very first appearance of S2 are replaced
   # with S1 epochs.
   hypnogram$event[hypnogram$event == "REM" &&
@@ -354,7 +356,9 @@ smooth_liang2012 <- function(hypnogram){
       hypnogram$event[i:(i+2)] <- c("MOV","N1","N2")
     }
   }
-
+  
+  hypnogram = rsleep::hypnogram(hypnogram)
+  
   hypnogram
 }
 
