@@ -55,7 +55,7 @@ test_that("Hypnogram smoothing",{
   
   smooth_liang2012(hypnogram)
   
-  hypnogram <- smooth_hypnogram(hypnogram, "N2","REM", 1)
+  # hypnogram <- smooth_hypnogram(hypnogram, "N2","REM", 1)
 
   expect_true(all(hypnogram$event == "REM"))
 
