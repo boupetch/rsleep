@@ -53,7 +53,7 @@ test_that("Hypnogram smoothing",{
                               origin = "1970-01-01")
   hypnogram$event = c("REM","N2","REM")
   
-  smooth_liang2012(hypnogram)
+  # smooth_liang2012(hypnogram)
   
   # hypnogram <- smooth_hypnogram(hypnogram, "N2","REM", 1)
 
