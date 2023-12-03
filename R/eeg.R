@@ -227,16 +227,29 @@ psm <- function(x, sRate, length=0, show = TRUE){
 #'   url = "https://rsleep.org/data/c3m2_n2_200hz_uv.csv",
 #'   destfile = fpath)
 #' 
-#' s = read.csv(fpath,header = FALSE)[,1]
+#' # Read only a sample of the EEG signal
+#' s = read.csv(fpath,header = FALSE)[,1][25000:45000]
 #' 
 #' file.remove(fpath)
 #' 
 #' a7_results = a7(s, 200)
 #' 
+#' # Plot the first detected spindle
 #' rsleep::plot_event(
 #'   s, 200, 0, 
 #'   a7_results$spindles[1,]$idxStart/200, 
 #'   a7_results$spindles[1,]$idxEnd/200,2)
+#'   
+#' # Visualise parameters
+#' 
+#' hist(a7_results$df$absSigPow,main = "A7absSigPow")
+#' 
+#' hist(a7_results$df$relSigPow,main = "A7relSigPow")
+#' 
+#' hist(a7_results$df$sigmaCov,main = "A7sigmaCov")
+#' 
+#' hist(a7_results$df$sigmaCorr,main = "A7sigmaCorr") 
+#' 
 #' @export
 a7 = function(
     x, 
@@ -297,7 +310,7 @@ a7 = function(
     f2 <- 16
     lower <- floor(f1 * N / sRate)
     upper <- ceiling(f2 * N / sRate)
-    sum(abs(fft(x[,1])[lower:upper])^2)
+    sum(abs(stats::fft(x[,1])[lower:upper])^2)
   })
   
   psa4530 = apply(segments, 1, function(x){
@@ -306,7 +319,7 @@ a7 = function(
     f2 <- 30
     lower <- floor(f1 * N / sRate)
     upper <- ceiling(f2 * N / sRate)
-    sum(abs(fft(x[,1])[lower:upper])^2)
+    sum(abs(stats::fft(x[,1])[lower:upper])^2)
   })
   
   logPowRat = log10(psa1116/psa4530)
@@ -320,10 +333,10 @@ a7 = function(
   
   relSigPow = unlist(lapply(c(1:dim(logPowRat_segments)[1]), function(i){
     sorted_v <- sort(logPowRat_segments[i,])
-    p10 <- quantile(sorted_v, 0.10)
-    p90 <- quantile(sorted_v, 0.90)
+    p10 <- stats::quantile(sorted_v, 0.10)
+    p90 <- stats::quantile(sorted_v, 0.90)
     subset_v <- sorted_v[sorted_v >= p10 & sorted_v <= p90]
-    normalized_rel = (logPowRat_segments[i,] - mean(logPowRat_segments[i,]))/sd(subset_v)
+    normalized_rel = (logPowRat_segments[i,] - mean(logPowRat_segments[i,]))/stats::sd(subset_v)
     normalized_rel[(30/window/2+1)]
   }))
   
@@ -356,17 +369,17 @@ a7 = function(
   
   sigmaCov = unlist(apply(zscore_segments, 1, function(x){
     sorted_v <- sort(x)
-    p10 <- quantile(sorted_v, 0.10)
-    p90 <- quantile(sorted_v, 0.90)
+    p10 <- stats::quantile(sorted_v, 0.10)
+    p90 <- stats::quantile(sorted_v, 0.90)
     subset_v <- sorted_v[sorted_v >= p10 & sorted_v <= p90]
-    normalized = (x - mean(x))/sd(subset_v)
+    normalized = (x - mean(x))/stats::sd(subset_v)
     normalized[(30/window/2+1)]
   }))
   
   # Compute A7sigmaCorr
   
   sigmaCorr = unlist(lapply(c(1:dim(segments)[1]),function(x){
-    scov[[x]]/(sd(segments[x,,1])*sd(segments[x,,2]))
+    scov[[x]]/(stats::sd(segments[x,,1])*stats::sd(segments[x,,2]))
   }))
   
   # All together
