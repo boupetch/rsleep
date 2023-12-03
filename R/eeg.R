@@ -227,6 +227,18 @@ psm <- function(x, sRate, length=0, show = TRUE){
 #' @param A7sigmaCov A7sigmaCov treshold. Default: 1.3
 #' @param A7sigmaCorr A7sigmaCorr treshold. Default: 0.69
 #' @return Detected spindles and associated features.
+#' @details
+#' A sleep spindle detection algorithm based on 4 features 
+#' computed along segmented signal according to `window` size 
+#' and `step` size parameters. 
+#' 1. Absolute sigma power
+#' \deqn{A7absSigPow = \log_{10} \left( \sum_{i=1}^{N} \frac{EEG\sigma_{i}^2}{N} \right)}
+#' 2. Relative sigma power 
+#' \deqn{\text{A7relSigPow} = zscore\left( \log_{10} \left( \frac{PSA_{11-16Hz}}{PSA_{4.5-30Hz}} \right) \right)}
+#' 3. Sigma covariance 
+#' \deqn{\text{A7sigmaCov} = zscore\left( \log_{10} \left( \frac{1}{N} \sum_{i=1}^{N} \left( EEG_{bf_i} - \mu_{EEG_{bf}} \right) \left( EEG_{\sigma_i} - \mu_{EEG_{\sigma}} \right) \right) \right)}
+#' 4. Sigma correlation
+#' \deqn{\text{A7sigmaCor} = \frac{\text{cov}(EEG_{bf}, EEG_{\sigma})}{sd_{EEG_{bf}} * sd_{EEG_{\sigma}}}}
 #' @examples
 #' fpath <- paste0(tempdir(),"c3m2_n2_200hz_uv.csv")
 #' 
@@ -247,7 +259,7 @@ psm <- function(x, sRate, length=0, show = TRUE){
 #'   a7_results$spindles[1,]$idxStart/200, 
 #'   a7_results$spindles[1,]$idxEnd/200,2)
 #'   
-#' # Visualise parameters
+#' # Visualise features distribution 
 #' 
 #' hist(a7_results$df$absSigPow,main = "A7absSigPow")
 #' 
