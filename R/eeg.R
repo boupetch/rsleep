@@ -219,6 +219,13 @@ psm <- function(x, sRate, length=0, show = TRUE){
 #' @references Lacourse, K., Delfrate, J., Beaudry, J., Peppard, P., & Warby, S. C. (2019). A sleep spindle detection algorithm that emulates human expert spindle scoring. In Journal of Neuroscience Methods (Vol. 316, pp. 3–11). Elsevier BV. https://doi.org/10.1016/j.jneumeth.2018.08.014 
 #' @param x EEG signal in μV.
 #' @param sRate Sample rate of the signal.
+#' @param window Size of the window in seconds. Default: 0.3
+#' @param step Size of the step between windows in seconds. Default: 0.1
+#' @param butter_order Order of the Butterworth filters. Default: 5
+#' @param A7absSigPow A7absSigPow treshold. Default: 1.25
+#' @param A7relSigPow A7relSigPow treshold. Default: 1.6
+#' @param A7sigmaCov A7sigmaCov treshold. Default: 1.3
+#' @param A7sigmaCorr A7sigmaCorr treshold. Default: 0.69
 #' @return Detected spindles and associated features.
 #' @examples
 #' fpath <- paste0(tempdir(),"c3m2_n2_200hz_uv.csv")
