@@ -85,13 +85,11 @@ spectrogram(
 `rsleep` reads this particular format with the `read_events_noxturnal` function. The `plot_hypnogram` function then plots the hypnogram.
 
 ```r
-if(!file.exists("15012016HD.csv")){
-  download.file(
+download.file(
   url = "https://rsleep.org/data/15012016HD.csv",
-  destfile = "15012016HD.csv")}
+  destfile = "15012016HD.csv")
 
-events <- rsleep::read_events_noxturnal(
-  "15012016HD.csv", h$startTime)
+events <- rsleep::read_events_noxturnal("15012016HD.csv")
 
 rsleep::plot_hypnogram(events)
 ```
