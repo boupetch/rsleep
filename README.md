@@ -7,8 +7,7 @@ rsleep: A R package for sleep data analysis
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7416363.svg)](https://doi.org/10.5281/zenodo.7416363)
 [![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/boupetch)
 
-rsleep is a multiplatform open-source R package providing a toolbox for sleep data processing,
-visualization and analysis. rsleep provides tools for state of the art automatic sleep stages scoring.
+rsleep: Open-source, multiplatform R package for advanced sleep data analysis. Features automatic sleep scoring and sophisticated visualization tools.
 
 ## Installation
 
@@ -16,7 +15,7 @@ Development version can be directly installed from
 [Github](https://github.com/) using the `devtools` package :
 
 ``` r
-devtools::install_github("boupetch/rsleep")
+devtools::install_github("boupetch/rsleep@dev")
 ```
 
 Stable version can be downloaded and installed from
