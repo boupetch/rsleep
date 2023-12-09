@@ -1,0 +1,151 @@
+---
+title: "Spindles detection and analysis"
+output: 
+  rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 3
+bibliography: Spindles_detection_and_analysis.bibtex
+csl: vignettes.csl
+vignette: >
+  %\VignetteIndexEntry{Spindles_detection_and_analysis}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Sleep spindles are distinct bursts of brain activity that occur during stage 2 of non-rapid eye movement (NREM) sleep. Characterized by their short duration, typically lasting between 0.5 to 2 seconds, they appear as a rapid series of waves on an electroencephalogram (EEG). These waves are typically in the 11 to 16 Hz frequency range. Sleep spindles are thought to play a crucial role in brain development, memory consolidation, and cognitive function. Their presence and characteristics can vary depending on age, cognitive factors, and certain neurological conditions, making them a significant focus in sleep research and neuroscience.
+
+While EEG-based visual inspection remains the benchmark for identifying these spindles, it's a process that is not only labor-intensive and expensive but also prone to variability and bias among different scorers. An algorithm for sleep spindle detection could significantly streamline this process, enhancing both efficiency and consistency in spindle identification.
+
+The A7 algorithm, developed by Lacourse & Al operates using a single EEG channel and is dependent on four key parameters: the absolute power of the sigma band, its relative power, and the correlation or covariance between the sigma band-passed signal and the original EEG signal.
+
+```{r setup, include=FALSE}
+
+library(rsleep)
+
+```
+
+# Sleep data
+
+First, download and read the `C3-M2` EEG signal from an example EDF @Kemp1992 file.
+
+```r
+
+library(edfReader)
+
+download.file(
+  url = "https://rsleep.org/data/15012016HD.edf",
+  destfile = "15012016HD.edf")
+
+h <- readEdfHeader("15012016HD.edf")
+
+s <- readEdfSignals(h, signals = "C3-M2")
+
+```
+
+```{r edf_read, echo=FALSE}
+
+library(edfReader)
+
+if(!file.exists(fname)){
+  download.file(
+  url = "https://rsleep.org/data/15012016HD.edf",
+  destfile = "15012016HD.edf",
+  method = "curl")}
+
+h <- readEdfHeader(fname)
+
+s <- readEdfSignals(h, signals = "C3-M2")
+
+file.remove("15012016HD.edf")
+
+```
+
+Then, donwload and read the hypnogram to epoch the signal and focus the analysis on N2 epochs.
+
+```r
+
+download.file(
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv")
+
+events <- rsleep::read_events_noxturnal("15012016HD.csv")
+
+rsleep::plot_hypnogram(events)
+
+```
+
+```{r hypnogram, echo=FALSE}
+
+if(!file.exists("15012016HD.csv")){
+  download.file(
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv",
+  method="curl")}
+
+events <- read_events_noxturnal("15012016HD.csv")
+
+```
+
+The hypnogram can be plotted using plo
+
+```{r plot_hypnogram, fig.width = 7}
+
+rsleep::plot_hypnogram(events)
+
+```
+
+# Spindle detection
+
+Spindles are marker of N2. N2 periods can be joined from 30 epochs with peiods
+
+```{r}
+
+n2_periods = rsleep::periods(events, stages=c("N2"))
+
+n2_periods$idx_start = as.numeric(difftime(n2_periods$begin, s$startTime, units = "secs")) * s$sRate
+
+n2_periods$idx_end = as.numeric(difftime(n2_periods$end, s$startTime, units = "secs")) * s$sRate - 1
+
+knitr::kable(n2_periods, row.names = FALSE)
+
+```
+
+## Single spindle
+
+```{r}
+
+eeg = s$signal[n2_periods$idx_start[1]:n2_periods$idx_end[1]]
+eeg = eeg*1000000
+  
+result = rsleep::a7(
+  x = signal,
+  s$sRate)
+  
+```
+
+```r
+
+result$spindles[1:5,]
+
+```
+
+```{r include=FALSE}
+
+knitr::kable(result$spindles[1:5,])
+
+```
+
+
+## Overnight spindle detection
+
+
+# Discussion

@@ -1,5 +1,5 @@
 ---
-title: "Using Rsleep and SleepCycles Packages to Detect Sleep Cycles"
+title: "Using rsleep and SleepCycles packages to detect sleep cycles"
 output: 
   rmarkdown::html_vignette:
      toc: true
