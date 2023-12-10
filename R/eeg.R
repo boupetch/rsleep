@@ -212,3 +212,315 @@ psm <- function(x, sRate, length=0, show = TRUE){
                    xaxs = "i")
   invisible(df)
 }
+
+#' A7 spindle detection algorithm
+#'
+#' @description A sleep spindle detection algorithm that emulates human expert spindle scoring
+#' @references Lacourse, K., Delfrate, J., Beaudry, J., Peppard, P., & Warby, S. C. (2019). A sleep spindle detection algorithm that emulates human expert spindle scoring. In Journal of Neuroscience Methods (Vol. 316, pp. 3–11). Elsevier BV. https://doi.org/10.1016/j.jneumeth.2018.08.014 
+#' @param x EEG signal in μV.
+#' @param sRate Sample rate of the signal.
+#' @param window Size of the window in seconds. Default: 0.3
+#' @param step Size of the step between windows in seconds. Default: 0.1
+#' @param butter_order Order of the Butterworth filters. Default: 5
+#' @param A7absSigPow A7absSigPow treshold. Default: 1.25
+#' @param A7relSigPow A7relSigPow treshold. Default: 1.6
+#' @param A7sigmaCov A7sigmaCov treshold. Default: 1.3
+#' @param A7sigmaCorr A7sigmaCorr treshold. Default: 0.69
+#' @return Detected spindles and associated features.
+#' @details
+#' A sleep spindle detection algorithm based on 4 features 
+#' computed along segmented signal according to `window` size 
+#' and `step` size parameters. 
+#' 
+#' 1. Absolute sigma power
+#' \deqn{A7absSigPow = \log_{10} \left( \sum_{i=1}^{N} \frac{EEG\sigma_{i}^2}{N} \right)}
+#' 2. Relative sigma power 
+#' \deqn{A7relSigPow = zscore\left( \log_{10} \left( \frac{PSA_{11-16Hz}}{PSA_{4.5-30Hz}} \right) \right)}
+#' 3. Sigma covariance 
+#' \deqn{A7sigmaCov = zscore\left( \log_{10} \left( \frac{1}{N} \sum_{i=1}^{N} \left( EEG_{bf_i} - \mu_{EEG_{bf}} \right) \left( EEG_{\sigma_i} - \mu_{EEG_{\sigma}} \right) \right) \right)}
+#' 4. Sigma correlation
+#' \deqn{A7sigmaCor = \frac{\text{cov}(EEG_{bf}, EEG_{\sigma})}{sd_{EEG_{bf}} * sd_{EEG_{\sigma}}}}
+#' @examples
+#' fpath <- paste0(tempdir(),"c3m2_n2_200hz_uv.csv")
+#' 
+#' download.file(
+#'   url = "https://rsleep.org/data/c3m2_n2_200hz_uv.csv",
+#'   destfile = fpath)
+#' 
+#' # Read only a sample of the EEG signal
+#' s = read.csv(fpath,header = FALSE)[,1][25000:45000]
+#' 
+#' file.remove(fpath)
+#' 
+#' a7_results = a7(s, 200)
+#' 
+#' # Plot the first detected spindle
+#' rsleep::plot_event(
+#'   s, 200, 0, 
+#'   a7_results$spindles[1,]$idxStart/200, 
+#'   a7_results$spindles[1,]$idxEnd/200,2)
+#'   
+#' # Visualise features distribution 
+#' 
+#' hist(a7_results$df$absSigPow,main = "A7absSigPow")
+#' 
+#' hist(a7_results$df$relSigPow,main = "A7relSigPow")
+#' 
+#' hist(a7_results$df$sigmaCov,main = "A7sigmaCov")
+#' 
+#' hist(a7_results$df$sigmaCorr,main = "A7sigmaCorr") 
+#' 
+#' @export
+a7 = function(
+    x, 
+    sRate, 
+    window=0.3,
+    step = 0.1,
+    butter_order = 5,
+    A7absSigPow = 1.25,
+    A7relSigPow = 1.6,
+    A7sigmaCov = 1.3,
+    A7sigmaCorr = 0.69){
+  
+  results = list()
+  
+  # Filter EEGs
+  low_freq <- 11
+  high_freq <- 16
+  nyquist <- sRate / 2
+  low_norm <- low_freq / nyquist
+  high_norm <- high_freq / nyquist
+  order <- butter_order
+  butter_filter <- signal::butter(order, c(low_norm, high_norm), type = "pass")
+  EEGs <- signal::filtfilt(butter_filter, x)
+  
+  # Filter EEGbf 
+  low_freq <- 0.3
+  high_freq <- 30
+  nyquist <- sRate / 2
+  low_norm <- low_freq / nyquist
+  high_norm <- high_freq / nyquist
+  order <- butter_order
+  butter_filter <- signal::butter(order, c(low_norm, high_norm), type = "pass")
+  EEGbf <- signal::filtfilt(butter_filter, x)
+  
+  # Segments
+  segments = rsleep::segmentation(
+    list(EEGbf, EEGs),
+    c(sRate, sRate),
+    segments_size = window,
+    step = step,
+    padding = 0)
+  
+  results[["segments_dimensions"]] = dim(segments)
+  
+  # Compute A7absSigPow
+  
+  absSigPow = apply(segments, 1, function(x){
+    sum(x[,2]^2) / length(x[,2])
+  })
+  
+  absSigPow = log10(absSigPow)
+  
+  # Compute A7relSigPow
+  
+  psa1116 = apply(segments, 1, function(x){
+    N <- length(x[,1])
+    f1 <- 11
+    f2 <- 16
+    lower <- floor(f1 * N / sRate)
+    upper <- ceiling(f2 * N / sRate)
+    sum(abs(stats::fft(x[,1])[lower:upper])^2)
+  })
+  
+  psa4530 = apply(segments, 1, function(x){
+    N <- length(x[,1])
+    f1 <- 4.5
+    f2 <- 30
+    lower <- floor(f1 * N / sRate)
+    upper <- ceiling(f2 * N / sRate)
+    sum(abs(stats::fft(x[,1])[lower:upper])^2)
+  })
+  
+  logPowRat = log10(psa1116/psa4530)
+  
+  logPowRat_segments = rsleep::segmentation(
+    list(c(unlist(logPowRat),0)),
+    c(1),
+    segments_size = 1,
+    step = 1,
+    padding = 30/window/2)
+  
+  relSigPow = unlist(lapply(c(1:dim(logPowRat_segments)[1]), function(i){
+    sorted_v <- sort(logPowRat_segments[i,])
+    p10 <- stats::quantile(sorted_v, 0.10)
+    p90 <- stats::quantile(sorted_v, 0.90)
+    subset_v <- sorted_v[sorted_v >= p10 & sorted_v <= p90]
+    normalized_rel = (logPowRat_segments[i,] - mean(logPowRat_segments[i,]))/stats::sd(subset_v)
+    normalized_rel[(30/window/2+1)]
+  }))
+  
+  # Compute A7sigmaCov
+  
+  scov = apply(segments,1,function(x){
+    mean_EEGbf <- mean(x[,1])
+    mean_EEGsigma <- mean(x[,2])
+    covariance = sum((x[,1] - mean_EEGbf) * (x[,2] - mean_EEGsigma)) / length(x[,1])
+    if(covariance > 0){
+      covariance
+    } else {
+      0
+    }
+  })
+  logSigmaCov = unlist(lapply(scov,function(x){
+    if(x > 0){
+      log10(x)
+    } else {
+      0
+    }
+  }))
+  
+  zscore_segments = rsleep::segmentation(
+    list(c(unlist(logSigmaCov),0)),
+    c(1),
+    segments_size = 1,
+    step = 1,
+    padding = 30/window/2)
+  
+  sigmaCov = unlist(apply(zscore_segments, 1, function(x){
+    sorted_v <- sort(x)
+    p10 <- stats::quantile(sorted_v, 0.10)
+    p90 <- stats::quantile(sorted_v, 0.90)
+    subset_v <- sorted_v[sorted_v >= p10 & sorted_v <= p90]
+    normalized = (x - mean(x))/stats::sd(subset_v)
+    normalized[(30/window/2+1)]
+  }))
+  
+  # Compute A7sigmaCorr
+  
+  sigmaCorr = unlist(lapply(c(1:dim(segments)[1]),function(x){
+    scov[[x]]/(stats::sd(segments[x,,1])*stats::sd(segments[x,,2]))
+  }))
+  
+  # All together
+  results[["df"]] = data.frame(
+    logPowRat = logPowRat,
+    absSigPow = absSigPow,
+    relSigPow = relSigPow,
+    sigmaCov = sigmaCov,
+    sigmaCorr = sigmaCorr)
+  
+  # Detect spindles based on thresolds
+  
+  results[["df"]]$spindle <- unlist(
+    lapply(c(1:nrow(results[["df"]])), function(i) {
+      all(
+        results[["df"]]$absSigPow[i] > A7absSigPow,
+        results[["df"]]$relSigPow[i] > A7relSigPow,
+        results[["df"]]$sigmaCov[i] > A7sigmaCov,
+        results[["df"]]$sigmaCorr[i] > A7sigmaCorr)
+    }))
+  
+  # Detect consecutive
+  
+  # Pass 1
+  spindle = FALSE
+  for(i in c(1:nrow(results[["df"]]))){
+    if(spindle & (results[["df"]]$absSigPow[i] > A7absSigPow) & (results[["df"]]$sigmaCov[i] > A7sigmaCov)){
+      results[["df"]]$spindle[i] = TRUE
+    }
+    spindle = results[["df"]]$spindle[i]
+  }
+  
+  # Pass 2
+  
+  spindle = FALSE
+  for(i in c(nrow(results[["df"]]):1)){
+    if(spindle & (results[["df"]]$absSigPow[i] > A7absSigPow) & (results[["df"]]$sigmaCov[i] > A7sigmaCov)){
+      results[["df"]]$spindle[i] = TRUE
+    }
+    spindle = results[["df"]]$spindle[i]
+  }
+  
+  
+  # Simplify spindles 
+  
+  results[["df"]]$idxStart = c(0:(nrow(results[["df"]])-1))*step*sRate+1
+  
+  results[["df"]]$idxEnd = results[["df"]]$idxStart + (step*sRate-1)
+  
+  # Spindles
+  
+  spindles <- list()
+  start <- NULL
+  end <- NULL
+  for (i in seq_along(results[["df"]]$spindle)) {
+    if (results[["df"]]$spindle[i]) {
+      if (is.null(start)) {
+        start <- i
+      }
+      end <- i
+    } else {
+      if (!is.null(start)) {
+        spindles[[length(spindles) + 1]] <- list(
+          start = start, 
+          end = end)
+        start <- NULL
+      }
+    }
+  }
+  if (!is.null(start)) {
+    spindles[[length(spindles) + 1]] <- list(
+      start = start, 
+      end = end)
+  }
+  spindles = dplyr::bind_rows(spindles)
+  spindles$length = (spindles$end - spindles$start + 1) * step
+  spindles$idxStart = spindles$start * step * sRate
+  spindles$idxEnd = spindles$end * step * sRate
+  spindles$segmentStart = spindles$start
+  spindles$segmentEnd = spindles$end
+  spindles$start = NULL
+  spindles$end = NULL
+  spindles = spindles[spindles$length >= 0.3,]
+  spindles = spindles[spindles$length <= 2.5,]
+  
+  results[["spindles"]] = spindles
+  
+  return(results)
+}
+
+#' Bandpass Filter Function
+#'
+#' This function applies a bandpass filter to a signal. 
+#' It first normalizes the high and low frequencies based on the Nyquist frequency,
+#' then creates a Butterworth filter using the `signal::butter` function,
+#' and finally applies the filter to the signal using `signal::filtfilt`.
+#'
+#' @param x A numeric vector representing the signal to be filtered.
+#' @param high The high cutoff frequency for the bandpass filter.
+#' @param low The low cutoff frequency for the bandpass filter.
+#' @param sRate The sampling rate of the signal.
+#' @param order The order of the Butterworth filter, defaulting to 5.
+#' @return A numeric vector representing the filtered signal.
+#' @importFrom signal butter
+#' @importFrom signal filtfilt
+#' @examples
+#' sample_signal <- sin(seq(0, 10, length.out = 1000))
+#' filtered_signal <- bandpass(sample_signal, high = 0.3, low = 0.1, sRate = 100)
+#' @export
+#' @seealso \code{\link[signal]{butter}}, \code{\link[signal]{filtfilt}}
+#' 
+#' @references
+#' If applicable, add references here.
+#'
+bandpass <- function(x, high, low, sRate, order = 5) {
+  nyquist <- sRate / 2
+  low_norm <- low / nyquist
+  high_norm <- high / nyquist
+  butter_filter <- signal::butter(
+    order, c(low_norm, high_norm), 
+    type = "pass")
+  return(signal::filtfilt(butter_filter, x))
+}
+

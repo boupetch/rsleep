@@ -1,5 +1,5 @@
 ---
-title: "Using Rsleep and SleepCycles Packages to Detect Sleep Cycles"
+title: "Using rsleep and SleepCycles packages to detect sleep cycles"
 output: 
   rmarkdown::html_vignette:
      toc: true
@@ -7,7 +7,7 @@ output:
 bibliography: Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles.bibtex
 csl: vignettes.csl
 vignette: >
-  %\VignetteIndexEntry{Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles}
+  %\VignetteIndexEntry{Using rsleep and SleepCycles packages to detect sleep cycles}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -15,11 +15,15 @@ editor_options:
 ---
 
 ```{r env, include = FALSE}
+
 options(scipen=999)
+
+options(rmarkdown.html_vignette.check_title = FALSE)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>")
+
 ```
 
 The [SleepCycles](https://CRAN.R-project.org/package=SleepCycles) package @BLUME2021101318 has been specifically developed to identify sleep cycles @Feinberg_Floyd_1979 and their corresponding NREM and REM components (known as (N)REM periods) from data that has been categorized based on AASM criteria for sleep staging @AASMScoringManual.

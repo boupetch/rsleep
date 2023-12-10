@@ -248,17 +248,21 @@ read_events_sleepedfx <- function(dir, update = TRUE){
 #'
 #' @param txt txt file path.
 #' @param startTime Character string or date object of the hypnogram start.
+#' @param labels Labels and values as a named list. Defaults to c("AWA" = 0, "N1" = 1, "N2" = 2, "N3" = 3, "REM" = 5).
 #' @return A dataframe of stages.
 #' @export
-read_events_compumedics <- function(txt, startTime){
+read_events_compumedics <- function(
+    txt, startTime, labels = c("AWA" = 0, "N1" = 1, "N2" = 2, "N3" = 3, "REM" = 5)){
   hypno <- utils::read.table(txt, stringsAsFactors = FALSE, col.names = "event")
   hypno$begin <- as.POSIXlt(startTime) + ((c(1:nrow(hypno))-1)*4)
   hypno$end <- hypno$begin+4
   hypno$event <- as.character(hypno$event)
-  hypno$event <- ifelse(hypno$event == "0","AWA",hypno$event)
-  hypno$event <- ifelse(hypno$event == "1","NREM",hypno$event)
-  hypno$event <- ifelse(hypno$event == "2","REM",hypno$event)
-  hypno$event <- ifelse(hypno$event == "?","AWA",hypno$event)
+  for(label in names(labels)){
+    hypno$event <- ifelse(hypno$event == as.character(labels[label]),label,hypno$event)
+  }
+  # hypno$event <- ifelse(hypno$event == "1","NREM",hypno$event)
+  # hypno$event <- ifelse(hypno$event == "2","REM",hypno$event)
+  # hypno$event <- ifelse(hypno$event == "?","AWA",hypno$event)
   hypno
 }
 

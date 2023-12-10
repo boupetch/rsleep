@@ -1,5 +1,5 @@
 ---
-title: "Spectral Analysis of Sleep EEG Signals"
+title: "Spectral analysis of sleep EEG signals"
 output: 
   rmarkdown::html_vignette:
      toc: true
@@ -7,7 +7,7 @@ output:
 bibliography: Spectral_analysis_sleep_electroencephalography.bibtex
 csl: vignettes.csl
 vignette: >
-  %\VignetteIndexEntry{Spectral_analysis_sleep_electroencephalography}
+  %\VignetteIndexEntry{Spectral analysis of sleep EEG signals}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -15,11 +15,15 @@ editor_options:
 ---
 
 ```{r env, include = FALSE}
+
 options(scipen=999)
+
+options(rmarkdown.html_vignette.check_title = FALSE)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>")
+
 ```
 
 This vignette provides a basic introduction to spectral analysis of Electroencephalography (EEG) signal from a sleep record file.
@@ -85,13 +89,11 @@ spectrogram(
 `rsleep` reads this particular format with the `read_events_noxturnal` function. The `plot_hypnogram` function then plots the hypnogram.
 
 ```r
-if(!file.exists("15012016HD.csv")){
-  download.file(
+download.file(
   url = "https://rsleep.org/data/15012016HD.csv",
-  destfile = "15012016HD.csv")}
+  destfile = "15012016HD.csv")
 
-events <- rsleep::read_events_noxturnal(
-  "15012016HD.csv", h$startTime)
+events <- rsleep::read_events_noxturnal("15012016HD.csv")
 
 rsleep::plot_hypnogram(events)
 ```

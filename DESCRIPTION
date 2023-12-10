@@ -11,6 +11,7 @@ URL: https://rsleep.org/, https://github.com/boupetch/rsleep
 BugReports: https://github.com/boupetch/rsleep/issues
 Imports:
   abind,
+  dplyr,
   edfReader,
   ggplot2,
   jsonlite,

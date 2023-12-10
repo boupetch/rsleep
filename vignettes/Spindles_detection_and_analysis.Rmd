@@ -1,0 +1,240 @@
+---
+title: "Spindles detection and analysis"
+output: 
+  rmarkdown::html_vignette:
+     toc: true
+     toc_depth: 3
+bibliography: Spindles_detection_and_analysis.bibtex
+csl: vignettes.csl
+vignette: >
+  %\VignetteIndexEntry{Spindles detection and analysis}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+
+options(scipen=999)
+
+options(rmarkdown.html_vignette.check_title = FALSE)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+
+Sleep spindles are distinct bursts of brain activity that occur mostly during stage 2 of non-rapid eye movement (NREM) sleep. Characterized by their short duration, typically lasting between 0.5 to 2 seconds, they appear as a rapid series of waves on an electroencephalogram (EEG). These waves are typically in the 11 to 16 Hz frequency range @DeGennaro2003 . Sleep spindles are thought to play a crucial role in brain development, memory consolidation, and cognitive function. Their presence and characteristics can vary depending on age, cognitive factors, and certain neurological conditions, making them a significant focus in sleep research and neuroscience.
+
+While EEG-based visual inspection remains the benchmark for identifying these spindles, this process is not only labor-intensive and expensive but also prone to variability and bias among different scorers. An algorithm for sleep spindle detection significantly streamline this process, enhancing both efficiency and consistency in spindle identification.
+
+The A7 algorithm @Lacourse2019 operates using a single EEG channel and is dependent on four objective key parameters: the absolute power of the sigma band, its relative power, and the correlation or covariance between the sigma band-passed signal and the original EEG signal.
+
+# Sleep data
+
+## EEG signal
+
+First, download and read an single EEG signal from an example EDF @Kemp1992 file. According to the standardized 10-20 system @niedermeyerElectroencephalographyBasicPrinciples2005, the `C3-M2` derivation refers to the measurement of electrical brain activity recorded between the C3 electrode position on the left side of the head and the M2 electrode positioned on the right mastoid.
+
+```r
+
+library(edfReader)
+
+download.file(
+  url = "https://rsleep.org/data/15012016HD.edf",
+  destfile = "15012016HD.edf")
+
+h <- readEdfHeader("15012016HD.edf")
+
+s <- readEdfSignals(h, signals = "C3-M2")
+
+```
+
+```{r edf_read, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(edfReader)
+
+if(!file.exists("15012016HD.edf")){
+  download.file(
+  url = "https://rsleep.org/data/15012016HD.edf",
+  destfile = "15012016HD.edf",
+  method = "curl")}
+
+h <- readEdfHeader("15012016HD.edf")
+
+s <- readEdfSignals(h, signals = "C3-M2")
+
+file.remove("15012016HD.edf")
+
+```
+
+## Scored events
+
+Then, download and read the scored events containing the hypnogram data to epoch the signal and focus the analysis on N2 epochs.
+
+```r
+
+download.file(
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv")
+
+events <- rsleep::read_events_noxturnal("15012016HD.csv")
+
+rsleep::plot_hypnogram(events)
+
+```
+
+```{r hypnogram, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(rsleep)
+
+if(!file.exists("15012016HD.csv")){
+  download.file(
+  url = "https://rsleep.org/data/15012016HD.csv",
+  destfile = "15012016HD.csv",
+  method="curl")}
+
+events <- read_events_noxturnal("15012016HD.csv")
+
+file.remove("15012016HD.csv")
+
+```
+
+The hypnogram can be plotted using `plot_hypnogram()` function from rsleep.
+
+```{r plot_hypnogram, fig.width = 7, fig.height = 2}
+
+plot_hypnogram(events)
+
+```
+
+# Spindle detection using A7
+
+Select the 10th N2 epoch that we know contain spindles.
+
+```{r}
+
+n2_epoch = events[events$event == "N2",][10,]
+
+```
+
+Compute the epoch boundaries in the signal: subtract the epoch times from the signal start time, then multiply by the signal's sample rate. Add one to the start result to adjust for R's indexing system.
+
+```{r epoch_boundaries}
+
+n2_epoch_index_start = as.numeric(
+  difftime(n2_epoch$begin, s$startTime, units = "secs")) * s$sRate + 1
+
+n2_epoch_index_end = as.numeric(
+  difftime(n2_epoch$end, s$startTime, units = "secs")) * s$sRate
+
+```
+
+Get the signal and multiply it as the A7 algorithm were designed for μVolts and the current EEG record is in Volts.
+
+```{r}
+
+eeg = s$signal[n2_epoch_index_start:n2_epoch_index_end]
+
+eeg = eeg * 1000000
+
+```
+
+Run the A7 algorithm implemented in `rsleep`:
+
+```{r warning=FALSE}
+
+result = a7(
+  x = eeg,
+  s$sRate)
+  
+```
+
+Display the 3 first detected spindles properties.
+
+```r
+
+result$spindles[1:3,]
+
+```
+
+```{r include=FALSE}
+
+knitr::kable(result$spindles[1:3,])
+
+```
+
+Visualise the 3rd detected spindle with the `plot_event()` function from `rsleep`.
+
+```{r, fig.width = 7, fig.height = 2}
+
+plot_event(
+ signal = eeg,
+ sRate = s$sRate,
+ sig_start = 0,
+ event_start = result$spindles$idxStart[2]/s$sRate,
+ event_end = result$spindles$idxEnd[2]/s$sRate,
+ window = 3
+)
+
+```
+
+# Overnight spindle detection
+
+Joining the previous steps in a for loop along all N2 epochs, spindles are detected over the whole sleep record:
+
+```{r warning=FALSE}
+
+n2_epochs = events[events$event == "N2",]
+
+epochs_results = list()
+
+for(i in c(1:nrow(n2_epochs))){
+  
+  n2_epoch_index_start = as.numeric(
+    difftime(n2_epochs$begin[i],s$startTime,units = "secs")) * s$sRate + 1
+
+  n2_epoch_index_end = as.numeric(
+    difftime(n2_epochs$end[i],s$startTime,units = "secs")) * s$sRate
+
+  eeg = s$signal[n2_epoch_index_start:n2_epoch_index_end]
+
+  eeg = eeg * 1000000
+  
+  results = rsleep::a7(
+    x = eeg,
+    s$sRate)
+  
+  epochs_results[[length(epochs_results)+1]] = results
+  
+}
+
+```
+
+Detected spindles from all the epochs may be bound together using `bind_rows()` from `dplyr`.
+
+```{r}
+
+spindles = dplyr::bind_rows(
+  lapply(c(1:length(epochs_results)), function(x){
+    epochs_results[[x]]$spindles$epoch = x
+    epochs_results[[x]]$spindles
+}))
+
+```
+
+Finally, plot the number of detected spindles by N2 epoch number using `ggplot2`:
+
+```{r, fig.width = 7, fig.height = 2}
+
+library(ggplot2)
+
+ggplot(spindles, aes(x = epoch)) +
+  geom_bar() +
+  xlab("N2 epoch number") +
+  ylab("Detected spindles")
+
+```

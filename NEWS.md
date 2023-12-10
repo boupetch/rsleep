@@ -1,3 +1,10 @@
+# rsleep 1.0.11
+
+  * Updated `read_events_compumedics()` to take bindings as parameter.
+  * Added `Spindles detection and analysis` vignette.
+  * Added `bandpass()` function as it is useful.
+  * Added `a7()` implemented from Lacourse & Al 2019.
+
 # rsleep 1.0.10
 
   * Added `adanorm()` implemented from Choi & Al 2018.
