@@ -184,7 +184,7 @@ plot_event(
 
 # Overnight spindle detection
 
-Joining the previous step in a for loop along all N2 epochs, spindles are detected over the whole sleep record:
+Joining the previous steps in a for loop along all N2 epochs, spindles are detected over the whole sleep record:
 
 ```{r warning=FALSE}
 
