@@ -61,13 +61,13 @@ s <- readEdfSignals(h, signals = "C3-M2")
 
 library(edfReader)
 
-if(!file.exists(fname)){
+if(!file.exists("15012016HD.edf")){
   download.file(
   url = "https://rsleep.org/data/15012016HD.edf",
   destfile = "15012016HD.edf",
   method = "curl")}
 
-h <- readEdfHeader(fname)
+h <- readEdfHeader("15012016HD.edf")
 
 s <- readEdfSignals(h, signals = "C3-M2")
 
@@ -99,6 +99,8 @@ if(!file.exists("15012016HD.csv")){
 
 events <- read_events_noxturnal("15012016HD.csv")
 
+file.remove("15012016HD.csv")
+
 ```
 
 The hypnogram can be plotted using plo
@@ -117,9 +119,9 @@ Spindles are marker of N2. N2 periods can be joined from 30 epochs with peiods
 
 n2_periods = rsleep::periods(events, stages=c("N2"))
 
-n2_periods$idx_start = as.numeric(difftime(n2_periods$begin, s$startTime, units = "secs")) * s$sRate
+n2_periods$idx_start = as.numeric(difftime(n2_periods$begin, s$startTime, units = "secs")) * s$sRate + 1
 
-n2_periods$idx_end = as.numeric(difftime(n2_periods$end, s$startTime, units = "secs")) * s$sRate - 1
+n2_periods$idx_end = as.numeric(difftime(n2_periods$end, s$startTime, units = "secs")) * s$sRate
 
 knitr::kable(n2_periods, row.names = FALSE)
 
@@ -133,7 +135,7 @@ eeg = s$signal[n2_periods$idx_start[1]:n2_periods$idx_end[1]]
 eeg = eeg*1000000
   
 result = rsleep::a7(
-  x = signal,
+  x = eeg,
   s$sRate)
   
 ```
