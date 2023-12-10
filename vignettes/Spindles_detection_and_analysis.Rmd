@@ -107,7 +107,7 @@ plot_hypnogram(events)
 
 ```
 
-# Spindle detection over a single epoch
+# Spindle detection using A7
 
 Select the 10th N2 epoch that we know contain spindles.
 
@@ -127,7 +127,7 @@ n2_epoch_index_end = as.numeric(
 
 ```
 
-Get the signal and multiply b 100 mv
+Get the signal and multiply it as the A7 algorithms were designed for μVolts and the current record is in Volts.
 
 ```{r}
 
@@ -174,7 +174,7 @@ plot_event(
 
 # Overnight spindle detection
 
-
+Putting all the previous code in a for loop along N2 epochs, spindles are detected over the whole sleep record:
 
 ```{r warning=FALSE}
 
@@ -209,6 +209,8 @@ spindles = dplyr::bind_rows(
 }))
 
 ```
+
+Plot the number of detected spindles by N2 epoch number using `ggplot2`:
 
 ```{r}
 
