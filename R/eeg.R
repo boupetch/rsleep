@@ -489,3 +489,38 @@ a7 = function(
   
   return(results)
 }
+
+#' Bandpass Filter Function
+#'
+#' This function applies a bandpass filter to a signal. 
+#' It first normalizes the high and low frequencies based on the Nyquist frequency,
+#' then creates a Butterworth filter using the `signal::butter` function,
+#' and finally applies the filter to the signal using `signal::filtfilt`.
+#'
+#' @param x A numeric vector representing the signal to be filtered.
+#' @param high The high cutoff frequency for the bandpass filter.
+#' @param low The low cutoff frequency for the bandpass filter.
+#' @param sRate The sampling rate of the signal.
+#' @param order The order of the Butterworth filter, defaulting to 5.
+#' @return A numeric vector representing the filtered signal.
+#' @importFrom signal butter
+#' @importFrom signal filtfilt
+#' @examples
+#' sample_signal <- sin(seq(0, 10, length.out = 1000))
+#' filtered_signal <- bandpass(sample_signal, high = 0.3, low = 0.1, sRate = 100)
+#' @export
+#' @seealso \code{\link[signal]{butter}}, \code{\link[signal]{filtfilt}}
+#' 
+#' @references
+#' If applicable, add references here.
+#'
+bandpass <- function(x, high, low, sRate, order = 5) {
+  nyquist <- sRate / 2
+  low_norm <- low / nyquist
+  high_norm <- high / nyquist
+  butter_filter <- signal::butter(
+    order, c(low_norm, high_norm), 
+    type = "pass")
+  return(signal::filtfilt(butter_filter, x))
+}
+

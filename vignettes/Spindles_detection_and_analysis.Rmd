@@ -33,12 +33,6 @@ While EEG-based visual inspection remains the benchmark for identifying these sp
 
 The A7 algorithm, developed by Lacourse & Al operates using a single EEG channel and is dependent on four key parameters: the absolute power of the sigma band, its relative power, and the correlation or covariance between the sigma band-passed signal and the original EEG signal.
 
-```{r setup, include=FALSE}
-
-library(rsleep)
-
-```
-
 # Sleep data
 
 First, download and read the `C3-M2` EEG signal from an example EDF @Kemp1992 file.
@@ -57,7 +51,7 @@ s <- readEdfSignals(h, signals = "C3-M2")
 
 ```
 
-```{r edf_read, echo=FALSE}
+```{r edf_read, echo=FALSE, message=FALSE, warning=FALSE}
 
 library(edfReader)
 
@@ -75,7 +69,7 @@ file.remove("15012016HD.edf")
 
 ```
 
-Then, donwload and read the hypnogram to epoch the signal and focus the analysis on N2 epochs.
+Then, download and read the scored events containing the hypnogram data to epoch the signal and focus the analysis on N2 epochs.
 
 ```r
 
@@ -89,7 +83,7 @@ rsleep::plot_hypnogram(events)
 
 ```
 
-```{r hypnogram, echo=FALSE}
+```{r hypnogram, echo=FALSE, message=FALSE, warning=FALSE}
 
 if(!file.exists("15012016HD.csv")){
   download.file(
@@ -103,20 +97,22 @@ file.remove("15012016HD.csv")
 
 ```
 
-The hypnogram can be plotted using plo
+The hypnogram can be plotted using `plot_hypnogram()` function from rsleep.
 
 ```{r plot_hypnogram, fig.width = 7}
 
-rsleep::plot_hypnogram(events)
+library(rsleep)
+
+plot_hypnogram(events)
 
 ```
 
 # Spindle detection over a single epoch
 
-Select the first N2 epoch
+Select the 10th N2 epoch that we know contain spindles.
 
 ```{r}
-n2_epoch = events[events$event == "N2",][5,]
+n2_epoch = events[events$event == "N2",][10,]
 ```
 
 Calculate the epoch boundaries in the signal: subtract the epoch times from the signal start time, then multiply by the signal's sample rate. Add one to the start result to adjust for R's indexing system.
@@ -131,7 +127,7 @@ n2_epoch_index_end = as.numeric(
 
 ```
 
-Get the signal and 
+Get the signal and multiply b 100 mv
 
 ```{r}
 
@@ -151,20 +147,34 @@ result = rsleep::a7(
 
 ```r
 
-result$spindles[1:5,]
+result$spindles[1:3,]
 
 ```
 
 ```{r include=FALSE}
 
-knitr::kable(result$spindles[1:5,])
+knitr::kable(result$spindles[1:3,])
 
 ```
 
+Visualise the 3rd spindle with the `plot_event()` function from `rsleep`.
+
+```{r}
+
+plot_event(
+ signal = eeg,
+ sRate = s$sRate,
+ sig_start = 0,
+ event_start = result$spindles$idxStart[2]/s$sRate,
+ event_end = result$spindles$idxEnd[2]/s$sRate,
+ window = 3
+)
+
+```
 
 # Overnight spindle detection
 
-N2 periods can be joined from 30 epochs with peiods
+
 
 ```{r warning=FALSE}
 

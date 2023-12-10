@@ -1,6 +1,11 @@
+# rsleep 1.0.11
+
+  * Added `Spindles detection and analysis` vignette.
+  * Added `bandpass()` function as it is useful.
+  * Added `a7()` implemented from Lacourse & Al 2019.
+
 # rsleep 1.0.10
 
-  * Added `a7()` implemented from Lacourse & Al 2019.
   * Added `adanorm()` implemented from Choi & Al 2018.
   * Added balanced accuracy custom metric to deep learning model.
   * Corrected 302 link to PsyArxiv.
