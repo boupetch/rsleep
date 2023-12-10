@@ -7,7 +7,7 @@ output:
 bibliography: Spindles_detection_and_analysis.bibtex
 csl: vignettes.csl
 vignette: >
-  %\VignetteIndexEntry{Spindles_detection_and_analysis}
+  %\VignetteIndexEntry{Spindles detection and analysis}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -111,29 +111,38 @@ rsleep::plot_hypnogram(events)
 
 ```
 
-# Spindle detection
+# Spindle detection over a single epoch
 
-Spindles are marker of N2. N2 periods can be joined from 30 epochs with peiods
+Select the first N2 epoch
+
+```{r}
+n2_epoch = events[events$event == "N2",][5,]
+```
+
+Calculate the epoch boundaries in the signal: subtract the epoch times from the signal start time, then multiply by the signal's sample rate. Add one to the start result to adjust for R's indexing system.
 
 ```{r}
 
-n2_periods = rsleep::periods(events, stages=c("N2"))
+n2_epoch_index_start = as.numeric(
+  difftime(n2_epoch$begin, s$startTime, units = "secs")) * s$sRate + 1
 
-n2_periods$idx_start = as.numeric(difftime(n2_periods$begin, s$startTime, units = "secs")) * s$sRate + 1
-
-n2_periods$idx_end = as.numeric(difftime(n2_periods$end, s$startTime, units = "secs")) * s$sRate
-
-knitr::kable(n2_periods, row.names = FALSE)
+n2_epoch_index_end = as.numeric(
+  difftime(n2_epoch$end, s$startTime, units = "secs")) * s$sRate
 
 ```
 
-## Single spindle
+Get the signal and 
 
 ```{r}
 
-eeg = s$signal[n2_periods$idx_start[1]:n2_periods$idx_end[1]]
-eeg = eeg*1000000
-  
+eeg = s$signal[n2_epoch_index_start:n2_epoch_index_end]
+
+eeg = eeg * 1000000
+
+```
+
+```{r warning=FALSE}
+
 result = rsleep::a7(
   x = eeg,
   s$sRate)
@@ -153,7 +162,51 @@ knitr::kable(result$spindles[1:5,])
 ```
 
 
-## Overnight spindle detection
+# Overnight spindle detection
 
+N2 periods can be joined from 30 epochs with peiods
 
-# Discussion
+```{r warning=FALSE}
+
+n2_epochs = events[events$event == "N2",]
+
+epochs_results = list()
+
+for(i in c(1:nrow(n2_epochs))){
+  
+  n2_epoch_index_start = as.numeric(
+    difftime(n2_epochs$begin[i],s$startTime,units = "secs")) * s$sRate + 1
+
+  n2_epoch_index_end = as.numeric(
+    difftime(n2_epochs$end[i],s$startTime,units = "secs")) * s$sRate
+
+  eeg = s$signal[n2_epoch_index_start:n2_epoch_index_end]
+
+  eeg = eeg * 1000000
+  
+  results = rsleep::a7(
+    x = eeg,
+    s$sRate)
+  
+  epochs_results[[length(epochs_results)+1]] = results
+  
+}
+
+spindles = dplyr::bind_rows(
+  lapply(c(1:length(epochs_results)), function(x){
+    epochs_results[[x]]$spindles$epoch = x
+    epochs_results[[x]]$spindles
+}))
+
+```
+
+```{r}
+
+library(ggplot2)
+
+ggplot(spindles, aes(x = epoch)) +
+  geom_bar() +
+  xlab("N2 epoch number") +
+  ylab("Detected spindles")
+
+```

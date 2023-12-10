@@ -7,7 +7,7 @@ output:
 bibliography: Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles.bibtex
 csl: vignettes.csl
 vignette: >
-  %\VignetteIndexEntry{Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles}
+  %\VignetteIndexEntry{Using rsleep and SleepCycles packages to detect sleep cycles}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
