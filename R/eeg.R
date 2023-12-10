@@ -217,7 +217,7 @@ psm <- function(x, sRate, length=0, show = TRUE){
 #'
 #' @description A sleep spindle detection algorithm that emulates human expert spindle scoring
 #' @references Lacourse, K., Delfrate, J., Beaudry, J., Peppard, P., & Warby, S. C. (2019). A sleep spindle detection algorithm that emulates human expert spindle scoring. In Journal of Neuroscience Methods (Vol. 316, pp. 3–11). Elsevier BV. https://doi.org/10.1016/j.jneumeth.2018.08.014 
-#' @param x EEG signal in μV.
+#' @param x EEG signal in uV.
 #' @param sRate Sample rate of the signal.
 #' @param window Size of the window in seconds. Default: 0.3
 #' @param step Size of the step between windows in seconds. Default: 0.1

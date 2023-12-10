@@ -133,7 +133,7 @@ n2_epoch_index_end = as.numeric(
 
 ```
 
-Get the signal and multiply it as the A7 algorithm were designed for μVolts and the current EEG record is in Volts.
+Get the signal and multiply it as the A7 algorithm were designed for uVolts and the current EEG record is in Volts.
 
 ```{r}
 
