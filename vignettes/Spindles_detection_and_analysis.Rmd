@@ -228,7 +228,7 @@ spindles = dplyr::bind_rows(
 
 Finally, plot the number of detected spindles by N2 epoch number using `ggplot2`:
 
-```{r}
+```{r, fig.width = 7, fig.height = 2}
 
 library(ggplot2)
 
