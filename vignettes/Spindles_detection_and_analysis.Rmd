@@ -85,6 +85,8 @@ rsleep::plot_hypnogram(events)
 
 ```{r hypnogram, echo=FALSE, message=FALSE, warning=FALSE}
 
+library(rsleep)
+
 if(!file.exists("15012016HD.csv")){
   download.file(
   url = "https://rsleep.org/data/15012016HD.csv",
@@ -100,8 +102,6 @@ file.remove("15012016HD.csv")
 The hypnogram can be plotted using `plot_hypnogram()` function from rsleep.
 
 ```{r plot_hypnogram, fig.width = 7}
-
-library(rsleep)
 
 plot_hypnogram(events)
 
