@@ -15,11 +15,15 @@ editor_options:
 ---
 
 ```{r env, include = FALSE}
+
 options(scipen=999)
+
+options(rmarkdown.html_vignette.check_title = FALSE)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>")
+
 ```
 
 This vignette provides a basic introduction to spectral analysis of Electroencephalography (EEG) signal from a sleep record file.
