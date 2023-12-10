@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 
 ```
 
-Sleep spindles are distinct bursts of brain activity that occur mostly during stage 2 of non-rapid eye movement (NREM) sleep. Characterized by their short duration, typically lasting between 0.5 to 2 seconds, they appear as a rapid series of waves on an electroencephalogram (EEG). These waves are typically in the 11 to 16 Hz frequency range. @DeGennaro2003 @ Sleep spindles are thought to play a crucial role in brain development, memory consolidation, and cognitive function. Their presence and characteristics can vary depending on age, cognitive factors, and certain neurological conditions, making them a significant focus in sleep research and neuroscience.
+Sleep spindles are distinct bursts of brain activity that occur mostly during stage 2 of non-rapid eye movement (NREM) sleep. Characterized by their short duration, typically lasting between 0.5 to 2 seconds, they appear as a rapid series of waves on an electroencephalogram (EEG). These waves are typically in the 11 to 16 Hz frequency range @DeGennaro2003 . Sleep spindles are thought to play a crucial role in brain development, memory consolidation, and cognitive function. Their presence and characteristics can vary depending on age, cognitive factors, and certain neurological conditions, making them a significant focus in sleep research and neuroscience.
 
 While EEG-based visual inspection remains the benchmark for identifying these spindles, this process is not only labor-intensive and expensive but also prone to variability and bias among different scorers. An algorithm for sleep spindle detection significantly streamline this process, enhancing both efficiency and consistency in spindle identification.
 
