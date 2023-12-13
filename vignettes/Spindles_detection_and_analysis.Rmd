@@ -167,18 +167,22 @@ knitr::kable(result$spindles[1:3,])
 
 ```
 
-Visualise the 3rd detected spindle with the `plot_event()` function from `rsleep`.
+Visualise the second detected spindle with `ggplot2`.
 
 ```{r, fig.width = 7, fig.height = 2}
 
-plot_event(
- signal = eeg,
- sRate = s$sRate,
- sig_start = 0,
- event_start = result$spindles$idxStart[2]/s$sRate,
- event_end = result$spindles$idxEnd[2]/s$sRate,
- window = 3
-)
+library(ggplot2)
+
+data = data.frame(x=eeg,index=seq_along(eeg))
+a = result$spindles$idxStart[2]
+b = result$spindles$idxEnd[2]
+data = data[(data$index <= (b+600)) & (data$index >= (a-600)), ]
+
+ggplot(data, aes(x = index, y = x)) +
+  geom_line() +
+  geom_line(data = subset(data, index >= a & index <= b), aes(x = index, y = x), color = "red") +
+  labs(x = "Signal index", y = "C3-M2") +
+  theme_minimal()
 
 ```
 

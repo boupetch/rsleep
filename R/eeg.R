@@ -255,10 +255,16 @@ psm <- function(x, sRate, length=0, show = TRUE){
 #' a7_results = a7(s, 200)
 #' 
 #' # Plot the first detected spindle
-#' rsleep::plot_event(
-#'   s, 200, 0, 
-#'   a7_results$spindles[1,]$idxStart/200, 
-#'   a7_results$spindles[1,]$idxEnd/200,2)
+#' data = data.frame(x=s,index=seq_along(s))
+#' a = a7_results$spindles$idxStart[1]
+#' b = a7_results$spindles$idxEnd[1]
+#' data = data[(data$index <= (b+600)) & (data$index >= (a-600)), ]
+#' library(ggplot2)
+#' ggplot(data, aes(x = index, y = x)) +
+#'  geom_line() +
+#'  geom_line(data = subset(data, index >= a & index <= b), aes(x = index, y = x), color = "red") +
+#'  labs(x = "Signal index", y = "C3-M2") +
+#'  theme_minimal()
 #'   
 #' # Visualise features distribution 
 #' 
