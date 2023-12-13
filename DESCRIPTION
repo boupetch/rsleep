@@ -17,7 +17,8 @@ Imports:
   jsonlite,
   psd,
   signal,
-  xml2
+  xml2,
+  readr
 Suggests:
   caret,
   gridExtra,

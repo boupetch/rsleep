@@ -143,14 +143,11 @@ plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 #' @param plot Plot the hypnogram or in not using \code{ggplot2}.
 #' @return Hypnogram dataframe or plot.
 #' @examples
-#' fpath <- paste0(tempdir(),"SC4001EC-Hypnogram.edf")
+#' fpath <- paste0(tempdir(),"/15012016HD.csv")
+#'
+#' download.file("https://rsleep.org/data/15012016HD.csv",fpath)
 #' 
-#' furl <- paste0("https://www.physionet.org/files/sleep-edfx/1.0.0/",
-#'  "sleep-cassette/SC4001EC-Hypnogram.edf?download")
-#'  
-#' download.file(furl,fpath)
-#' 
-#' events <- read_events_sleepedfx(fpath)
+#' events <- read_events_noxturnal(fpath)
 #' 
 #' unlink(fpath)
 #' 
