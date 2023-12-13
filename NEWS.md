@@ -1,5 +1,6 @@
 # rsleep 1.0.11
 
+  * Added a `CONTRIBUTING.md` file.
   * Updated `read_events_compumedics()` to take bindings as parameter.
   * Added `Spindles detection and analysis` vignette.
   * Added `bandpass()` function as it is useful.
