@@ -12,10 +12,10 @@ rsleep: Open-source, multiplatform R package for advanced sleep data analysis. F
 ## Installation
 
 Development version can be directly installed from
-[Github](https://github.com/) using the `devtools` package :
+[Github](https://github.com/boupetch/rsleep) :
 
 ``` r
-devtools::install_github("boupetch/rsleep@dev")
+remotes::install_github("boupetch/rsleep@dev")
 ```
 
 Stable version can be downloaded and installed from
