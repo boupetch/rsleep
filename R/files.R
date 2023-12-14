@@ -136,10 +136,12 @@ write_hypnogram_compumedics <- function(hypnogram, filename){
 #' @export
 read_events_noxturnal <- function(dir){
   
+  suppressWarnings({
   events <- readr::read_csv(
     dir, show_col_types = FALSE,
     col_names = c("begin","end","event","duration"),
     locale = readr::locale(encoding = "UTF-16LE"), skip = 1)
+  })
   
   if (ncol(events) < 4) {
     stop(paste0(
