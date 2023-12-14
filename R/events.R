@@ -151,7 +151,7 @@ plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 #' 
 #' unlink(fpath)
 #' 
-#' hypnogram(events, plot = TRUE)
+#' hypnogram(events)
 #' @export
 hypnogram <- function(
     events,
