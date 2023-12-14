@@ -13,7 +13,7 @@ devtools::check(".")
 ### Windows
 
 ```
-devtools::check_win(".")
+devtools::check_win_devel(".")
 ```
 
 ### m1Mac
