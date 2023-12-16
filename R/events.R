@@ -145,7 +145,7 @@ plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 #' @examples
 #' fpath <- paste0(tempdir(),"/15012016HD.csv")
 #'
-#' download.file("https://rsleep.org/data/15012016HD.csv",fpath)
+#' download.file("https://rsleep.org/data/15012016HD.csv",fpath, method="curl")
 #' 
 #' events <- read_events_noxturnal(fpath)
 #' 
