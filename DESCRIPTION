@@ -18,7 +18,8 @@ Imports:
   psd,
   signal,
   xml2,
-  readr
+  readr,
+  xts
 Suggests:
   caret,
   gridExtra,

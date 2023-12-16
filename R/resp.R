@@ -38,3 +38,73 @@ adanorm = function(x, sRate){
   normalized_x = unlist(normalized_x)
   return(normalized_x)
 }
+
+
+#' Clean Oximetry Signal
+#'
+#' This function processes an oximetry signal vector to remove values below a specified threshold. 
+#' It is designed to enhance the quality of oximetry data by replacing sub-threshold impossible values 
+#' with the nearest valid data points.
+#'
+#' @param oximetry A numeric vector representing the oximetry signal. 
+#'                 Each element corresponds to an oximetry reading.
+#' @param threshold A numeric value setting the minimum acceptable oximetry value. 
+#'                  Default is 70. Values in `oximetry` below this threshold will be 
+#'                  replaced with the nearest value above the threshold or an average 
+#'                  of the nearest valid values on either side.
+#'
+#' @return A numeric vector of the same length as `oximetry`. 
+#'         Sub-threshold values are replaced based on nearby valid readings.
+#'
+#' @details
+#' The function iterates through the `oximetry` vector. For each value below the `threshold`,
+#' it searches for the nearest valid value (above the threshold) to the left and right. 
+#' If both neighbors are found, it replaces the sub-threshold value with their average. 
+#' If only one valid neighbor is found, it uses that value. 
+#'
+#' The algorithm ensures that the processed signal retains the general pattern of the 
+#' original data while mitigating the impact of anomalously low readings.
+#'
+#' @examples
+#' oximetry_data <- c(91, 92, 91, 34, 92, 93, 91)
+#' clean_oximetry(oximetry_data)
+#'
+#' @export
+clean_oximetry <- function(oximetry, threshold = 70) {
+  if (length(oximetry) < 3) {
+    stop("Data vector must have at least 3 elements.")
+  }
+  
+  for (i in 1:length(oximetry)) {
+    if (oximetry[i] < threshold) {
+      left <- right <- NA
+      
+      # Search for nearest value over threshold on the left
+      for (j in i:1) {
+        if (oximetry[j] > threshold) {
+          left <- oximetry[j]
+          break
+        }
+      }
+      
+      # Search for nearest value over threshold on the right
+      for (j in i:length(oximetry)) {
+        if (oximetry[j] > threshold) {
+          right <- oximetry[j]
+          break
+        }
+      }
+      
+      # Calculate average if both neighbors are found
+      if (!is.na(left) && !is.na(right)) {
+        oximetry[i] <- mean(c(left, right))
+      } else if (!is.na(left)) {
+        oximetry[i] <- left
+      } else if (!is.na(right)) {
+        oximetry[i] <- right
+      }
+    }
+  }
+  
+  return(oximetry)
+}

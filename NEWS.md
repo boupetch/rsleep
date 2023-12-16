@@ -1,7 +1,9 @@
 # rsleep 1.0.11
 
+  * Added `create_xts()` function to create `xts` objects from signal.
+  * Added `clean_oximetry()` function to remove oximetry signals outliers.
   * Added a `CONTRIBUTING.md` file.
-  * Updated `read_events_compumedics()` to take bindings as parameter.
+  * Updated `read_events_compumedics()` to take labels bindings as parameter.
   * Added `Spindles detection and analysis` vignette.
   * Added `bandpass()` function as it is useful.
   * Added `a7()` implemented from Lacourse & Al 2019.
