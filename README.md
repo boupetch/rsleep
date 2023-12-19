@@ -34,6 +34,7 @@ library(rsleep)
 ## Vignettes
 
 - [Spectral analysis of sleep electroencephalography signals](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
+- [Spindles detection and analysis](https://rsleep.org/articles/Spindles_detection_and_analysis.html)
 - [Using Rsleep and SleepCycles Packages to Detect Sleep Cycles](https://rsleep.org/articles/Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles.html)
   
 ## Examples
