@@ -1,5 +1,7 @@
 # rsleep 1.0.12
 
+  # Added new publication using the rsleep package
+
 # rsleep 1.0.11
 
   * Added `create_xts()` function to create `xts` objects from signal.
