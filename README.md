@@ -74,11 +74,11 @@ library(rsleep)
 }
 ```
 
-## Reverse bibliography
+## Publications using the rsleep package
 
 - Lok, R., Duran, M., & Zeitzer, J. M. (2023). [Moving time zones in a flash with light therapy during sleep.](https://www.nature.com/articles/s41598-023-41742-w) In Scientific Reports (Vol. 13, Issue 1). Springer Science and Business Media LLC.
 
-- Baur, D. M., Dornbierer, D. A., & Landolt, H.-P. [Concentration-effect relationships of plasma caffeine on EEG delta power and cardiac autonomic activity during human sleep. Cold Spring Harbor Laboratory.](https://www.medrxiv.org/content/10.1101/2023.10.14.23297036v1)
+- Baur, D. M., Dornbierer, D. A., & Landolt, H.-P. [Concentration-effect relationships of plasma caffeine on EEG delta power and cardiac autonomic activity during human sleep.](https://www.medrxiv.org/content/10.1101/2023.10.14.23297036v1) Cold Spring Harbor Laboratory.
 
 - Wolf, M.C., Klein, P., Kulau, U., Richter, C. and Wolf, K.H., [DR. BEAT: First Insights into a Study to Collect Baseline BCG Data with a Sensor-Based Wearable Prototype in Heart-Healthy Adults.](https://arinex.com.au/EMBC/pdf/full-paper_271.pdf)
 
@@ -86,7 +86,7 @@ library(rsleep)
 
 - Santhiya P., JebaRajalakshmi J., S Siva Ranjani, Selvi S. ArunMozhi, [Detection of Epilepsy through Machine Learning Algorithms Using Brain Signals](https://www.proquest.com/openview/5244c8f8e90715c223df74f2487651dc/1?pq-origsite=gscholar&cbl=2035897), NeuroQuantology, Bornova Izmir Vol. 20, Iss. 8,  (2022): 6011 - 6018. 
 
-- Rajalakshmi, J., Ranjani, S. S., Sugitha, G., & Prabanand, S. C. (2022). [Electroencephalogram Data Analysed Through the Lens of Machine Learning to Detect Signs of Epilepsy.](https://ieeexplore.ieee.org/document/9985641) In 2022 4th International Conference on Inventive Research in Computing Applications (ICIRCA). 2022 4th International Conference on Inventive Research in Computing Applications (ICIRCA). IEEE. 
+- Rajalakshmi, J., Ranjani, S. S., Sugitha, G., & Prabanand, S. C. (2022). [Electroencephalogram Data Analysed Through the Lens of Machine Learning to Detect Signs of Epilepsy.](https://ieeexplore.ieee.org/document/9985641) In 2022 4th International Conference on Inventive Research in Computing Applications (ICIRCA). 2022 IEEE. 
 
 - Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve stimulation in a hungry state decreases heart rate variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213) Physiology & Behavior. 2023;258:114016.
 
