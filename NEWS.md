@@ -1,6 +1,7 @@
 # rsleep 1.0.12
 
-  # Added new publication using the rsleep package
+  # DOI: 10.5281/zenodo.10507974
+  # Added new publications using the rsleep package
 
 # rsleep 1.0.11
 
