@@ -1,7 +1,8 @@
 # rsleep 1.0.12
 
-  # DOI: 10.5281/zenodo.10507974
-  # Added new publications using the rsleep package
+  * DOI: 10.5281/zenodo.10507974
+  * Set default `startTime` to `2000-01-01` in `read_events_compumedics()`.
+  * Added new publications using the rsleep package
 
 # rsleep 1.0.11
 
