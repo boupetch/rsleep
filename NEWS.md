@@ -3,6 +3,7 @@
   * DOI: 10.5281/zenodo.10507974
   * Set default `startTime` to `2000-01-01` in `read_events_compumedics()`.
   * Added new publications using the rsleep package
+  * `NULL` epochs are not removed anymore in the `epochs` function.
 
 # rsleep 1.0.11
 
