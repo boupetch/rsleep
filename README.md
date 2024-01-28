@@ -62,15 +62,14 @@ library(rsleep)
 # Citation
 
 ```
-@software{paul_bouchequet_2022_7474289,
+@software{paul_bouchequet_2024_10507974,
   author       = {Paul Bouchequet},
   title        = {rsleep},
-  month        = dec,
-  year         = 2022,
+  year         = 2024,
   publisher    = {Zenodo},
-  version      = {1.0.6},
-  doi          = {10.5281/zenodo.7416363},
-  url          = {https://doi.org/10.5281/zenodo.7416363}
+  version      = {1.0.12},
+  doi          = {10.5281/zenodo.10507974},
+  url          = {https://doi.org/10.5281/zenodo.10507974}
 }
 ```
 
