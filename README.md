@@ -55,6 +55,10 @@ library(rsleep)
 
 [<img src="https://rsleep.org/reference/plot_hypnodensity-1.png" width="600">](https://rsleep.org/reference/plot_hypnodensity.html)
 
+### Detecting spindles
+
+[<img src="https://rsleep.org/articles/Spindles_detection_and_analysis_files/figure-html/unnamed-chunk-6-1.png" width="600">](https://rsleep.org/reference/a7.html)
+
 ### Computing a transition matrix
 
 [<img src="https://rsleep.org/reference/transitions-1.png" width="400">](https://rsleep.org/reference/transitions.html)
