@@ -261,18 +261,29 @@ ggplot(bands_df_long,
   theme(legend.position = "none")
 ```
 
-Or as values over epoch numbers:
+Once normalized, bands powers displayed over epoch numbers reveals the dynamic interplay of brain activity overnight.
 
 ```{r delta_overnight}
+
+bands_df_normalized = as.data.frame(sapply(bands_df, function(x) {
+  return((x - min(x)) / (max(x) - min(x)))
+}))
+
+bands_df_normalized$epoch = c(1:nrow(bands_df_normalized))
+
+long_bands_df_normalized <- reshape2::melt(
+  bands_df_normalized, id.vars = "epoch")
+
 ggplot(
-  data.frame(
-    stage = c(1:nrow(bands_df)), 
-    value = bands_df$Delta), 
-  aes(x = stage, y = value)) +
-  geom_line() +
-  labs(x = "Epoch number",
-       y = "Delta Power") +
-  theme_minimal()
+  long_bands_df_normalized, 
+  aes(x = epoch, y = value, color = variable)) +
+  geom_line(size = 0.4) +
+  labs(title = "Bands power overnight", x = "Epoch ", y = "PSD") +
+  theme_minimal() +
+  scale_color_manual(values = c("#00A08A", "#F2AD00", "#F98400", "#5BBCD6")
+) +
+  theme(legend.position = "bottom", legend.title = element_blank())
+
 ```
 
 ## References
