@@ -265,6 +265,8 @@ Once normalized, bands powers displayed over epoch numbers reveals the dynamic i
 
 ```{r delta_overnight}
 
+bands_df$stage = NULL
+
 bands_df_normalized = as.data.frame(sapply(bands_df, function(x) {
   return((x - min(x)) / (max(x) - min(x)))
 }))
