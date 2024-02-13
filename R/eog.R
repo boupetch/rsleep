@@ -133,7 +133,7 @@ detect_rem = function(
       }
       
       # Correlation
-      localcc = cor(locw,rocw)
+      localcc = stats::cor(locw,rocw)
       if(localcc > cc){
         valid = 0
       }
