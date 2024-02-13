@@ -39,7 +39,7 @@
 #' https://doi.org/10.1109/TBME.2005.851512
 #'
 #' @import signal
-#' @import dplyr
+#' @importFrom dplyr bind_rows
 #' @export
 detect_rem = function(
     roc,

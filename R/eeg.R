@@ -277,6 +277,7 @@ psm <- function(x, sRate, length=0, show = TRUE){
 #' hist(a7_results$df$sigmaCorr,main = "A7sigmaCorr") 
 #' 
 #' @export
+#' @importFrom dplyr bind_rows
 a7 = function(
     x, 
     sRate, 
