@@ -5,7 +5,6 @@ output:
      toc: true
      toc_depth: 3
 bibliography: Spectral_analysis_sleep_electroencephalography.bibtex
-csl: vignettes.csl
 vignette: >
   %\VignetteIndexEntry{Spectral analysis of sleep EEG signals}
   %\VignetteEncoding{UTF-8}
