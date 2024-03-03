@@ -1,3 +1,7 @@
+# rsleep 1.0.13
+
+  * Making sure the package build and test can run without an internet connection.
+
 # rsleep 1.0.12
 
   * DOI: 10.5281/zenodo.10507974
