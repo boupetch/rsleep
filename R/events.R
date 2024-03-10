@@ -143,15 +143,19 @@ plot_hypnogram <- function(events, labels = c("N3","N2","N1","REM","AWA")){
 #' @param plot Plot the hypnogram or in not using \code{ggplot2}.
 #' @return Hypnogram dataframe or plot.
 #' @examples
-#' fpath <- paste0(tempdir(),"/15012016HD.csv")
+#' tryCatch({
+#'   fpath <- paste0(tempdir(),"/15012016HD.csv")
 #'
-#' download.file("https://rsleep.org/data/15012016HD.csv",fpath, method="curl")
+#'   download.file("https://rsleep.org/data/15012016HD.csv",fpath, method="curl")
 #' 
-#' events <- read_events_noxturnal(fpath)
+#'   events <- read_events_noxturnal(fpath)
 #' 
-#' unlink(fpath)
+#'   unlink(fpath)
 #' 
-#' hypnogram(events)
+#'   hypnogram(events)
+#'  }, error = function(e) {
+#'   print("Error executing this example, check your internet connection.")
+#'   })
 #' @export
 hypnogram <- function(
     events,
@@ -221,6 +225,7 @@ hypnogram <- function(
 #' @param colors Vector of colors to use.
 #' @return A `ggplot2` hypnodensity graph.
 #' @examples
+#' tryCatch({
 #' download.file("https://rsleep.org/data/hypnodensity.csv", "hypnodensity.csv")
 #' 
 #' hypnodensity <- read.csv2("hypnodensity.csv")
@@ -228,6 +233,9 @@ hypnogram <- function(
 #' unlink("hypnodensity.csv")
 #' 
 #' plot_hypnodensity(hypnodensity)
+#' }, error = function(e) {
+#'   print("Error executing this example, check your internet connection.")
+#'   })
 #' @export
 plot_hypnodensity <- function(hypnodensity,
                               stages = c("AWA","REM","N1","N2","N3"),
@@ -367,6 +375,7 @@ smooth_liang2012 <- function(hypnogram){
 #' @return A dataframe of periods with their begin and stop times, duration and stages for stage mode.
 #' @export
 #' @examples
+#' tryCatch({
 #' library(ggplot2)
 #' 
 #' download.file(
@@ -386,6 +395,9 @@ smooth_liang2012 <- function(hypnogram){
 #' periods_stages <- periods(events, mode = "stages")
 #'  
 #' ggplot(periods_stages, aes(x=event,y=duration,color=event)) + geom_boxplot()
+#' }, error = function(e) {
+#'   print("Error executing this example, check your internet connection.")
+#'   })
 periods <- function(
     hypnogram,
     mode = "continuous",
@@ -428,6 +440,7 @@ periods <- function(
 #' @return Count of stages transitions in selected format.
 #' @export
 #' @examples
+#' tryCatch({
 #' download.file("https://rsleep.org/data/hypnodensity.csv", "hypnodensity.csv")
 #' 
 #' hypnodensity <- read.csv2("hypnodensity.csv")
@@ -452,7 +465,9 @@ periods <- function(
 #'     events, 
 #'     format = "dataframe")/(
 #'       sum(transitions(events)))*100,2)
-#'       
+#' }, error = function(e) {
+#'   print("Error executing this example, check your internet connection.")
+#'   })
 transitions <- function(
     hypnogram,
     stages = c("AWA", "REM", "N1", "N2", "N3", "NREM"),

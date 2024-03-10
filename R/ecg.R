@@ -15,18 +15,26 @@
 #' *(or samples if return_index is TRUE)
 #' @export
 #' @examples
-#' path <- paste0(tempdir(),"rec_1.dat")
-#' download.file("https://physionet.org/files/ecgiddb/1.0.0/Person_01/rec_1.dat?download",path)
-#' ecg <- readBin(path,integer(),500*30)
-#' peaks <- detect_rpeaks(ecg, sRate = 500)
-#' unlink(path)
-#' print(peaks)
-#'
-#' ecg.df <- data.frame(ECG = ecg,Seconds = c(1:length(ecg))/500)
-#' library(ggplot2)
-#' ggplot(ecg.df,aes(x = Seconds,y = ECG)) +
-#'   geom_line() + theme_bw() +
-#'   geom_vline(data.frame(p = peaks),mapping = aes(xintercept = p), linetype="dashed",color = "red")
+#' tryCatch({
+#'   path <- paste0(tempdir(),"rec_1.dat")
+#'   download.file("https://rsleep.org/data/rec_1.sdat",path)
+#'   ecg <- readBin(path,integer(),500*30)
+#'   peaks <- detect_rpeaks(ecg, sRate = 500)
+#'   unlink(path)
+#'   print(peaks)
+#'   ecg.df <- data.frame(ECG = ecg,Seconds = c(1:length(ecg))/500)
+#'   library(ggplot2)
+#'   ggplot(ecg.df,aes(x = Seconds,y = ECG)) +
+#'     geom_line() + 
+#'     theme_bw() +
+#'     geom_vline(
+#'       data.frame(p = peaks),
+#'       mapping = aes(xintercept = p),
+#'       linetype="dashed",
+#'       color = "red")
+#' }, error = function(e) {
+#'   print("Error executing this example, check your internet connection.")
+#'   })
 detect_rpeaks <- function(
   signal,
   sRate,

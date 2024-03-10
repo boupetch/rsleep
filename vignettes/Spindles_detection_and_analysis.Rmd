@@ -5,7 +5,6 @@ output:
      toc: true
      toc_depth: 3
 bibliography: Spindles_detection_and_analysis.bibtex
-csl: vignettes.csl
 vignette: >
   %\VignetteIndexEntry{Spindles detection and analysis}
   %\VignetteEncoding{UTF-8}

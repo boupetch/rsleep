@@ -68,7 +68,7 @@ epochs <- function(signals,
         resampled_signals[sidx:eidx,]
       }
     })
-    epochs[sapply(epochs, is.null)] <- NULL
+    # epochs[sapply(epochs, is.null)] <- NULL
     
   } else {
     

@@ -108,3 +108,95 @@ clean_oximetry <- function(oximetry, threshold = 70) {
   
   return(oximetry)
 }
+
+#' Detect Apneic Events in SpO2 Signal Data
+#'
+#' This function implements the algorithm described by Jund & Al in "Real-Time Automatic Apneic Event Detection Using Nocturnal Pulse Oximetry", 2018.
+#' It analyzes a given SpO2 signal to detect apneic events. It works by resampling the input signal
+#' and applying a series of checks to identify potential apnea instances. The algorithm uses a state machine
+#' with different blocks representing various stages of detection.
+#'
+#' @references Jung, D. W., Hwang, S. H., Cho, J. G., Choi, B. H., Baek, H. J., Lee, Y. J., Jeong, D.-U., & Park, K. S. (2018). Real-Time Automatic Apneic Event Detection Using Nocturnal Pulse Oximetry. In IEEE Transactions on Biomedical Engineering (Vol. 65, Issue 3, pp. 706–712). Institute of Electrical and Electronics Engineers (IEEE). https://doi.org/10.1109/tbme.2017.2715405 
+#' @param spo2 A numeric vector representing the SpO2 signal data.
+#' @param sRate The original sampling rate of the SpO2 signal.
+#' @return A list of numeric vectors. Each vector represents a detected apneic event, containing the start and end
+#'         indices of the event in the resampled signal.
+#' @examples
+#' # Example usage
+#' spo2_sample <- c(98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88)
+#' sample_rate <- 1  # Assuming 1 Hz sampling rate
+#' detected_apneas <- detect_apneic_events(spo2_sample, sample_rate)
+#' print(detected_apneas)
+#'
+#' @export
+detect_apneic_events <- function(spo2, sRate) {
+  
+  spo2 = signal::resample(spo2, 1, sRate)
+  
+  apneas <- list()
+  
+  a = 26
+  b = 0
+  c = 0
+  block  = "1"
+  while((a <= length(spo2)) & (b <= length(spo2)) & (c <= length(spo2))  ){
+    switch(
+      block,
+      "1" = {
+        if((-3<=(spo2[a] - spo2[a-1])) & ((spo2[a] - spo2[a-1])<=-1)){
+          b = a + 1
+          block = "3"
+        } else {
+          block = "2"
+        }
+      },
+      "2" = {
+        a = a + 1
+        block = "1"
+      },
+      "3" = {
+        if(spo2[b] <= spo2[b-1]){
+          if((spo2[a]-spo2[b]) >=-3){
+            c = b+1
+            block = "4"
+          }
+          else{
+            b = b + 1
+            block = "3"
+          }
+        } else {
+          block = "2"
+        }
+      },
+      "4" = {
+        if(!(((spo2[a]-spo2[c]) <= 1) || ((spo2[c]-spo2[b]) >= 3))){
+          block = "5"
+        }
+        if(!(c-a) >= 10){
+          block = "5"
+        }
+        if(!(c-a) <= 90){
+          block = "6"
+        }
+        apneas[[length(apneas)+1]] = c(a-25,c-25)
+        block = "6"
+      },
+      "5" = {
+        c = c + 1
+        if(spo2[b] >= spo2[c-1]){
+          b = c-1
+        }
+        block = "5"
+        
+      },
+      "6" = {
+        a = c + 1
+        block = "1"
+      }
+      
+    )
+    
+  }
+  
+  return(apneas)
+}

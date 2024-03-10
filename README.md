@@ -3,8 +3,8 @@ rsleep: A R package for sleep data analysis
 
 [![CRAN](https://www.r-pkg.org/badges/version/rsleep)](https://cran.r-project.org/package=rsleep)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/rsleep)](https://cran.r-project.org/package=rsleep)
-[![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/license/mit/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7416363.svg)](https://doi.org/10.5281/zenodo.7416363)
+![License:MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10507974.svg)](https://doi.org/10.5281/zenodo.10507974)
 [![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/boupetch)
 
 rsleep: Open-source, multiplatform R package for advanced sleep data analysis. Features automatic sleep scoring and sophisticated visualization tools.
@@ -34,6 +34,7 @@ library(rsleep)
 ## Vignettes
 
 - [Spectral analysis of sleep electroencephalography signals](https://rsleep.org/articles/Spectral_analysis_sleep_electroencephalography.html)
+- [Spindles detection and analysis](https://rsleep.org/articles/Spindles_detection_and_analysis.html)
 - [Using Rsleep and SleepCycles Packages to Detect Sleep Cycles](https://rsleep.org/articles/Using_rsleep_and_SleepCycles_packages_to_detect_sleep_cycles.html)
   
 ## Examples
@@ -54,6 +55,10 @@ library(rsleep)
 
 [<img src="https://rsleep.org/reference/plot_hypnodensity-1.png" width="600">](https://rsleep.org/reference/plot_hypnodensity.html)
 
+### Detecting spindles
+
+[<img src="https://rsleep.org/articles/Spindles_detection_and_analysis_files/figure-html/unnamed-chunk-6-1.png" width="600">](https://rsleep.org/reference/a7.html)
+
 ### Computing a transition matrix
 
 [<img src="https://rsleep.org/reference/transitions-1.png" width="400">](https://rsleep.org/reference/transitions.html)
@@ -61,27 +66,31 @@ library(rsleep)
 # Citation
 
 ```
-@software{paul_bouchequet_2022_7474289,
+@software{paul_bouchequet_2024_10507974,
   author       = {Paul Bouchequet},
   title        = {rsleep},
-  month        = dec,
-  year         = 2022,
-  publisher    = {Zenodo},
-  version      = {1.0.6},
   doi          = {10.5281/zenodo.7416363},
   url          = {https://doi.org/10.5281/zenodo.7416363}
 }
 ```
 
-## Reverse bibliography
+## Publications using the rsleep package
 
-- Baur, D. M., Dornbierer, D. A., & Landolt, H.-P. [Concentration-effect relationships of plasma caffeine on EEG delta power and cardiac autonomic activity during human sleep. Cold Spring Harbor Laboratory.](https://www.medrxiv.org/content/10.1101/2023.10.14.23297036v1)
+- Lok, R., Duran, M., & Zeitzer, J. M. (2023). [Moving time zones in a flash with light therapy during sleep.](https://www.nature.com/articles/s41598-023-41742-w) In Scientific Reports (Vol. 13, Issue 1). Springer Science and Business Media LLC.
+
+- Baur, D. M., Dornbierer, D. A., & Landolt, H.-P. [Concentration-effect relationships of plasma caffeine on EEG delta power and cardiac autonomic activity during human sleep.](https://www.medrxiv.org/content/10.1101/2023.10.14.23297036v1) Cold Spring Harbor Laboratory.
 
 - Wolf, M.C., Klein, P., Kulau, U., Richter, C. and Wolf, K.H., [DR. BEAT: First Insights into a Study to Collect Baseline BCG Data with a Sensor-Based Wearable Prototype in Heart-Healthy Adults.](https://arinex.com.au/EMBC/pdf/full-paper_271.pdf)
 
-- P. Bouchequet, T. Andrillon, G. Solelhac, A. Rouen, F. Sauvet, and D. Léger, [0424 Visualizing insomnia phenotypes using dimensionality reduction techniques,](https://academic.oup.com/sleep/article/46/Supplement_1/A188/7181658) SLEEP, vol. 46, no. Supplement_1. Oxford University Press (OUP), pp. A188–A189, May 01, 2023. doi: 10.1093/sleep/zsad077.0424.
+- P. Bouchequet, T. Andrillon, G. Solelhac, A. Rouen, F. Sauvet, and D. Léger, [0424 Visualizing insomnia phenotypes using dimensionality reduction techniques,](https://academic.oup.com/sleep/article/46/Supplement_1/A188/7181658) SLEEP, vol. 46, no. Supplement_1. Oxford University Press (OUP), pp. A188–A189, May 01, 2023
+
+- Santhiya P., JebaRajalakshmi J., S Siva Ranjani, Selvi S. ArunMozhi, [Detection of Epilepsy through Machine Learning Algorithms Using Brain Signals](https://www.proquest.com/openview/5244c8f8e90715c223df74f2487651dc/1?pq-origsite=gscholar&cbl=2035897), NeuroQuantology, Bornova Izmir Vol. 20, Iss. 8,  (2022): 6011 - 6018. 
+
+- Rajalakshmi, J., Ranjani, S. S., Sugitha, G., & Prabanand, S. C. (2022). [Electroencephalogram Data Analysed Through the Lens of Machine Learning to Detect Signs of Epilepsy.](https://ieeexplore.ieee.org/document/9985641) In 2022 4th International Conference on Inventive Research in Computing Applications (ICIRCA). 2022 IEEE. 
 
 - Altınkaya Z, Öztürk L, Büyükgüdük İ, et al. [Non-invasive vagus nerve stimulation in a hungry state decreases heart rate variability.](https://www.sciencedirect.com/science/article/abs/pii/S0031938422003213) Physiology & Behavior. 2023;258:114016.
+
+- Munch Nielsen, J., Zibrandtsen, I. C., Masulli, P., Lykke Sørensen, T., Andersen, T. S., & Wesenberg Kjær, T. (2022). [Towards a wearable multi-modal seizure detection system in epilepsy: A pilot study.](https://www.sciencedirect.com/science/article/pii/S1388245722000219?via%3Dihub) In Clinical Neurophysiology (Vol. 136, pp. 40–48). Elsevier BV. https://doi.org/10.1016/j.clinph.2022.01.005 
 
 - Rajalakshmi J, Ranjani SS, Sugitha G, Prabanand SC. [Electroencephalogram Data Analysed Through the Lens of Machine Learning to Detect Signs of Epilepsy.](https://ieeexplore.ieee.org/document/9985641) 2022 4th International Conference on Inventive Research in Computing Applications (ICIRCA). September 2022. 
 

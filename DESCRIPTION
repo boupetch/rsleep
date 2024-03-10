@@ -1,7 +1,7 @@
 Package: rsleep
 Type: Package
 Title: Analysis of Sleep Data
-Version: 1.0.11
+Version: 1.0.12
 Authors@R: c(person("Paul", "Bouchequet", ,"paul.bouchequet@frenchkpi.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-4033-2929")))
 Description: A toolbox for sleep data processing, visualization and analysis. Tools for state of the art automatic sleep stages scoring.
 License: MIT + file LICENSE
@@ -32,5 +32,5 @@ Suggests:
   DBI,
   SleepCycles,
   devtools
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 VignetteBuilder: knitr
