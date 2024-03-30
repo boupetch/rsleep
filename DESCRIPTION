@@ -32,5 +32,5 @@ Suggests:
   DBI,
   SleepCycles,
   devtools
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr

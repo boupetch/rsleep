@@ -79,3 +79,42 @@ create_xts <- function(signals, sample_rates, start_time) {
   # Create and return an xts object
   return(xts(combined_signals, order.by = time_index))
 }
+
+#' Plot sleep cycles along hypnogram
+#'
+#' This function takes a full hypnogram dataset enriched with cycles and plots the hypnogram with annotated sleep cycles.
+#' Sleep cycles are aggregated and marked on the hypnogram, providing a visual representation
+#' of the distribution and duration of sleep cycles throughout the recording period.
+#'
+#' @param hypnogram.full A data frame containing the full hypnogram data along sleep cycles.
+#'
+#' @return A ggplot object representing the hypnogram with annotated sleep cycles.
+#' Each sleep cycle is marked with a vertical dotted line and labeled accordingly.
+#'
+#' @examples
+#' # Assuming `hypnogram.full` is your dataset with hypnogram data
+#' # and the rsleep package is installed and loaded along with ggplot2
+#'
+#' # plot_hypnogram_cycles(hypnogram.full)
+#'
+#' @export
+#' @import ggplot2
+plot_hypnogram_cycles = function(hypnogram.full){
+  cycles = aggregate_cycles(hypnogram.full)
+  hypnogram = plot_hypnogram(hypnogram.full)
+  for(i in unique(cycles$SleepCycle)){
+    hypnogram = hypnogram + ggplot2::annotate(
+      "text",
+      x=cycles[cycles$SleepCycle == i,]$begin,
+      y=Inf,
+      label=paste0("Cycle ",i," "), 
+      angle=90, 
+      vjust=1, hjust=1, size=2.5, color="black") + 
+      ggplot2::geom_vline(
+        xintercept = as.numeric(cycles[cycles$SleepCycle == i,]$begin), 
+        linetype="dotted", 
+        color="black")
+
+  }
+  hypnogram
+}

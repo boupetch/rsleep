@@ -117,3 +117,48 @@ ckappa <- function(observed, predicted){
   
   kappa
 }
+
+#' Aggregate Sleep Cycles from Hypnogram Data
+#'
+#' This function processes a full hypnogram dataset to identify and aggregate information about each sleep cycle.
+#' It calculates the start and end times of each cycle, as well as counts the number of epochs within each cycle.
+#' The function requires `hypnogram.full` to have `begin`, `end`, and `SleepCycle` columns, with `begin` and `end`
+#' indicating the start and end times of each epoch in the hypnogram, and `SleepCycle` indicating the cycle each epoch belongs to.
+#'
+#' @param hypnogram.full A data frame representing the full hypnogram dataset.
+#' This dataset must include the columns `begin`, `end`, and `SleepCycle`, where `begin` and `end` are POSIXct datetime strings
+#' representing the start and end of each epoch, and `SleepCycle` is an integer indicating the sleep cycle number of each epoch.
+#'
+#' @return A data frame with one row per sleep cycle, including the following columns:
+#' \describe{
+#'   \item{SleepCycle}{The sleep cycle identifier.}
+#'   \item{begin}{The start time of the sleep cycle as POSIXct.}
+#'   \item{end}{The end time of the sleep cycle as POSIXct.}
+#'   \item{epoch_count}{The number of epochs within the sleep cycle.}
+#' }
+#'
+#' @examples
+#' # Assuming `hypnogram.full` is your dataset containing hypnogram data with columns `begin`, `end`, and `SleepCycle`
+#' # and the datetime strings are in the format "YYYY-MM-DD HH:MM:SS"
+#' 
+#' # aggregated_cycles = aggregate_cycles(hypnogram.full)
+#'
+#' @export
+aggregate_cycles = function(hypnogram.full){
+  
+  hypnogram.full$begin = as.POSIXct(hypnogram.full$begin, format="%Y-%m-%d %H:%M:%S")
+  
+  hypnogram.full$end = as.POSIXct(hypnogram.full$end, format="%Y-%m-%d %H:%M:%S")
+  
+  cycles = aggregate(begin ~ SleepCycle, data=hypnogram.full, FUN=min)
+  
+  cycles_end = aggregate(end ~ SleepCycle, data=hypnogram.full, FUN=max)
+  
+  cycles$end = cycles_end$end
+  
+  cycles_epochs_count = aggregate(event ~ SleepCycle, data = hypnogram.full, FUN = length)
+  
+  cycles$epoch_count = cycles_epochs_count$event
+  
+  return(cycles)
+}

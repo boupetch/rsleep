@@ -1,3 +1,8 @@
+# rsleep 1.0.13
+
+  * Added `aggregate_cycles()` function.
+  * Added `plot_hypnogram_cycles()` function.
+
 # rsleep 1.0.12
 
   * DOI: 10.5281/zenodo.10507974
