@@ -54,61 +54,44 @@ plot_hypnogram(events)
 
 ## Formatting
 
-Tne `SleepCycles` package only reads directories and files in specific format. Hypnograms must be converted in the appropriate arrangement before being written on disk in an explicit folder:
+Tne `SleepCycles` package only reads directories and files in specific format. Hypnograms must be converted in the appropriate arrangement before being written on disk in an explicit folder. The formatting function can be found in a forked version of the package, available on Github: `boupetch/SleepCycles`.
 
-```{r cycles, echo=TRUE, message=FALSE, warning=FALSE}
+```{r formating, echo=TRUE, message=FALSE, warning=FALSE}
 
-events.vmrk = data.frame(Description = as.character(events$event))
-events.vmrk$Description[events.vmrk$Description == "AWA"] = 0
-events.vmrk$Description[events.vmrk$Description == "N1"] = 1
-events.vmrk$Description[events.vmrk$Description == "N2"] = 2
-events.vmrk$Description[events.vmrk$Description == "N3"] = 3
-events.vmrk$Description[events.vmrk$Description == "REM"] = 5
-events.vmrk$Description = as.integer(events.vmrk$Description)
-events.vmrk$Type = "SleepStage"
-events.vmrk = events.vmrk[,c(2,1)]
+devtools::install_github("boupetch/SleepCycles")
 
-newdir <- file.path(
-  tempdir(),"SleepCycles")
-
-dir.create(newdir, showWarnings = FALSE)
-
-write.table(
-  events.vmrk, 
-  file = paste(
-    newdir,
-    "events.txt", sep = "/"),
-  row.names=FALSE,
-  col.names = TRUE, 
-  quote = FALSE, 
-  sep = ",")
+dir = SleepCycles::format_events(events)
 
 ```
 
 ## Detection
 
-The `SleepCycles()` function can now read the created directory and detect sleep cycles in the saved hypnograms. The original version of the function interactively asks the file format to the user and writes the result to a file in the same directory. The forked version `boupetch/SleepCycles` modifies this behaviour to take the format as parameters and return directly the results as a dataframe, making the pipeline easier to automate.
+The `SleepCycles()` function can now read the created directory and detect sleep cycles in the saved hypnograms.
 
-```r
-
-devtools::install_github("boupetch/SleepCycles")
+```{r cycles, echo=TRUE, message=FALSE, warning=FALSE}
 
 cycles = SleepCycles::SleepCycles(
-  p = newdir, 
+  p = dir, 
   filetype = "txt", 
   plot = FALSE)
-
-unlink(newdir, recursive=TRUE)
 
 head(cycles)
 
 ```
 
-Bound together, hypnogram and cycles dataframes make an enriched hypnogram dataset.
+```{r include=FALSE}
+
+unlink(dir, recursive=TRUE)
 
 ```
 
+Bound together, hypnogram and cycles dataframes make an enriched hypnogram dataset.
+
+```{r}
+
 hypnogram.full = cbind(events, cycles)
+
+head(hypnogram.full)
 
 ```
 
@@ -116,44 +99,9 @@ hypnogram.full = cbind(events, cycles)
 
 Compute the begining of each cyle to plot a dotted line at each cyle begining over the regular hypnogram plot.
 
-```
+```{r}
 
-library(ggplot2)
-
-cycles = aggregate_cycles(hypnogram.full)
-
-
-
-
-rsleep::plot_hypnogram(hypnogram.full) + geom_rect(
-  aes(xmin=cyles_times$begin[1], xmax=cyles_times$end[1], ymin=-Inf, ymax=Inf),
-  fill="green", alpha=0.002) + geom_vline(xintercept = as.numeric(cyles_times$begin[1]), linetype="dotted", color="black") + annotate("text", x=cyles_times$begin[1], y=Inf, label="Cycle 1 - NREM", vjust=2, size=3, color="black")
-
-
-
-
-```
-
-
-## Indicators
-
-Performing aggregations provides valuable sleep macrostructure indicators:
-
-```r
-
-
-
-# Composition of each cycle
-cycles.comp = aggregate(
-  SleepStages ~ SleepCycle + event, 
-  data = hypnogram.full, 
-  FUN = length)
-cycles.comp = reshape(
-  data = cycles.comp, 
-  direction = "wide", 
-  timevar  = "event",
-  idvar  = "SleepCycle")
-cycles.comp
+rsleep::plot_hypnogram_cycles(hypnogram.full)
 
 ```
 

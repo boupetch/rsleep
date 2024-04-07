@@ -138,7 +138,8 @@ ckappa <- function(observed, predicted){
 #' }
 #'
 #' @examples
-#' # Assuming `hypnogram.full` is your dataset containing hypnogram data with columns `begin`, `end`, and `SleepCycle`
+#' # Assuming `hypnogram.full` is your dataset containing hypnogram data 
+#' # with columns `begin`, `end`, and `SleepCycle`
 #' # and the datetime strings are in the format "YYYY-MM-DD HH:MM:SS"
 #' 
 #' # aggregated_cycles = aggregate_cycles(hypnogram.full)
@@ -150,13 +151,13 @@ aggregate_cycles = function(hypnogram.full){
   
   hypnogram.full$end = as.POSIXct(hypnogram.full$end, format="%Y-%m-%d %H:%M:%S")
   
-  cycles = aggregate(begin ~ SleepCycle, data=hypnogram.full, FUN=min)
+  cycles = stats::aggregate(begin ~ SleepCycle, data=hypnogram.full, FUN=min)
   
-  cycles_end = aggregate(end ~ SleepCycle, data=hypnogram.full, FUN=max)
+  cycles_end = stats::aggregate(end ~ SleepCycle, data=hypnogram.full, FUN=max)
   
   cycles$end = cycles_end$end
   
-  cycles_epochs_count = aggregate(event ~ SleepCycle, data = hypnogram.full, FUN = length)
+  cycles_epochs_count = stats::aggregate(event ~ SleepCycle, data = hypnogram.full, FUN = length)
   
   cycles$epoch_count = cycles_epochs_count$event
   
