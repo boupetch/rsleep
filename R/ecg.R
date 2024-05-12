@@ -10,6 +10,7 @@
 #' @param integration_window Convolution window size.
 #' @param refractory Minimal space between peaks in milliseconds.
 #' @param return_index If TRUE, the index for each R peak is returned instead of the timing. 
+#' @param limit_factor Limit peak height by this multiple of mean convolved signal.
 #' @return A numeric vector of detected R peaks, expressed in seconds* from the start of the signal. This vector can be used in RHRV using `RHRV::LoadBeatVector()`.
 #' 
 #' *(or samples if return_index is TRUE)
@@ -43,7 +44,8 @@ detect_rpeaks <- function(
   filter_order = 1,
   integration_window = 15,
   refractory = 200,
-  return_index = FALSE){
+  return_index = FALSE,
+  limit_factor = 3){
 
   nyquist_freq = 0.5 * sRate
   low = lowcut / nyquist_freq
@@ -81,7 +83,7 @@ detect_rpeaks <- function(
 
   # Detect peak on preprocessed signal.
   peaks <- c(0)
-  limit <- mean(signal_conv)*3
+  limit <- mean(signal_conv)*limit_factor
 
   refractory <- sRate*(refractory/1000)
   x <- signal_conv
