@@ -1,5 +1,6 @@
 # rsleep 1.0.13
 
+  * DOI: 10.5281/zenodo.11420762
   * `limit_factor` parameter added in `detect_rpeaks()` function.
   * Making sure the package build and test can run without an internet connection.
   * Added `aggregate_cycles()` function.
